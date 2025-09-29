@@ -1,17 +1,9 @@
-# Ignorera allt
 *
-
-# Tillåt specifika YAML-filer
 !configuration.yaml
 !automations.yaml
-
-# Tillåt .gitignore och README
 !.gitignore
 !README.md
-
-# Tillåt utvalda kataloger och deras innehåll
 !.includes/
 !.includes/**
-
 !esphome/
 !esphome/**

@@ -29,18 +29,6 @@ http:
   - 172.30.33.0/24
 
 #####################################################
-# HACS Remote Home-Assistant
-#remote_homeassistant:
-#  instances:
-#    - host: !secret internal_ip
-#      port: 8124
-#      secure: true
-#      verify_ssl: false
-#      access_token: !secret hacs_remote_token
-#      entity_prefix: "haserver_"
-#      entity_friendly_name_prefix: "HA Server "
-
-#####################################################
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes

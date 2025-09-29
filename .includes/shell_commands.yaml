@@ -1,7 +1,4 @@
 
   update_ddns: 'bash /config/scripts/cloudflare_ddns.sh {{ states("sensor.external_ip") }}'
-  git_commit_push: >
-    cd /config && 
-    git add . && 
-    git commit -m "{{ Automatic commit }}" && 
-    git push
+  git_commit_push: 'cd /config && git add . && git commit -m "Automatic commit from HA-server" && git push'
+

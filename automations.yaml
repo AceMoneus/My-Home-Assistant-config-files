@@ -508,7 +508,7 @@
         id: disconnected
       sequence:
       - data:
-          message: '⚠️ Shaun har kopplats från.
+          message: '⚠️ Shaun har kopplats från!
 
             Status: {{ states(''input_text.shaun_state'') }}
 
