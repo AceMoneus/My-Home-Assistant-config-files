@@ -325,3 +325,13 @@
       payload: '{{ (as_timestamp(now()) | timestamp_local) }}'
       retain: true
   mode: single
+- id: '1759152056892'
+  alias: GitHub commits
+  description: GitHub commits
+  triggers:
+  - at: 03:00:00
+    trigger: time
+  actions:
+  - action: shell_command.git_push_config
+    data: {}
+  mode: single
