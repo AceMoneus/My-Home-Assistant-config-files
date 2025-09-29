@@ -1,0 +1,3 @@
+- platform: worxlandroid
+  host: 192.168.2.4
+  pin: 9904

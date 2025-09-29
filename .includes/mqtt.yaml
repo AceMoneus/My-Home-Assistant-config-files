@@ -1,0 +1,37 @@
+  switch:
+    - name: home_mqtt_alarm_state
+      unique_id: home_mqtt_alarm_state
+      command_topic: "home/alarm/mqtt_alarm_state"
+      state_topic: "home/alarm/mqtt_alarm_state"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: kottbo_mqtt_alarm_state
+      unique_id: kottbo_mqtt_alarm_state
+      command_topic: "kottbo/alarm/mqtt_alarm_state"
+      state_topic: "kottbo/alarm/mqtt_alarm_state"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+
+  sensor:
+  - name: "MQTT Temperatur Vardagsrum"
+    state_topic: "home/temp/livingroom"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
+  - name: "MQTT Temperatur Sovrum"
+    state_topic: "home/temp/bedroom"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
+  - name: "MQTT Temperatur Ute"
+    state_topic: "home/temp/outside"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
+  - name: "MQTT Temperatur Outside"
+    state_topic: "home/temp/outside"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
