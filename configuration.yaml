@@ -23,13 +23,10 @@ http:
 
 #####################################################
 # Includes
-
 automation: !include automations.yaml
 script: !include .includes/scripts.yaml
 scene: !include scenes.yaml
 input_boolean: !include .includes/input_boolean.yaml
-
-#sensor: !include_dir_merge_list .includes/sensors/
 binary_sensor: !include_dir_merge_list .includes/binary_sensors/
 template: !include_dir_merge_list .includes/template/
 mqtt: !include .includes/mqtt.yaml
