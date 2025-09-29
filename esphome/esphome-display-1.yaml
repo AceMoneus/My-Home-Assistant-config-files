@@ -1,0 +1,157 @@
+esphome:
+  name: esphome-display-1
+  friendly_name: ESPHome Display 1
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: !secret fallback_ssid
+    password: !secret fallback_password
+
+captive_portal:
+
+logger:
+
+api:
+  encryption:
+    key: !secret encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# SPI konfiguration för ESP32-S3-LCD-2
+spi:
+  clk_pin: GPIO39  # SCK
+  mosi_pin: GPIO38 # MOSI/SDA
+
+# I2C för touch controller
+i2c:
+  sda: GPIO17  # Istället för GPIO6
+  scl: GPIO18  # Istället för GPIO5
+
+# Touch controller för ESP32-S3-LCD-2
+touchscreen:
+  - platform: cst816
+    id: my_touchscreen
+    interrupt_pin: GPIO7
+    reset_pin: GPIO8
+    on_touch:
+      - lambda: |-
+          ESP_LOGI("touch", "Touch detected at (%d, %d)", touch.x, touch.y);
+          
+          // Bilvärmare knapp: x=60-260, y=120-170 (landscape)
+          if (touch.x >= 60 && touch.x <= 260 && touch.y >= 120 && touch.y <= 170) {
+            ESP_LOGI("touch", "Car heater button pressed!");
+            id(ha_car_heater).toggle();
+          }
+
+# Bakgrundsbelysning
+output:
+  - platform: ledc
+    pin: GPIO1
+    id: backlight_pwm
+
+light:
+  - platform: monochromatic
+    output: backlight_pwm
+    name: "Display Backlight"
+    restore_mode: ALWAYS_ON
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_title
+    size: 20
+  - file: "gfonts://Roboto"
+    id: font_medium
+    size: 18
+  - file: "gfonts://Roboto"
+    id: font_large
+    size: 24
+
+# Home Assistant sensorer och kontroller
+sensor:
+  - platform: homeassistant
+    id: ha_outside_temperature
+    entity_id: sensor.outside_temperature
+    
+  - platform: homeassistant
+    id: ha_inside_temperature
+    entity_id: sensor.inside_temperature
+
+switch:
+  - platform: homeassistant
+    id: ha_car_heater
+    entity_id: switch.plug_q08_officecorner_brytare
+
+# Display konfiguration för ESP32-S3-LCD-2 (240x320)
+display:
+  - platform: ili9xxx
+    model: st7789v
+    cs_pin: GPIO45    # CS
+    dc_pin: GPIO42    # DC
+    reset_pin: GPIO41 # RESET - DETTA SAKNADES!
+    rotation: 90      # Roterat 90 grader för landscape
+    invert_colors: true
+    id: my_display
+    pages:
+      - id: main_page
+        lambda: |-
+          // Landscape: 320 bred x 240 hög
+          it.print(160, 10, id(font_title), Color(255, 255, 255), TextAlign::CENTER, "Bil & Temperatur");
+          
+          // Utomhustemperatur - vänster sida
+          it.rectangle(10, 40, 140, 60);
+          it.print(20, 50, id(font_medium), Color(0, 255, 255), TextAlign::LEFT, "Ute:");
+          if (id(ha_outside_temperature).has_state()) {
+            it.printf(20, 75, id(font_large), Color(0, 255, 255), "%.1f°C", id(ha_outside_temperature).state);
+          } else {
+            it.print(20, 75, id(font_medium), Color(255, 0, 0), "N/A");
+          }
+          
+          // Inomhustemperatur - höger sida  
+          it.rectangle(170, 40, 140, 60);
+          it.print(180, 50, id(font_medium), Color(255, 165, 0), TextAlign::LEFT, "Inne:");
+          if (id(ha_inside_temperature).has_state()) {
+            it.printf(180, 75, id(font_large), Color(255, 165, 0), "%.1f°C", id(ha_inside_temperature).state);
+          } else {
+            it.print(180, 75, id(font_medium), Color(255, 0, 0), "N/A");
+          }
+          
+          // Bilvärmare knapp - centrerad längst ner
+          if (id(ha_car_heater).state) {
+            it.filled_rectangle(60, 120, 200, 50, Color(255, 0, 0));  // Röd när PÅ
+            it.print(160, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "BILVARMARE PA");
+            it.print(160, 155, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Tryck for att stanga av");
+          } else {
+            it.rectangle(60, 120, 200, 50);  // Bara ram när AV
+            it.print(160, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "BILVARMARE AV");
+            it.print(160, 155, id(font_medium), Color(128, 128, 128), TextAlign::CENTER, "Tryck for att starta");
+          }
+          
+          // Status, datum och tid
+          it.line(0, 190, 320, 190, Color(255, 255, 255));
+          it.strftime(80, 200, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%Y-%m-%d", id(ha_time).now());
+          it.strftime(160, 220, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%A", id(ha_time).now());
+          it.strftime(240, 200, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%H:%M", id(ha_time).now());
+
+# Uppdatera displayen varje sekund
+interval:
+  - interval: 1s
+    then:
+      - display.page.show: main_page
+      - component.update: my_display
+  - interval: 10s
+    then:
+      - lambda: |-
+          ESP_LOGI("heartbeat", "Enheten lever: %s", id(ha_time).now().strftime("%Y-%m-%d %H:%M:%S").c_str());

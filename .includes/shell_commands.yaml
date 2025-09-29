@@ -1,0 +1,3 @@
+
+  update_ddns: 'bash /config/scripts/cloudflare_ddns.sh {{ states("sensor.external_ip") }}'
+  git_push_config: 'cd /config && git add . && git commit -m "Automatisk commit $(date)" && git push origin master'

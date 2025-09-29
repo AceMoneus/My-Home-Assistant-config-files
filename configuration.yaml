@@ -1,0 +1,56 @@
+#####################################################
+# Loads default set of integrations.
+default_config:
+homeassistant:
+  media_dirs: 
+    media: /config/www/media
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - !secret trusted_network_1
+        - !secret trusted_network_2
+        - !secret trusted_network_3
+        - !secret trusted_network_4
+  external_url: !secret external_url
+  internal_url: !secret internal_url
+  allowlist_external_dirs:
+    - /config/www/
+    - /config/www/media/
+
+logger:
+  default: info
+
+#####################################################
+# ssl & Cloudflare
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+  - 172.30.33.0/24
+
+#####################################################
+# HACS Remote Home-Assistant
+#remote_homeassistant:
+#  instances:
+#    - host: !secret internal_ip
+#      port: 8124
+#      secure: true
+#      verify_ssl: false
+#      access_token: !secret hacs_remote_token
+#      entity_prefix: "haserver_"
+#      entity_friendly_name_prefix: "HA Server "
+
+#####################################################
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+#####################################################
+# Includes
+automation: !include automations.yaml
+script: !include .includes/script.yaml
+scene: !include .includes/scene.yaml
+mqtt: !include .includes/mqtt.yaml
+template: !include .includes/template.yaml
+sensor: !include .includes/sensor.yaml
+shell_command: !include .includes/shell_commands.yaml
