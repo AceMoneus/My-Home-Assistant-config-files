@@ -11,12 +11,3 @@
     sun_angle:
       value_template: "{{ state_attr('sun.sun', 'elevation') }}"
       unit_of_measurement: "°"
-
-- platform: worxlandroid
-  host: 192.168.2.4
-  pin: 1541
-
-- platform: rest
-  name: "Kjell"
-  resource: "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/357066_pc?apikey=KG3JnvsGOOAuqBQwPNp0PQtv2tyu8PVZ&metric=true"
-  value_template: "{{ value_json[7].Temperature.Value }}"
