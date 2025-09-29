@@ -3,5 +3,7 @@
   git_commit_push: >
     cd /config && 
     git add . && 
+    git config user.name "AceMoneus" && 
+    git config user.email "kjell@moneus.se" && 
     git commit -m "{{ Automatic commit }}" && 
     git push
