@@ -761,6 +761,6 @@
   - at: 03:00:00
     trigger: time
   actions:
-  - action: shell_command.git_push_config
+  - action: shell_command.git_commit_push
     data: {}
   mode: single
