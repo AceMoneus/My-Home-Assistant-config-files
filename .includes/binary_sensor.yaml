@@ -1,0 +1,15 @@
+  - platform: template
+    sensors:
+      heat_pump_low_temperature:
+        friendly_name: "Low Temperature"
+        value_template: >
+          {{ states('sensor.inside_temperature') | float <
+             states('input_number.heat_pump_low_temperature_threshold') | float }}
+      heat_pump_low_effect:
+        friendly_name: "Heat Pump Low Effect"
+        value_template: "{{ states('sensor.plug_q13_heatpump_effekt') | float < 100 }}"
+      heat_pump_reset_condition:
+        friendly_name: "Heat Pump Reset Condition"
+        value_template: >
+          {{ is_state('binary_sensor.heat_pump_low_temperature', 'on') and
+             is_state('binary_sensor.heat_pump_low_effect', 'on') }}

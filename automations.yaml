@@ -107,17 +107,30 @@
       entity_id: switch.home_mqtt_alarm_lock
   mode: single
 - id: '1741098388388'
-  alias: HeatPump - Reset
-  description: Stänger av och startar om värmepumpen vid låg effekt och låg temperatur
+  alias: HeatPump - Reset after 20 min heat_pump_reset_condition
   triggers:
-  - value_template: "{{ states('sensor.plug_q13_heatpump_effekt') | float < 100 and\n
-      \  states('sensor.inside_temperature') | float < 20 }}\n"
-    trigger: template
+  - minutes: /1
+    trigger: time_pattern
+  - event: start
+    trigger: homeassistant
   conditions:
+  - condition: state
+    entity_id: binary_sensor.heat_pump_reset_condition
+    state: 'on'
+  - condition: template
+    value_template: '{{ (now() - states.binary_sensor.heat_pump_reset_condition.last_changed).total_seconds()
+      > 1200 }}
+
+      '
   - condition: state
     entity_id: switch.plug_q13_heatpump_brytare
     state: 'on'
   actions:
+  - data:
+      name: HeatPump Reset
+      message: Reset utförd efter >20 min heat_pump_reset_condition
+      entity_id: switch.plug_q13_heatpump_brytare
+    action: logbook.log
   - target:
       entity_id: switch.plug_q13_heatpump_brytare
     action: switch.turn_off
@@ -128,16 +141,14 @@
     action: switch.turn_on
   - delay:
       minutes: 20
-  mode: single
+  mode: restart
 - id: '1741098679152'
   alias: HeatPump - On under 19,5
   description: ''
   triggers:
-  - alias: Under 19,5
-    entity_id:
-    - sensor.inside_temperature
-    below: 19.5
-    trigger: numeric_state
+  - value_template: "{{ states('sensor.inside_temperature') | float <\n   states('input_number.heat_pump_low_temperature_threshold')
+      | float }}\n"
+    trigger: template
   conditions: []
   actions:
   - data: {}
@@ -285,11 +296,9 @@
   alias: HeatPump - Off above 20,5
   description: ''
   triggers:
-  - alias: Off above 20, 5
-    entity_id:
-    - sensor.temp_livingroom_temperatur
-    trigger: numeric_state
-    above: 20.5
+  - value_template: "{{ states('sensor.inside_temperature') | float >\n   states('input_number.heat_pump_high_threshold')
+      | float }}\n"
+    trigger: template
   conditions: []
   actions:
   - action: homeassistant.turn_off

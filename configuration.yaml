@@ -40,4 +40,7 @@ scene: !include .includes/scene.yaml
 mqtt: !include .includes/mqtt.yaml
 template: !include .includes/template.yaml
 sensor: !include .includes/sensor.yaml
-shell_command: !include .includes/shell_commands.yaml
+shell_command: !include .includes/shell_command.yaml
+binary_sensor: !include .includes/binary_sensor.yaml
+input_number: !include .includes/input_number.yaml
+

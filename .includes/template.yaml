@@ -1,0 +1,9 @@
+  - sensor:
+      - name: time_on_low
+        unit_of_measurement: min
+        state: >
+          {% if is_state('binary_sensor.low_effekt', 'on') %}
+            {{ ((now() - states.binary_sensor.low_effekt.last_changed).total_seconds() / 60) | round(0) }}
+          {% else %}
+            0
+          {% endif %}
