@@ -1,6 +1,6 @@
 - platform: worxlandroid
-  host: 192.168.2.4
-  pin: 9904
+  host: !secret shaun_ip
+  pin: !secret shaun_pin
 
 - platform: rest
   name: External IP

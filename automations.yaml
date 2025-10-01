@@ -108,41 +108,27 @@
   mode: single
 - id: '1741098388388'
   alias: HeatPump - Reset
-  description: ''
+  description: Stänger av och startar om värmepumpen vid låg effekt och låg temperatur
   triggers:
-  - trigger: numeric_state
-    entity_id:
-    - sensor.plug_q13_heatpump_effekt
-    below: 100
+  - value_template: "{{ states('sensor.plug_q13_heatpump_effekt') | float < 100 and\n
+      \  states('sensor.inside_temperature') | float < 20 }}\n"
+    trigger: template
   conditions:
-  - condition: numeric_state
-    entity_id: sensor.inside_temperature
-    below: 20
+  - condition: state
+    entity_id: switch.plug_q13_heatpump_brytare
+    state: 'on'
   actions:
-  - repeat:
-      while:
-      - condition: numeric_state
-        entity_id: sensor.inside_temperature
-        below: 20
-      sequence:
-      - delay:
-          hours: 0
-          minutes: 5
-          seconds: 0
-          milliseconds: 0
-      - target:
-          entity_id: switch.plug_q13_heatpump_brytare
-        action: switch.turn_off
-        data: {}
-      - delay:
-          seconds: 10
-      - target:
-          entity_id: switch.plug_q13_heatpump_brytare
-        action: switch.turn_on
-        data: {}
-      - delay:
-          minutes: 20
-  mode: restart
+  - target:
+      entity_id: switch.plug_q13_heatpump_brytare
+    action: switch.turn_off
+  - delay:
+      seconds: 10
+  - target:
+      entity_id: switch.plug_q13_heatpump_brytare
+    action: switch.turn_on
+  - delay:
+      minutes: 20
+  mode: single
 - id: '1741098679152'
   alias: HeatPump - On under 19,5
   description: ''
@@ -764,3 +750,24 @@
   - action: shell_command.git_commit_push
     data: {}
   mode: single
+- id: '1759218371444'
+  alias: Send Persistent Notice to Telegram
+  triggers:
+  - event_type: call_service
+    trigger: event
+  conditions:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{ trigger.event.data.domain == ''persistent_notification''
+        }}'
+    - condition: template
+      value_template: '{{ trigger.event.data.service == ''create'' }}'
+  actions:
+  - data:
+      message: 'Trigger data: {{ trigger.event.data }}'
+    action: system_log.write
+  - data:
+      message: 'Persistent Notify: **{{ trigger.event.data.service_data.title }}**
+        {{ trigger.event.data.service_data.message }}'
+    action: telegram_bot.send_message

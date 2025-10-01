@@ -36,7 +36,6 @@ frontend:
 #####################################################
 # Includes
 automation: !include automations.yaml
-script: !include .includes/script.yaml
 scene: !include .includes/scene.yaml
 mqtt: !include .includes/mqtt.yaml
 template: !include .includes/template.yaml
