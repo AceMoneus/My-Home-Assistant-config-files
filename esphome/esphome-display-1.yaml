@@ -2,12 +2,12 @@ esphome:
   name: esphome-display-1
   friendly_name: ESPHome Display 1
   # Pulsa touch-reset vid boot
-  on_boot:
-    priority: -100
-    then:
-      - output.turn_off: touchscreen_reset
-      - delay: 100ms
-      - output.turn_on: touchscreen_reset
+  #on_boot:
+  #  priority: -100
+  #  then:
+  #    - output.turn_off: touchscreen_reset
+  #    - delay: 100ms
+  #    - output.turn_on: touchscreen_reset
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -69,9 +69,11 @@ spi:
   mosi_pin: GPIO38                # MOSI/SDA
 
 i2c:
-  sda: GPIO17                     # Istället för GPIO6
-  scl: GPIO18                     # Istället för GPIO5
-  frequency: 10000                # Vid 50000 fungerade inte touch
+  sda: GPIO10                      # Istället för GPIO17
+  scl: GPIO11                      # Istället för GPIO18
+  #sda: GPIO17                     # Istället för GPIO6
+  #scl: GPIO18                     # Istället för GPIO5
+  frequency: 10000                 # Vid 50000 fungerade inte touch
 
 output:
   # Bakgrundsbelysning
@@ -79,9 +81,9 @@ output:
     pin: GPIO1
     id: backlight_pwm
   # output för reset-pin till touch
-  - platform: gpio
-    pin: GPIO8
-    id: touchscreen_reset
+  #- platform: gpio
+  #  pin: GPIO8
+  #  id: touchscreen_reset
 light:
   - platform: monochromatic
     output: backlight_pwm
@@ -220,7 +222,7 @@ touchscreen:
     id: my_touchscreen
     interrupt_pin: GPIO7
     # Reset av touch sköts via output
-    # reset_pin: GPIO8
+    reset_pin: GPIO8
     address: 0x15
     skip_probe: true
     on_touch:
@@ -229,7 +231,7 @@ touchscreen:
           
           // Lampknapp: x = 10–106
           if (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170) {
-            id(ha_lampor).toggle();
+           id(ha_lampor).toggle();
           }
 
           // Bettan: x = 116–212
