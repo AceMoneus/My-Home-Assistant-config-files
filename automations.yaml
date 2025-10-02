@@ -107,9 +107,9 @@
       entity_id: switch.home_mqtt_alarm_lock
   mode: single
 - id: '1741098388388'
-  alias: HeatPump - Reset every 15 min if condition is true
+  alias: HeatPump - Reset every 20 min if condition is true
   triggers:
-  - minutes: /15
+  - minutes: /20
     trigger: time_pattern
   conditions:
   - condition: state

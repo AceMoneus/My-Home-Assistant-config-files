@@ -4,7 +4,7 @@
         friendly_name: "Low Temperature"
         value_template: >
           {{ states('sensor.inside_temperature') | float <
-             states('input_number.heat_pump_low_temperature_threshold') | float }}
+             states('input_number.heat_pump_high_temperature_threshold') | float }}
       heat_pump_low_effect:
         friendly_name: "Heat Pump Low Effect"
         value_template: "{{ states('sensor.plug_q13_heatpump_effekt') | float < 100 }}"

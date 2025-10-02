@@ -50,7 +50,7 @@ touchscreen:
       - lambda: |-
           ESP_LOGI("touch", "Touch detected at (%d, %d)", touch.x, touch.y);
           
-          // Bilvärmare knapp: x=60-260, y=120-170 (landscape)
+          // Kupévärmarknapp: x=60-260, y=120-170 (landscape)
           if (touch.x >= 60 && touch.x <= 260 && touch.y >= 120 && touch.y <= 170) {
             ESP_LOGI("touch", "Car heater button pressed!");
             id(ha_car_heater).toggle();
@@ -128,7 +128,7 @@ display:
             it.print(180, 75, id(font_medium), Color(255, 0, 0), "N/A");
           }
           
-          // Bilvärmare knapp - centrerad längst ner
+          // Kupévärmarknapp - centrerad längst ner
           if (id(ha_car_heater).state) {
             it.filled_rectangle(60, 120, 200, 50, Color(255, 0, 0));  // Röd när PÅ
             it.print(160, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "BILVARMARE PA");
@@ -141,9 +141,9 @@ display:
           
           // Status, datum och tid
           it.line(0, 190, 320, 190, Color(255, 255, 255));
-          it.strftime(80, 200, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%Y-%m-%d", id(ha_time).now());
+          it.strftime(40, 220, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%Y-%m-%d", id(ha_time).now());
           it.strftime(160, 220, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%A", id(ha_time).now());
-          it.strftime(240, 200, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%H:%M", id(ha_time).now());
+          it.strftime(260, 220, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "%H:%M", id(ha_time).now());
 
 # Uppdatera displayen varje sekund
 interval:
