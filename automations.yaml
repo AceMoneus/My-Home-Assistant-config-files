@@ -118,7 +118,7 @@
   actions:
   - data:
       name: HeatPump Reset
-      message: Reset utförd enligt kvartsschema
+      message: Reset utförd enligt tidsschema
       entity_id: switch.plug_q13_heatpump_brytare
     action: logbook.log
   - target:
@@ -134,16 +134,17 @@
   alias: HeatPump - On Below Low Threshold
   description: ''
   triggers:
-  - value_template: "{{ states('sensor.inside_temperature') | float <\n   states('input_number.heat_pump_low_temperature_threshold')
-      | float }}\n"
-    trigger: template
-  conditions: []
+  - trigger: time_pattern
+    minutes: /1
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.heat_pump_low_temperature
+    state: 'on'
   actions:
   - data: {}
     target:
       entity_id:
       - switch.plug_q13_heatpump_brytare
-      - automation.heatpump_reset
     action: homeassistant.turn_on
   mode: single
 - id: '1741249838102'
@@ -284,16 +285,17 @@
   alias: HeatPump - OFF Above High Threshold
   description: ''
   triggers:
-  - value_template: "{{ states('sensor.inside_temperature') | float >\n   states('input_number.heat_pump_high_threshold')
-      | float }}\n"
-    trigger: template
-  conditions: []
+  - trigger: time_pattern
+    minutes: /1
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.heat_pump_high_temperature
+    state: 'on'
   actions:
   - action: homeassistant.turn_off
     target:
       entity_id:
       - switch.plug_q13_heatpump_brytare
-      - automation.heatpump_reset
     data: {}
   mode: single
 - id: '1744054727367'
