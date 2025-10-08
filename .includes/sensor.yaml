@@ -8,3 +8,10 @@
   method: GET
   scan_interval: 300  # uppdateras var 5:e minut
   value_template: "{{ value }}"
+
+#- platform: nut
+#  name: APC UPS
+#  host: 127.0.0.1
+#  port: 3493
+#  username: nutty
+#  password: myups123!
