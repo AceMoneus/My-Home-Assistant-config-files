@@ -43,4 +43,5 @@ sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml
 binary_sensor: !include .includes/binary_sensor.yaml
 input_number: !include .includes/input_number.yaml
+utility_meter: !include .includes/utility_meter.yaml
 

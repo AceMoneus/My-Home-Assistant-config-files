@@ -770,3 +770,25 @@
       message: 'Persistent Notify: **{{ trigger.event.data.service_data.title }}**
         {{ trigger.event.data.service_data.message }}'
     action: telegram_bot.send_message
+- id: '1760009530526'
+  alias: 'Strömövervakning: Faser över 16A'
+  description: ''
+  triggers:
+  - entity_id: sensor.frient_electricity_effekt
+    above: 16
+    trigger: numeric_state
+  - entity_id: sensor.frient_electricity_effekt_fas_b
+    above: 16
+    trigger: numeric_state
+  - entity_id: sensor.frient_electricity_effekt_fas_c
+    above: 16
+    trigger: numeric_state
+  actions:
+  - data:
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_effekt' %}\n
+        \ ⚡ Fas A har gått över 16A!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_b'
+        %}\n  ⚡ Fas B har gått över 16A!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_c'
+        %}\n  ⚡ Fas C har gått över 16A!\n{% else %}\n  ⚠️ Okänd fas har överskridit
+        gränsen.\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
