@@ -46,6 +46,10 @@
     device_id: cf1060197270db5704ae7db13dbb61d1
     entity_id: e6bccb0c96f672b1db2bc7e45873afa9
     domain: switch
+  - type: turn_on
+    device_id: 7be7a99abd383b0c2fc642968d3cfa5f
+    entity_id: d6dfc08e8db5ead711489e1f51b4503e
+    domain: switch
   - delay:
       hours: 0
       minutes: 1
@@ -58,6 +62,10 @@
   - type: turn_on
     device_id: 1a79c81a47913a2a14158863a2086c73
     entity_id: 5543ae2b6ebcf3995ae2451b41a15294
+    domain: switch
+  - type: turn_on
+    device_id: d4b04ea31a7777bd0c9ec56db6cbef39
+    entity_id: 2b6f357ca858d2e65b4a57c93becb8dc
     domain: switch
   - action: switch.turn_off
     metadata: {}
@@ -87,6 +95,10 @@
     device_id: 1a79c81a47913a2a14158863a2086c73
     entity_id: 5543ae2b6ebcf3995ae2451b41a15294
     domain: switch
+  - type: turn_off
+    device_id: d4b04ea31a7777bd0c9ec56db6cbef39
+    entity_id: 2b6f357ca858d2e65b4a57c93becb8dc
+    domain: switch
   - delay:
       hours: 0
       minutes: 1
@@ -99,6 +111,10 @@
   - type: turn_off
     device_id: cf1060197270db5704ae7db13dbb61d1
     entity_id: e6bccb0c96f672b1db2bc7e45873afa9
+    domain: switch
+  - type: turn_off
+    device_id: 7be7a99abd383b0c2fc642968d3cfa5f
+    entity_id: d6dfc08e8db5ead711489e1f51b4503e
     domain: switch
   - action: switch.turn_off
     metadata: {}
@@ -771,24 +787,50 @@
         {{ trigger.event.data.service_data.message }}'
     action: telegram_bot.send_message
 - id: '1760009530526'
-  alias: 'Strömövervakning: Faser över 16A'
+  alias: 'Strömövervakning: Faser över 16A i 2 minuter'
   description: ''
   triggers:
-  - entity_id: sensor.frient_electricity_effekt
+  - entity_id:
+    - sensor.frient_electricity_strom
     above: 16
+    for:
+      minutes: 2
     trigger: numeric_state
-  - entity_id: sensor.frient_electricity_effekt_fas_b
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_b
     above: 16
+    for:
+      minutes: 2
     trigger: numeric_state
-  - entity_id: sensor.frient_electricity_effekt_fas_c
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_c
     above: 16
+    for:
+      minutes: 2
     trigger: numeric_state
   actions:
   - data:
       message: "{% if trigger.entity_id == 'sensor.frient_electricity_effekt' %}\n
-        \ ⚡ Fas A har gått över 16A!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_b'
-        %}\n  ⚡ Fas B har gått över 16A!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_c'
-        %}\n  ⚡ Fas C har gått över 16A!\n{% else %}\n  ⚠️ Okänd fas har överskridit
-        gränsen.\n{% endif %}\n"
+        \ ⚡ Fas A har varit över 16A i mer än 2 minuter!\n{% elif trigger.entity_id
+        == 'sensor.frient_electricity_effekt_fas_b' %}\n  ⚡ Fas B har varit över 16A
+        i mer än 2 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_c'
+        %}\n  ⚡ Fas C har varit över 16A i mer än 2 minuter!\n{% else %}\n  ⚠️ Okänd
+        fas har överskridit gränsen.\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
+- id: '1760364391930'
+  alias: UPS status notifiering
+  description: Skickar aktuell UPS-status via Telegram
+  triggers:
+  - entity_id: sensor.myups_status
+    trigger: state
+  conditions: []
+  actions:
+  - data:
+      message: 'UPS-status ändrad till:
+
+        {{ states(''sensor.myups_status'') }}
+
+        '
     action: telegram_bot.send_message
   mode: single
