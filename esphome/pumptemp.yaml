@@ -31,10 +31,10 @@ one_wire:
 sensor:
   - platform: dallas_temp
     address: 0xC53CE10457C6C928
-    name: "heatpump_primary_out"
+    name: "heatpump_primary_in"
   - platform: dallas_temp
     address: 0x483CE10457B53D28
-    name: "heatpump_primary_in"
+    name: "heatpump_primary_out"
   - platform: dallas_temp
     address: 0x483CE10457891328
     name: "heatpump_secondary_out"
