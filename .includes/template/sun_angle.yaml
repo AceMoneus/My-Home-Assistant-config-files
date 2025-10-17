@@ -1,0 +1,6 @@
+      - name: "Solvinkel"
+        unique_id: solvinkel
+        unit_of_measurement: "°"
+        state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
+        attributes:
+          azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
