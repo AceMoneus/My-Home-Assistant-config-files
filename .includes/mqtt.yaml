@@ -17,6 +17,34 @@
       optimistic: false
       qos: 2
       retain: true
+    - name: home_mqtt_carheat
+      unique_id: home_mqtt_carheat
+      command_topic: "home/switch/mqtt_carheat"
+      state_topic: "home/switch/mqtt_carheat"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_evening_lights
+      unique_id: home_mqtt_evening_lights
+      command_topic: "home/switch/evening_lights"
+      state_topic: "home/switch/evening_lights"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_morning_lights
+      unique_id: home_mqtt_morning_lights 
+      command_topic: "home/switch/morning_lights"
+      state_topic: "home/switch/morning_lights"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+
 
   sensor:
   - name: "MQTT Temperatur Vardagsrum"
