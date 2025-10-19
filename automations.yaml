@@ -790,32 +790,31 @@
   alias: 'Strömövervakning: Faser över 16A i 2 minuter'
   description: ''
   triggers:
-  - entity_id:
-    - sensor.frient_electricity_strom
+  - entity_id: sensor.frient_electricity_strom
     above: 16
     for:
       minutes: 2
     trigger: numeric_state
-  - entity_id:
-    - sensor.frient_electricity_strom_fas_b
+  - entity_id: sensor.frient_electricity_strom_fas_b
     above: 16
     for:
       minutes: 2
     trigger: numeric_state
-  - entity_id:
-    - sensor.frient_electricity_strom_fas_c
+  - entity_id: sensor.frient_electricity_strom_fas_c
     above: 16
     for:
       minutes: 2
     trigger: numeric_state
   actions:
   - data:
-      message: "{% if trigger.entity_id == 'sensor.frient_electricity_effekt' %}\n
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_strom' %}\n
         \ ⚡ Fas A har varit över 16A i mer än 2 minuter!\n{% elif trigger.entity_id
-        == 'sensor.frient_electricity_effekt_fas_b' %}\n  ⚡ Fas B har varit över 16A
-        i mer än 2 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_effekt_fas_c'
+        == 'sensor.frient_electricity_strom_fas_b' %}\n  ⚡ Fas B har varit över 16A
+        i mer än 2 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_strom_fas_c'
         %}\n  ⚡ Fas C har varit över 16A i mer än 2 minuter!\n{% else %}\n  ⚠️ Okänd
-        fas har överskridit gränsen.\n{% endif %}\n"
+        fas har överskridit gränsen.\n  Entitet: {{ trigger.entity_id }}\n  Värde:
+        {{ trigger.to_state.state }} {{ trigger.to_state.attributes.unit_of_measurement
+        or 'okänd enhet' }}\n{% endif %}\n"
     action: telegram_bot.send_message
   mode: single
 - id: '1760364391930'
@@ -834,3 +833,43 @@
         '
     action: telegram_bot.send_message
   mode: single
+- id: '1760814343855'
+  alias: Bettans motorvärmare
+  description: ''
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_carheat
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_carheat
+        state: 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_outside_driveway
+      - delay:
+          hours: 0
+          minutes: 30
+          seconds: 0
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_outside_driveway
+          - switch.home_mqtt_carheat
+        data: {}
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_carheat
+        state: 'off'
+      sequence:
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.plug_outside_driveway
+  mode: restart
