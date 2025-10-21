@@ -1,5 +1,6 @@
   - sensor:
-      - name: time_on_low
+      - name: "H-pump time on low effect"
+        unique_id: time_on_low
         unit_of_measurement: min
         state: >
           {% if is_state('binary_sensor.low_effekt', 'on') %}
@@ -7,8 +8,8 @@
           {% else %}
             0
           {% endif %}
-      - name: "Solvinkel"
-        unique_id: solvinkel
+      - name: "Sun angle"
+        unique_id: sun_angle
         unit_of_measurement: "°"
         state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
         attributes:
