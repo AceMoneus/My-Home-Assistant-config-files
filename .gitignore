@@ -1,10 +1,37 @@
+# Ignore everything by default
 *
 
-!configuration.yaml
-!automations.yaml
-
+# ✅ Allow essential files in the root directory
 !.gitignore
 !README.md
+!Network.png
 
-!.includes/
-!.includes/**
+# ✅ Allow files and folders in ha-server
+!ha-server/
+!ha-server/README.md
+!ha-server/configuration.yaml
+!ha-server/automations.yaml
+!ha-server/includes/
+!ha-server/includes/**
+!ha-server/esphome/
+!ha-server/esphome/**
+
+# ✅ Allow files and folders in ha-kottbo
+!ha-kottbo/
+!ha-kottbo/README.md
+!ha-kottbo/configuration.yaml
+!ha-kottbo/automations.yaml
+!ha-kottbo/includes/
+!ha-kottbo/includes/**
+!ha-kottbo/esphome/
+!ha-kottbo/esphome/**
+
+# ✅ Allow files and folders in ha-quarry
+!ha-quarry/
+!ha-quarry/README.md
+!ha-quarry/configuration.yaml
+!ha-quarry/automations.yaml
+!ha-quarry/includes/
+!ha-quarry/includes/**
+!ha-quarry/esphome/
+!ha-quarry/esphome/**
