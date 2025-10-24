@@ -1,5 +1,5 @@
 
   update_ddns: 'bash /config/scripts/cloudflare_ddns.sh {{ states("sensor.external_ip") }}'
-  git_commit_push: 'cd /config/My-Home-Assistant-config-files/ha-server && git add . && git commit -m "Automatic commit from ha-server" && git push'
+  git_sync: 'bash /config/scripts/git_sync.sh'
 
 
