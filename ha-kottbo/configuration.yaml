@@ -31,11 +31,9 @@ remote_homeassistant:
 #####################################################
 # Includes
 automation: !include automations.yaml
-script: !include .includes/scripts.yaml
-sensor: !include .includes/sensors.yaml
+sensor: !include .includes/sensor.yaml
 input_boolean: !include .includes/input_boolean.yaml
 template: !include .includes/template.yaml
 command_line: !include .includes/command_line.yaml
 mqtt: !include .includes/mqtt.yaml
-shell_command: !include .includes/shell_commands.yaml
-
+shell_command: !include .includes/shell_command.yaml
