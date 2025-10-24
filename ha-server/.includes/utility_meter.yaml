@@ -1,0 +1,7 @@
+daily_energy:
+  source: sensor.frient_electricity_summering_av_leverans
+  cycle: daily
+
+monthly_energy:
+  source: sensor.frient_electricity_summering_av_leverans
+  cycle: monthly

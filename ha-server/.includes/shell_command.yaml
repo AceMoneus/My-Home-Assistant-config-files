@@ -1,0 +1,5 @@
+
+  update_ddns: 'bash /config/scripts/cloudflare_ddns.sh {{ states("sensor.external_ip") }}'
+  git_sync: 'bash /config/scripts/git_sync.sh'
+
+

@@ -1,0 +1,12 @@
+heat_pump_low_temperature_threshold:
+  name: Temperaturgräns
+  initial: 19.5
+  min: 10
+  max: 29
+  step: 0.5
+
+heat_pump_high_temperature_threshold:
+  initial: 20.5
+  min: 11
+  max: 30
+  step: 0.5
