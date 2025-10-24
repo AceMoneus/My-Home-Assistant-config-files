@@ -11,8 +11,8 @@
 !ha-server/README.md
 !ha-server/configuration.yaml
 !ha-server/automations.yaml
-!ha-server/includes/
-!ha-server/includes/**
+!ha-server/.includes/
+!ha-server/.includes/**
 !ha-server/esphome/
 !ha-server/esphome/**
 
@@ -21,8 +21,8 @@
 !ha-kottbo/README.md
 !ha-kottbo/configuration.yaml
 !ha-kottbo/automations.yaml
-!ha-kottbo/includes/
-!ha-kottbo/includes/**
+!ha-kottbo/.includes/
+!ha-kottbo/.includes/**
 !ha-kottbo/esphome/
 !ha-kottbo/esphome/**
 
@@ -31,7 +31,8 @@
 !ha-quarry/README.md
 !ha-quarry/configuration.yaml
 !ha-quarry/automations.yaml
-!ha-quarry/includes/
-!ha-quarry/includes/**
+!ha-quarry/.includes/
+!ha-quarry/.includes/**
 !ha-quarry/esphome/
 !ha-quarry/esphome/**
+
