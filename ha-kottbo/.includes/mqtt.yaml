@@ -1,0 +1,10 @@
+  switch:
+    - name: kottbo_mqtt_alarm_state
+      unique_id: kottbo_mqtt_alarm_state
+      command_topic: "kottbo/alarm/mqtt_alarm_state"
+      state_topic: "kottbo/alarm/mqtt_alarm_state"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true

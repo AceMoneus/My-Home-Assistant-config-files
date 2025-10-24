@@ -1,0 +1,2 @@
+git_commit_push: 'cd /config/My-Home-Assistant-config-files/ha-kottbo && git add . && git commit -m "Automatic commit from ha-kottbo" && git push'
+

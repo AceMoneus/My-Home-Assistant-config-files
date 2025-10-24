@@ -1,0 +1,847 @@
+- id: '1659996473008'
+  alias: Röklarm Vind
+  description: ''
+  triggers:
+  - type: smoke
+    device_id: 7118210ce01423cad93110f420f73cda
+    entity_id: cc288f2a796882799b15430fb6ac40a9
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - data:
+      message: '!! Rök - Vind !!'
+    action: notify.telegram
+  mode: single
+- id: '1662194898234'
+  alias: Telegram - HA Boot
+  description: ''
+  triggers:
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      message: Kottbo - Booted
+  mode: single
+- id: '1662207023146'
+  alias: Telegram - Reply with Status
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /status
+  condition: []
+  action:
+  - data:
+      message: 'HA Kottbo - Up and running :)
+
+        HA system time {{ as_local(now()).strftime("%Y-%m-%d %H:%M:%S")}}
+
+        Temp ute: {{ states.sensor.temp_outside_temperature_temperatur.state }}
+
+        Temp inne: {{ states.sensor.temp_kitchen_temperature.state }}'
+    action: notify.telegram
+  - action: automation.trigger
+    target:
+      entity_id:
+      - automation.telegram_keyboard
+    data:
+      skip_condition: true
+  mode: single
+- id: '1663097375867'
+  alias: Telegram - Moist Sink
+  description: ''
+  trigger:
+  - type: moist
+    platform: device
+    device_id: d9f9dcc362d444aa30004053e14ff3bf
+    entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_iaszone
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Fuktsensor!!'
+      message: Fukt under diskbänk
+  mode: single
+- id: '1663097514926'
+  alias: Telegram - Moist Basement
+  description: ''
+  trigger:
+  - type: moist
+    platform: device
+    device_id: 91d38d0dd83aeafad111257ea72aee0e
+    entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_iaszone_2
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Fuktsensor!!'
+      message: Fukt i källare
+  mode: single
+- id: '1663329099899'
+  alias: Telegram - Ytterdörr
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 575589282f4e38780e5e55616bd62ce4
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_opening
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    data:
+      config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
+      message: Kottbo - Ytterdörr
+- id: '1667817132698'
+  alias: Temp under 5 - Element ON
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    below: 5
+  condition: []
+  action:
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  mode: single
+- id: '1667817190613'
+  alias: Temp över 5 - Element OFF
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    above: 5
+  condition: []
+  action:
+  - service: homeassistant.turn_off
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  mode: single
+- id: '1667817682853'
+  alias: Telegram - Kök temp under 3
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: 522ec5c96b4ed7b8223ebf2215704612
+    entity_id: sensor.ewelink_th01_1_temperature
+    domain: sensor
+    below: 3
+  condition: []
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Kök under 3 grader
+  mode: single
+- id: '1670409339675'
+  alias: Telegram - Reboot
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /reboot
+  condition: []
+  action:
+  - service: notify.mobile_app_sm_s908b
+    data:
+      message: Reboot Kottbo
+  - service: hassio.host_reboot
+    data: {}
+  mode: single
+- id: '1670409459063'
+  alias: Telegram - Shutdown notice
+  description: ''
+  triggers:
+  - event: shutdown
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      message: HA Kottbo shutting down
+  mode: single
+- id: '1670480699279'
+  alias: Temp under 16 - Element ON
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    below: 15.9
+  condition: []
+  action:
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  mode: single
+- id: '1670480832383'
+  alias: Temp över 16 - Element Off
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    above: 16.1
+  condition: []
+  action:
+  - service: homeassistant.turn_off
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  mode: single
+- id: '1671351353316'
+  alias: Telegram - V-rum temp under 3
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: add81a6a571f6dc7fb334189f30f7db4
+    entity_id: sensor.ewelink_th01_2_temperature_2
+    domain: sensor
+    below: 3
+  condition: []
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur V-rum under 3 grader
+  mode: single
+- id: '1671351449325'
+  alias: Telegram - S-rum temp under 5
+  description: ''
+  triggers:
+  - type: temperature
+    device_id: 2cab8cf24a7ccaa6dd8687a6a84a1c3b
+    entity_id: 22061e2eac87d4a58b1301e4254eb314
+    domain: sensor
+    trigger: device
+    below: 5
+  conditions: []
+  actions:
+  - data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Sovrum under 5 grader
+    action: notify.telegram
+  mode: single
+- id: '1671352910843'
+  alias: Telegram - V-rum temp över 10 grader
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: add81a6a571f6dc7fb334189f30f7db4
+    entity_id: sensor.ewelink_th01_2_temperature_2
+    domain: sensor
+    above: 10
+  condition:
+  - condition: state
+    entity_id: switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+    state: 'on'
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: 'Temperatur V-rum över 8 grader samtidigt som el-element är på. '
+  mode: single
+- id: '1679756929851'
+  alias: Auto - Bathroom Heat Fan - OFF 15 min
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+  condition: []
+  action:
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+  mode: single
+- id: '1682782508740'
+  alias: Telegram - kök över -5
+  description: ''
+  trigger:
+  - type: temperature
+    platform: device
+    device_id: 522ec5c96b4ed7b8223ebf2215704612
+    entity_id: sensor.ewelink_th01_1_temperature
+    domain: sensor
+    above: -5
+  condition: []
+  action:
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Kök över - 5 grader
+  mode: single
+- id: '1697571704298'
+  alias: MoodOnSunset
+  description: ''
+  triggers:
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    below: 2.5
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      device_id:
+      - 581f1029f083c2080c0473d9474f765c
+      - 3c603425ec80b6c20b9305731f00c441
+      - 5b19d1ce1b19a015b80485d12cb2f3b7
+    action: homeassistant.turn_on
+  mode: single
+- id: '1697571878770'
+  alias: MoodOffMidnight
+  description: ''
+  triggers:
+  - at: '23:30:00'
+    trigger: time
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      device_id:
+      - 581f1029f083c2080c0473d9474f765c
+      - 5b19d1ce1b19a015b80485d12cb2f3b7
+    action: homeassistant.turn_off
+  mode: single
+- id: '1698688508680'
+  alias: MoodOffMorning
+  description: ''
+  triggers:
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    above: 2.5
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      entity_id:
+      - switch.plug_outside_1_switch
+      - switch.silver_1_hall_switch
+      device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
+    action: homeassistant.turn_off
+  mode: single
+- id: '1701855339155'
+  alias: Telegram - Cloudflare Start
+  description: ''
+  triggers:
+  - event_type: telegram_command
+    event_data:
+      command: /cfstart
+    trigger: event
+  conditions: []
+  actions:
+  - data:
+      message: Start Cloudflare
+    action: notify.telegram
+  - data:
+      addon: 9074a9fa_cloudflared
+    action: hassio.addon_start
+  mode: single
+- id: '1701855916383'
+  alias: Telegram - Cloudflare Stop
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /cfstop
+  condition: []
+  action:
+  - data:
+      message: Stop Cloudflare
+    action: notify.telegram
+  - data:
+      addon: 9074a9fa_cloudflared
+    action: hassio.addon_stop
+  - action: automation.trigger
+    target:
+      entity_id:
+      - automation.telegram_keyboard
+    data:
+      skip_condition: true
+  mode: single
+- id: '1706195245715'
+  alias: Auto - Shower Fan - OFF 30 min
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+    trigger: device
+  conditions: []
+  actions:
+  - delay:
+      hours: 0
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  mode: single
+- id: '1707382797030'
+  alias: Auto - Bathroom Heat Fan - OFF 20 min
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
+  condition: []
+  action:
+  - type: turn_off
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+  mode: single
+- id: '1711699263720'
+  alias: Fläkt badrum 60%
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id:
+    - sensor.temp_bathroom_luftfuktighet
+    above: 60
+  condition: []
+  action:
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  mode: single
+- id: '1723803632613'
+  alias: Camera - snapshot /30
+  description: ''
+  triggers:
+  - minutes: /30
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/front.jpg
+    target:
+      entity_id: camera.framsida_medium_resolution_channel
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/back.jpg
+    target:
+      entity_id: camera.baksida_medium_resolution_channel
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/hall.jpg
+    enabled: true
+    target:
+      entity_id: camera.hall_medium_resolution_channel
+  mode: single
+- id: '1727098712935'
+  alias: Button - Bathroom Heat ON
+  description: ''
+  trigger:
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_1
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: button_1
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: button_1
+  condition: []
+  action:
+  - type: toggle
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+  mode: single
+- id: '1727098782425'
+  alias: Button - Shower Fan ON
+  description: ''
+  trigger:
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: button_2
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: both_buttons
+  condition: []
+  action:
+  - type: toggle
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  mode: single
+- id: '1727098850376'
+  alias: Button - Bathroom Fans OFF
+  description: ''
+  trigger:
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: both_buttons
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: both_buttons
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: both_buttons
+  condition: []
+  action:
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - type: turn_off
+    device_id: a75a12f213bf4c57d3edb6d381b3f360
+    entity_id: fda237c86c0caf227302187483084202
+    domain: switch
+  mode: single
+- id: '1727255982082'
+  alias: Shower Fan at 05:00
+  description: ''
+  trigger:
+  - platform: time
+    at: 05:00:00
+  condition: []
+  action:
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  mode: single
+- id: '1730722172820'
+  alias: MQTT Timestamp
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /1
+  conditions: []
+  actions:
+  - action: mqtt.publish
+    metadata: {}
+    data:
+      topic: kottbo/timestamp
+      retain: true
+  - action: mqtt.publish
+    metadata: {}
+    data:
+      topic: kottbo/timestamp
+      payload: '{{ (as_timestamp(now()) | timestamp_local) }}'
+      retain: true
+  mode: single
+- id: '1739818615342'
+  alias: Ozone Basement
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /30
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  mode: single
+- id: '1742421369675'
+  alias: Shower Fan at 17:00
+  description: ''
+  triggers:
+  - at: '17:00:00'
+    trigger: time
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  mode: single
+- id: '1746094619730'
+  alias: Röklarm Sovrum
+  description: ''
+  triggers:
+  - type: turned_on
+    device_id: 024e02e67b53ecc78f7c3285a4973bfe
+    entity_id: f0f30cd10f6696aad0457d8b9631573b
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - data:
+      message: '!! Rök - Sovrum !!'
+    action: notify.telegram
+  mode: single
+- id: '1746528303004'
+  alias: Publish sensor data to MQTT
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.temp_attic_luftfuktighet
+    - sensor.temp_attic_temperatur
+    - sensor.temp_basement_luftfuktighet
+    - sensor.temp_basement_temperatur
+    - sensor.temp_bathroom_luftfuktighet
+    - sensor.temp_bathroom_temperatur
+    - sensor.temp_kitchen_humidity
+    - sensor.temp_kitchen_temperature
+    - sensor.temp_bedroom_luftfuktighet
+    - sensor.temp_bedroom_temperatur
+    - sensor.temp_outside_luftfuktighet
+    - sensor.temp_outside_temperatur
+    - sensor.frient_energy_summering_av_leverans
+    - binary_sensor.baksida_person_detected
+    - binary_sensor.framsida_person_detected
+    - binary_sensor.hall_person_detected
+    trigger: state
+  actions:
+  - data:
+      topic: "{% if trigger.entity_id == 'sensor.temp_attic_luftfuktighet' %}\n  statistics/kottbo/humidity/attic\n{%
+        elif trigger.entity_id == 'sensor.temp_basement_luftfuktighet' %}\n  statistics/kottbo/humidity/basement\n{%
+        elif trigger.entity_id == 'sensor.temp_bathroom_luftfuktighet' %}\n  statistics/kottbo/humidity/bathroom\n{%
+        elif trigger.entity_id == 'sensor.temp_kitchen_humidity' %}\n  statistics/kottbo/humidity/kitchen\n{%
+        elif trigger.entity_id == 'sensor.temp_bedroom_luftfuktighet' %}\n  statistics/kottbo/humidity/bedroom\n{%
+        elif trigger.entity_id == 'sensor.temp_outside_luftfuktighet' %}\n  statistics/kottbo/humidity/outside\n{%
+        elif trigger.entity_id == 'sensor.temp_attic_temperatur' %}\n  statistics/kottbo/temperature/attic\n{%
+        elif trigger.entity_id == 'sensor.temp_basement_temperatur' %}\n  statistics/kottbo/temperature/basement\n{%
+        elif trigger.entity_id == 'sensor.temp_bathroom_temperatur' %}\n  statistics/kottbo/temperature/bathroom\n{%
+        elif trigger.entity_id == 'sensor.temp_kitchen_temperature' %}\n  statistics/kottbo/temperature/kitchen\n{%
+        elif trigger.entity_id == 'sensor.temp_bedroom_temperatur' %}\n  statistics/kottbo/temperature/bedroom\n{%
+        elif trigger.entity_id == 'sensor.temp_outside_temperatur' %}\n  statistics/kottbo/temperature/outside\n{%
+        elif trigger.entity_id == 'sensor.frient_energy_summering_av_leverans' %}\n
+        \ statistics/kottbo/electricity/power_consumed_summation\n{% elif trigger.entity_id
+        == 'binary_sensor.baksida_person_detected' %}\n  actions/kottbo/person_detected_back\n{%
+        elif trigger.entity_id == 'binary_sensor.framsida_person_detected' %}\n  actions/kottbo/person_detected_front\n{%
+        elif trigger.entity_id == 'binary_sensor.hall_person_detected' %}\n  actions/kottbo/person_detected_hall\n{%
+        endif %}\n"
+      payload: '{{ trigger.to_state.state }}'
+    action: mqtt.publish
+  mode: single
+- id: '1750769007053'
+  alias: Alarm ON
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.kottbo_mqtt_alarm_state
+    to: 'on'
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: ba02bab09e7cbb79a9ecbf432fa1c130
+    entity_id: 71cd9f685715a98c410872b317c8c3b2
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.baksida_detections_person
+      - switch.framsida_detections_person
+      - switch.hall_detections_person
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: automation.telegram_ytterdorr
+  mode: single
+- id: '1750769125651'
+  alias: Alarm OFF
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.kottbo_mqtt_alarm_state
+    to: 'off'
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.baksida_detections_person
+      - switch.framsida_detections_person
+      - switch.hall_detections_person
+  - action: homeassistant.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: automation.telegram_ytterdorr
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: ba02bab09e7cbb79a9ecbf432fa1c130
+    entity_id: 71cd9f685715a98c410872b317c8c3b2
+    domain: switch
+  mode: single
+- id: '1759152112915'
+  alias: GitHub commits
+  description: GitHub commits
+  triggers:
+  - at: 03:00:00
+    trigger: time
+  actions:
+  - action: shell_command.git_commit_push
+    data: {}
+  mode: single
