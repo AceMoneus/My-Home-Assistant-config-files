@@ -1,0 +1,24 @@
+- platform: statistics
+  name: "stat_bedroom_temperature"
+  entity_id: sensor.temp_bedroom_temperatur
+  state_characteristic: mean
+  max_age:
+    minutes: 60
+  sampling_size: 100
+  precision: 1
+- platform: statistics
+  name: "stat_bedroom_humidity"
+  entity_id: sensor.temp_bedroom_luftfuktighet
+  state_characteristic: mean
+  max_age:
+    minutes: 60
+  sampling_size: 100
+  precision: 1
+- platform: statistics
+  name: "stat_bedroom_battery"
+  entity_id: sensor.temp_bedroom_batteri
+  state_characteristic: mean
+  max_age:
+    minutes: 60
+  sampling_size: 2
+  precision: 0

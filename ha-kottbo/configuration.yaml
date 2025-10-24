@@ -1,0 +1,41 @@
+
+#####################################################
+# HA config
+default_config:
+homeassistant:
+  auth_providers:
+    - type: homeassistant
+    - type: trusted_networks
+      trusted_networks:
+        - 192.168.2.0/24
+        - 192.168.3.0/24
+        - 172.27.0.0/16
+  external_url: !secret external_url
+  internal_url: !secret internal_url
+  allowlist_external_dirs:
+    - "/config/www/"
+
+#####################################################
+# ssl etc...
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+  - 172.30.33.0/24
+  - 172.27.55.0/24
+
+#####################################################
+# HACS Remote Home-Assistant
+remote_homeassistant:
+  instances:
+
+#####################################################
+# Includes
+automation: !include automations.yaml
+script: !include .includes/scripts.yaml
+sensor: !include .includes/sensors.yaml
+input_boolean: !include .includes/input_boolean.yaml
+template: !include .includes/template.yaml
+command_line: !include .includes/command_line.yaml
+mqtt: !include .includes/mqtt.yaml
+shell_command: !include .includes/shell_commands.yaml
+
