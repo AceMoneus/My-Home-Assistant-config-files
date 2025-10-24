@@ -23,9 +23,6 @@ mkdir -p $SERVER_NAME/.includes
 mkdir -p $SERVER_NAME/esphome
 mkdir -p $SERVER_NAME/scripts
 
-
-echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
-
 cp $CONFIG_DIR/configuration.yaml $REPO_DIR/$SERVER_NAME/ 2>/dev/null
 cp $CONFIG_DIR/automations.yaml $REPO_DIR/$SERVER_NAME/ 2>/dev/null
 
@@ -40,6 +37,8 @@ fi
 if [ -d "$CONFIG_DIR/scripts" ]; then
     cp -r $CONFIG_DIR/scripts/* $REPO_DIR/$SERVER_NAME/scripts/ 2>/dev/null
 fi
+
+echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
 
 git add .
 if git diff --staged --quiet; then
