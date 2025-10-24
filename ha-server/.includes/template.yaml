@@ -1,0 +1,16 @@
+  - sensor:
+      - name: "H-pump time on low effect"
+        unique_id: time_on_low
+        unit_of_measurement: min
+        state: >
+          {% if is_state('binary_sensor.low_effekt', 'on') %}
+            {{ ((now() - states.binary_sensor.low_effekt.last_changed).total_seconds() / 60) | round(0) }}
+          {% else %}
+            0
+          {% endif %}
+      - name: "Sun angle"
+        unique_id: sun_angle
+        unit_of_measurement: "°"
+        state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
+        attributes:
+          azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
