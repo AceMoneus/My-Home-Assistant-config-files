@@ -17,6 +17,8 @@ secrets.yaml
 !ha-server/.includes/**
 !ha-server/esphome/
 !ha-server/esphome/**
+!ha-server/scripts/
+!ha-server/scripts/**
 
 # ✅ Allow files and folders in ha-kottbo
 !ha-kottbo/
@@ -27,6 +29,8 @@ secrets.yaml
 !ha-kottbo/.includes/**
 !ha-kottbo/esphome/
 !ha-kottbo/esphome/**
+!ha-kottbo/scripts/
+!ha-kottbo/scripts/**
 
 # ✅ Allow files and folders in ha-quarry
 !ha-quarry/
@@ -37,6 +41,8 @@ secrets.yaml
 !ha-quarry/.includes/**
 !ha-quarry/esphome/
 !ha-quarry/esphome/**
+!ha-quarry/scripts/
+!ha-quarry/scripts/**
 
 # 🔒 Block secrets
 secrets.yaml
@@ -44,3 +50,4 @@ secrets.yaml
 ha-server/esphome/secrets.yaml
 ha-kottbo/esphome/secrets.yaml
 ha-quarry/esphome/secrets.yaml
+
