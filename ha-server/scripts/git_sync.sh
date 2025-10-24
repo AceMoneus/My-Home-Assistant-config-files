@@ -38,8 +38,6 @@ if [ -d "$CONFIG_DIR/scripts" ]; then
     cp -r $CONFIG_DIR/scripts/* $REPO_DIR/$SERVER_NAME/scripts/ 2>/dev/null
 fi
 
-echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
-
 git add .
 if git diff --staged --quiet; then
     echo "No changes to commit"
