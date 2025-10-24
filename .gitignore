@@ -7,7 +7,7 @@
 !.includes/**
 !esphome/
 !esphome/**
-!scrips/
-!scrips/**
+!scripts/
+!scripts/**
 secrets.yaml
 **/secrets.yaml
