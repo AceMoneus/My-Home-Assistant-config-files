@@ -1,0 +1,11 @@
+- sensor:
+  - name: 'day_date'
+    unique_id: day_date
+    state: >-
+      {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d %a') }}
+    icon: "mdi:calendar-clock"
+  - name: "Solvinkel"
+    unique_id: solvinkel
+    state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
+    attributes:
+      azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"

@@ -1,0 +1,13 @@
+- platform: time_date
+  display_options:
+    - 'time'
+    - 'date'
+    - 'date_time'
+    - 'date_time_utc'
+    - 'date_time_iso'
+
+- platform: template
+  sensors:
+    sun_angle:
+      value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+      unit_of_measurement: "°"
