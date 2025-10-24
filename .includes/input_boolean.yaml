@@ -1,9 +1,0 @@
-  indoor_lights:
-    name: Innelampor
-    initial: off
-  lamp_bedroom:
-    name: Sovrum
-    initial: off
-  switch_workdesk:
-    name: Skrivbord
-    initial: off
