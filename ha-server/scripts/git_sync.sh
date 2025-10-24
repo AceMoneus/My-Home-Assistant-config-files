@@ -9,8 +9,6 @@ GITHUB_USER=$(grep 'github_username:' $SECRETS_FILE | cut -d'"' -f2)
 GITHUB_REPO=$(grep 'github_repo:' $SECRETS_FILE | cut -d'"' -f2)
 SERVER_NAME=$(grep 'github_server_name:' $SECRETS_FILE | cut -d'"' -f2)
 
-echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
-
 cd $REPO_DIR || exit 1
 
 git config pull.rebase false
@@ -24,6 +22,9 @@ git pull origin main || {
 mkdir -p $SERVER_NAME/.includes
 mkdir -p $SERVER_NAME/esphome
 mkdir -p $SERVER_NAME/scripts
+
+
+echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
 
 cp $CONFIG_DIR/configuration.yaml $REPO_DIR/$SERVER_NAME/ 2>/dev/null
 cp $CONFIG_DIR/automations.yaml $REPO_DIR/$SERVER_NAME/ 2>/dev/null
