@@ -1,0 +1,1 @@
+  git_sync: 'bash /config/scripts/git_sync.sh'
