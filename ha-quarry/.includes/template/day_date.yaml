@@ -1,0 +1,5 @@
+- sensor:
+  - name: 'day_date'
+    state: >-
+      {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d %a') }}
+    icon: "mdi:calendar-clock"
