@@ -1,5 +1,7 @@
 # Ignore everything by default
 *
+secrets.yaml
+**/secrets.yaml
 
 # ✅ Allow essential files in the root directory
 !.gitignore
@@ -35,4 +37,5 @@
 !ha-quarry/.includes/**
 !ha-quarry/esphome/
 !ha-quarry/esphome/**
+
 
