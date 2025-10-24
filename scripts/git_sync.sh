@@ -9,8 +9,6 @@ GITHUB_USER=$(grep 'github_username:' $SECRETS_FILE | cut -d'"' -f2)
 GITHUB_REPO=$(grep 'github_repo:' $SECRETS_FILE | cut -d'"' -f2)
 SERVER_NAME=$(grep 'github_server_name:' $SECRETS_FILE | cut -d'"' -f2)
 
-echo "# Configuration for $SERVER_NAME" > $REPO_DIR/$SERVER_NAME/README.md
-
 cd $REPO_DIR || exit 1
 
 git config pull.rebase false
