@@ -38,4 +38,9 @@ secrets.yaml
 !ha-quarry/esphome/
 !ha-quarry/esphome/**
 
-
+# 🔒 Block secrets
+secrets.yaml
+**/secrets.yaml
+ha-server/esphome/secrets.yaml
+ha-kottbo/esphome/secrets.yaml
+ha-quarry/esphome/secrets.yaml
