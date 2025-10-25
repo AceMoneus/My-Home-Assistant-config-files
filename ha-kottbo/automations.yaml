@@ -836,7 +836,7 @@
     domain: switch
   mode: single
 - id: '1759152112915'
-  alias: GitHub commits
+  alias: Kottbo GitHub commits
   description: GitHub commits
   triggers:
   - at: 03:00:00
