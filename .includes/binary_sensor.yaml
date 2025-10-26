@@ -1,28 +1,33 @@
   - platform: template
     sensors:
+
       heat_pump_high_temperature:
-        friendly_name: "High Temperature"
+        friendly_name: "Heat Pump High Temperature"
         unique_id: heat_pump_high_temperature
         value_template: >
           {{ states('sensor.inside_temperature') | float >
              states('input_number.heat_pump_high_temperature_threshold') | float }}
+
       heat_pump_low_temperature:
-        friendly_name: "Low Temperature"
-        unique_id: heat_pump_low_effect
+        friendly_name: "Heat Pump Low Temperature"
+        unique_id: heat_pump_low_temperature
         value_template: >
           {{ states('sensor.inside_temperature') | float <
              states('input_number.heat_pump_low_temperature_threshold') | float }}
-      heat_pump_low_effect:
-        unique_id: heat_pump_low_effect
-        friendly_name: "Heat Pump Low Effect"
+
+      heat_pump_low_effect_status:
+        friendly_name: "Heat Pump Low Effect Status"
+        unique_id: heat_pump_low_effect_status
         value_template: "{{ states('sensor.plug_q13_heatpump_effekt') | float < 100 }}"
+
       heat_pump_reset_condition:
         friendly_name: "Heat Pump Reset Condition"
         unique_id: heat_pump_reset_condition
         value_template: >
           {{ is_state('binary_sensor.heat_pump_high_temperature', 'off') and
-             is_state('binary_sensor.heat_pump_low_effect', 'on') }}
+             is_state('binary_sensor.heat_pump_low_effect_status', 'on') }}
+
       sun_down:
         friendly_name: "Sun Down"
         unique_id: sun_down
-        value_template: "{{ state_attr('sun.sun', 'elevation') < 3 }}"
+        value_template: "{{ state_attr('sun.sun', 'elevation') < 4 }}"

@@ -1,16 +1,22 @@
   - sensor:
-      - name: "H-pump time on low effect"
-        unique_id: time_on_low
+      - name: "Heat pump time on low"
+        unique_id: heat_pump_time_on_low
         unit_of_measurement: min
         state: >
           {% if is_state('binary_sensor.low_effekt', 'on') %}
-            {{ ((now() - states.binary_sensor.low_effekt.last_changed).total_seconds() / 60) | round(0) }}
+            {{ ((now() - states.binary_sensor.low_effekt_status.last_changed).total_seconds() / 60) | round(0) }}
           {% else %}
             0
           {% endif %}
       - name: "Sun angle"
         unique_id: sun_angle
         unit_of_measurement: "°"
-        state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
+        state: "{{ state_attr('sun.sun', 'elevation') | round(0) }}"
         attributes:
-          azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
+          azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(0) }}"
+      - name: "MyUPS Last Watt"
+        unique_id: myups_last_watt
+        unit_of_measurement: "W"
+        state: >
+          {% set percent = states('sensor.myups_last') | float %}
+          {{ (percent / 100) * 1200 | round(0) }}
