@@ -30,4 +30,4 @@
       sun_down:
         friendly_name: "Sun Down"
         unique_id: sun_down
-        value_template: "{{ state_attr('sun.sun', 'elevation') < 3 }}"
+        value_template: "{{ state_attr('sun.sun', 'elevation') < 4 }}"
