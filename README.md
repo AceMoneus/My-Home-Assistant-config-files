@@ -1,15 +1,24 @@
-Repository for my three Home Assistans servers.
+## Repository for My Three Home Assistant Servers
 
-I have two houses: the one I live in and a holiday home.
+I manage Home Assistant across two properties: my primary residence and a holiday home.
 
-In my main house, I run one Home Assistant instance that acts as a web front. I access this instance through an HTTPS tunnel; it is located behind a firewall in a DMZ.
+### 🏠 Main House Setup
+- One Home Assistant instance acts as a web front-end.
+- It’s accessed via an HTTPS tunnel and resides in a DMZ behind a firewall.
+- The “real” Home Assistant server is located deeper in the network, behind another firewall.
+- Communication between the front-end and the real server is handled exclusively via MQTT over TLS.
 
-The “real” Home Assistant sits behind another firewall, and they communicate only via MQTT over SSL.
+### 🏡 Holiday Home Setup
+- The Home Assistant instance here communicates only with the main server at home.
+- This connection uses MQTT over SSL and a VPN tunnel between the sites.
 
-The Home Assistant in the holiday home communicates exclusively with the “real” server at home, using MQTT over SSL and a VPN tunnel between the sites.
+### 🔄 Communication & Independence
+- Both main Home Assistant instances are fully independent in terms of automations and configurations.
+- MQTT is used to exchange commands, sensor data, and telemetry between them.
+- The external-facing Home Assistant provides dashboards but has limited control over the main servers—only via a few configured MQTT topics.
 
-The two main Home Assistant instances at the two sites are independent of each other regarding automations and configuration. However, I use MQTT to send commands, sensor data, and telemetry between them. The external Home Assistant only provides a dashboard and cannot control the main instances, except through a few MQTT topics I have configured.
+### 📁 Status
+As of October 2025, I haven’t published all configuration files yet.
 
-As of now (october 2025) I hav not yet published all config files, yet...
 
 ![Schematic network](https://github.com/AceMoneus/My-Home-Assistant-config-files/blob/main/readme-related/Network.png)
