@@ -12,4 +12,4 @@ The two main Home Assistant instances at the two sites are independent of each o
 
 As of now (october 2025) I hav not yet published all config files, yet...
 
-![Schematic network](https://github.com/AceMoneus/My-Home-Assistant-config-files/blob/main/Network.png)
+![Schematic network](https://github.com/AceMoneus/My-Home-Assistant-config-files/blob/main/readme-related/Network.png)
