@@ -10,7 +10,7 @@ I manage Home Assistant across two properties: my primary residence and a holida
 
 ### 🏡 Holiday Home Setup
 - The Home Assistant instance here communicates only with the main server at home.
-- This connection uses MQTT over SSL and a VPN tunnel between the sites.
+- This connection uses MQTT over TLS and a VPN tunnel between the sites.
 
 ### 🔄 Communication & Independence
 - Both main Home Assistant instances are fully independent in terms of automations and configurations.
