@@ -796,6 +796,8 @@
       - switch.baksida_detections_person
       - switch.framsida_detections_person
       - switch.hall_detections_person
+      - switch.framsida_detections_vehicle
+      - switch.baksida_detections_vehicle
   - action: homeassistant.turn_on
     metadata: {}
     data: {}
@@ -820,6 +822,8 @@
       - switch.baksida_detections_person
       - switch.framsida_detections_person
       - switch.hall_detections_person
+      - switch.baksida_detections_vehicle
+      - switch.framsida_detections_vehicle
   - action: homeassistant.turn_off
     metadata: {}
     data: {}
