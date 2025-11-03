@@ -692,6 +692,25 @@
       entity_id:
       - light.innelampor_light
       - light.utelampor_light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.innelampor_switch
+      - switch.utelampor_switch
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+      - light.utelampor_light
   mode: single
 - id: '1755033929887'
   alias: 'Släck utelampor efter 5 min. '
