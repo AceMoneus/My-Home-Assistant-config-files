@@ -892,3 +892,44 @@
         target:
           entity_id: switch.plug_outside_driveway
   mode: restart
+- id: '1762203466396'
+  alias: 'Strömövervakning: Faser över 20A i 1 minut'
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.frient_electricity_strom
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_b
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_c
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_strom' %}\n
+        \ ⚡ Fas A har varit över 20A i mer än 1 minut!\n{% elif trigger.entity_id
+        == 'sensor.frient_electricity_strom_fas_b' %}\n  ⚡ Fas B har varit över 20A
+        i mer än 1 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_strom_fas_c'
+        %}\n  ⚡ Fas C har varit över 20A i mer än 1 minuter!\n{% else %}\n  ⚠️ Okänd
+        fas har överskridit gränsen.\n  Entitet: {{ trigger.entity_id }}\n  Värde:
+        {{ trigger.to_state.state }} {{ trigger.to_state.attributes.unit_of_measurement
+        or 'okänd enhet' }}\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
