@@ -795,7 +795,6 @@
       entity_id:
       - switch.baksida_detections_person
       - switch.framsida_detections_person
-      - switch.hall_detections_person
       - switch.framsida_detections_vehicle
       - switch.baksida_detections_vehicle
   - action: homeassistant.turn_on
