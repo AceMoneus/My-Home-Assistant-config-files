@@ -1015,3 +1015,62 @@
         or 'okänd enhet' }}\n{% endif %}\n"
     action: telegram_bot.send_message
   mode: single
+- id: '1762602864883'
+  alias: Outside
+  description: ''
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_outside_lights
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_outside_lights
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.tz3000_iiacqpdz_ts011f
+          - switch.plug_q22_outside
+          - switch.plug_q21_outside_kitchen
+          - switch.plug_q20_light_shed
+    - conditions:
+      - condition: state
+        state:
+        - 'off'
+        entity_id: switch.home_mqtt_outside_lights
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_q21_outside_kitchen
+          - switch.tz3000_iiacqpdz_ts011f
+          - switch.plug_q22_outside
+          - switch.plug_q20_light_shed
+        data: {}
+  mode: single
+- id: '1762609393709'
+  alias: Tänd innelampor
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sun_down
+    from:
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+      - switch.innelampor_switch
+  mode: single
