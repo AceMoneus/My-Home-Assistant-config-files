@@ -8,15 +8,19 @@
           {% else %}
             0
           {% endif %}
+
       - name: "Sun angle"
         unique_id: sun_angle
         unit_of_measurement: "°"
         state: "{{ state_attr('sun.sun', 'elevation') | round(0) | int }}"
         attributes:
           azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(0) | int }}"
+
       - name: "MyUPS Last Watt"
         unique_id: myups_last_watt
         unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
         state: >
           {% set percent = states('sensor.myups_last') | float %}
           {{ (percent / 100) * 1200 | round(0) | int }}

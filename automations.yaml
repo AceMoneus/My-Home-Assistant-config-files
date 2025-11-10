@@ -692,6 +692,25 @@
       entity_id:
       - light.innelampor_light
       - light.utelampor_light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.innelampor_switch
+      - switch.utelampor_switch
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+      - light.utelampor_light
   mode: single
 - id: '1755033929887'
   alias: 'Släck utelampor efter 5 min. '
@@ -873,3 +892,185 @@
         target:
           entity_id: switch.plug_outside_driveway
   mode: restart
+- id: '1762203466396'
+  alias: 'Strömövervakning: Faser över 20A i 2 minuter'
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.frient_electricity_strom
+    above: 20
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_b
+    above: 20
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_c
+    above: 20
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_strom' %}\n
+        \ ⚡ Fas A har varit över 20A i mer än 2 minuter!\n{% elif trigger.entity_id
+        == 'sensor.frient_electricity_strom_fas_b' %}\n  ⚡ Fas B har varit över 20A
+        i mer än 2 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_strom_fas_c'
+        %}\n  ⚡ Fas C har varit över 20A i mer än 2 minuter!\n{% else %}\n  ⚠️ Okänd
+        fas har överskridit gränsen.\n  Entitet: {{ trigger.entity_id }}\n  Värde:
+        {{ trigger.to_state.state }} {{ trigger.to_state.attributes.unit_of_measurement
+        or 'okänd enhet' }}\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
+- id: '1762551687523'
+  alias: 'Strömövervakning: Faser över 16A i 5 minuter'
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.frient_electricity_strom
+    above: 16
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_b
+    above: 16
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_c
+    above: 16
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_strom' %}\n
+        \ ⚡ Fas A har varit över 16A i mer än 5 minuter!\n{% elif trigger.entity_id
+        == 'sensor.frient_electricity_strom_fas_b' %}\n  ⚡ Fas B har varit över 16A
+        i mer än 5 minuter!\n{% elif trigger.entity_id == 'sensor.frient_electricity_strom_fas_c'
+        %}\n  ⚡ Fas C har varit över 16A i mer än 5 minuter!\n{% else %}\n  ⚠️ Okänd
+        fas har överskridit gränsen.\n  Entitet: {{ trigger.entity_id }}\n  Värde:
+        {{ trigger.to_state.state }} {{ trigger.to_state.attributes.unit_of_measurement
+        or 'okänd enhet' }}\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
+- id: '1762551963876'
+  alias: 'Strömövervakning: Faser över 20A i 1 minut'
+  description: ''
+  triggers:
+  - entity_id:
+    - sensor.frient_electricity_strom
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_b
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  - entity_id:
+    - sensor.frient_electricity_strom_fas_c
+    above: 20
+    for:
+      hours: 0
+      minutes: 1
+      seconds: 0
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      message: "{% if trigger.entity_id == 'sensor.frient_electricity_strom' %}\n
+        \ ⚡ Fas A har varit över 20A i mer än 1 minut!\n{% elif trigger.entity_id
+        == 'sensor.frient_electricity_strom_fas_b' %}\n  ⚡ Fas B har varit över 20A
+        i mer än 1 minut!\n{% elif trigger.entity_id == 'sensor.frient_electricity_strom_fas_c'
+        %}\n  ⚡ Fas C har varit över 20A i mer än 1 minut!\n{% else %}\n  ⚠️ Okänd
+        fas har överskridit gränsen.\n  Entitet: {{ trigger.entity_id }}\n  Värde:
+        {{ trigger.to_state.state }} {{ trigger.to_state.attributes.unit_of_measurement
+        or 'okänd enhet' }}\n{% endif %}\n"
+    action: telegram_bot.send_message
+  mode: single
+- id: '1762602864883'
+  alias: Outside
+  description: ''
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_outside_lights
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_outside_lights
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.tz3000_iiacqpdz_ts011f
+          - switch.plug_q22_outside
+          - switch.plug_q21_outside_kitchen
+          - switch.plug_q20_light_shed
+    - conditions:
+      - condition: state
+        state:
+        - 'off'
+        entity_id: switch.home_mqtt_outside_lights
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_q21_outside_kitchen
+          - switch.tz3000_iiacqpdz_ts011f
+          - switch.plug_q22_outside
+          - switch.plug_q20_light_shed
+        data: {}
+  mode: single
+- id: '1762609393709'
+  alias: Tänd innelampor
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sun_down
+    from:
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+      - switch.innelampor_switch
+  mode: single
