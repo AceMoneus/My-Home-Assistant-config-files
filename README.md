@@ -18,7 +18,7 @@ I manage Home Assistant across two properties: my primary residence and a holida
 - The external-facing Home Assistant provides dashboards but has limited control over the main servers—only via a few configured MQTT topics.
 
 ### 📁 Status
-As of October 2025, I haven’t published all configuration files yet.
+As of November 2025, I haven’t published all configuration files yet.
 
 
 ![Schematic network](https://github.com/AceMoneus/My-Home-Assistant-config-files/blob/main/readme-related/Network.png)
