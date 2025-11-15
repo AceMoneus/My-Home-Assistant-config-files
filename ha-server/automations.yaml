@@ -1074,3 +1074,20 @@
       - light.innelampor_light
       - switch.innelampor_switch
   mode: single
+- id: '1763110119433'
+  alias: New automation
+  description: ''
+  triggers:
+  - device_id: 693371e4bc2605fd745df4a0c39a3da3
+    domain: zha
+    type: remote_button_short_press
+    subtype: button
+    trigger: device
+  conditions: []
+  actions:
+  - action: switch.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: switch.home_mqtt_bettan_button
+  mode: single
