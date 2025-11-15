@@ -105,6 +105,15 @@ switch:
       optimistic: false
       qos: 2
       retain: true
+    - name: home_mqtt_bettan_button
+      unique_id: home_mqtt_bettan_button
+      command_topic: "home/switch/bettan_button"
+      state_topic: "home/switch/bettan_button"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
 
 
 ##############################################
