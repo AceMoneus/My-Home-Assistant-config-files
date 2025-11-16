@@ -867,6 +867,11 @@
         entity_id: switch.home_mqtt_carheat
         state: 'on'
       sequence:
+      - action: homeassistant.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.plug_q13_heatpump_brytare
       - action: homeassistant.turn_on
         data: {}
         target:
