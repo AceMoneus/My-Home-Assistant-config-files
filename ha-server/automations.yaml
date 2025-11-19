@@ -1096,3 +1096,18 @@
     target:
       entity_id: switch.home_mqtt_bettan_button
   mode: single
+- id: '1763451186242'
+  alias: Väck Victus
+  description: ''
+  triggers:
+  - trigger: time_pattern
+    minutes: /5
+  conditions: []
+  actions:
+  - device_id: 23906c9fbc4a8b42da5797cca8e90dab
+    domain: button
+    entity_id: 726b440c173acbe599106fa2d37f013b
+    type: press
+    metadata:
+      secondary: false
+  mode: single
