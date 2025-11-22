@@ -877,8 +877,8 @@
         target:
           entity_id: switch.plug_outside_driveway
       - delay:
-          hours: 0
-          minutes: 30
+          hours: 1
+          minutes: 0
           seconds: 0
           milliseconds: 0
       - action: homeassistant.turn_off
