@@ -4,3 +4,4 @@
         state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
         attributes:
           azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
+        icon: "mdi:angle-acute"
