@@ -1,6 +1,7 @@
 - platform: worxlandroid
   host: !secret shaun_ip
   pin: !secret shaun_pin
+  icon: "mdi:robot-mower"
 
 - platform: rest
   name: External IP
