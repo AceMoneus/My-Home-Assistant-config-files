@@ -31,4 +31,3 @@
         friendly_name: "Sun Down"
         unique_id: sun_down
         value_template: "{{ state_attr('sun.sun', 'elevation') < 4 }}"
-        icon: "mdi:weather-sunset-down"
