@@ -1060,7 +1060,7 @@
         data: {}
   mode: single
 - id: '1762609393709'
-  alias: Tänd innelampor
+  alias: Tänd lampor när det blir mörkt
   description: ''
   triggers:
   - trigger: state
@@ -1078,6 +1078,10 @@
       entity_id:
       - light.innelampor_light
       - switch.innelampor_switch
+      - switch.plug_q20_light_shed
+      - switch.plug_q21_outside_kitchen
+      - switch.plug_q22_outside
+      - switch.tz3000_iiacqpdz_ts011f
   mode: single
 - id: '1763110119433'
   alias: New automation
@@ -1110,4 +1114,45 @@
     type: press
     metadata:
       secondary: false
+  mode: single
+- id: '1764586567605'
+  alias: Släck innelampor när Evening = off
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.evening
+    to:
+    - 'off'
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.innelampor_switch
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.innelampor_switch
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
   mode: single
