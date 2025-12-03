@@ -848,3 +848,39 @@
   - action: shell_command.git_sync
     data: {}
   mode: single
+- id: '1764667796585'
+  alias: Jul - tänd kväll
+  description: ''
+  triggers:
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    below: 2.5
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data: {}
+    action: homeassistant.turn_on
+    target:
+      entity_id:
+      - switch.plug_jul_2
+      - switch.plug_jul_3
+      - switch.plug_jul_5
+  mode: single
+- id: '1764667867112'
+  alias: Jul - av morgon
+  description: ''
+  triggers:
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    above: 2.5
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data: {}
+    target:
+      entity_id:
+      - switch.plug_jul_2
+      - switch.plug_jul_3
+      - switch.plug_jul_5
+    action: homeassistant.turn_off
+  mode: single
