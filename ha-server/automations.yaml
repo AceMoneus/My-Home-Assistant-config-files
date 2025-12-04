@@ -1156,3 +1156,44 @@
       entity_id:
       - light.innelampor_light
   mode: single
+- id: '1764685195989'
+  alias: Update home_away based on phones
+  description: Sätter home_away till ON om någon mobil är hemma, OFF om båda borta
+    >5 min
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.ping_kjells_mobil
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.ping_bettans_mobil
+          state: 'on'
+      sequence:
+      - data:
+          topic: home/state/home_away
+          payload: 'ON'
+        action: mqtt.publish
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.ping_kjells_mobil
+          state: 'off'
+          for: 00:05:00
+        - condition: state
+          entity_id: binary_sensor.ping_bettans_mobil
+          state: 'off'
+          for: 00:05:00
+      sequence:
+      - data:
+          topic: home/state/home_away
+          payload: 'OFF'
+        action: mqtt.publish
+  mode: single
