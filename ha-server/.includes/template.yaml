@@ -24,3 +24,8 @@
         state: >
           {% set percent = states('sensor.myups_last') | float %}
           {{ (percent / 100) * 1200 | round(0) | int }}
+
+  - binary_sensor:
+    - name: "Sun Down"
+      unique_id: "sun_down"
+      state: "{{ state_attr('sun.sun', 'elevation') < 4 }}"
