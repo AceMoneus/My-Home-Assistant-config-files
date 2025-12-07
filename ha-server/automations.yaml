@@ -122,47 +122,6 @@
     target:
       entity_id: switch.home_mqtt_alarm_lock
   mode: single
-- id: '1741098388388'
-  alias: HeatPump - Reset every 20 min if condition is true
-  triggers:
-  - minutes: /20
-    trigger: time_pattern
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.heat_pump_reset_condition
-    state: 'on'
-  actions:
-  - data:
-      name: HeatPump Reset
-      message: Reset utförd enligt tidsschema
-      entity_id: switch.plug_q13_heatpump_brytare
-    action: logbook.log
-  - target:
-      entity_id: switch.plug_q13_heatpump_brytare
-    action: switch.turn_off
-  - delay:
-      seconds: 10
-  - target:
-      entity_id: switch.plug_q13_heatpump_brytare
-    action: switch.turn_on
-  mode: single
-- id: '1741098679152'
-  alias: HeatPump - On Below Low Threshold
-  description: ''
-  triggers:
-  - trigger: time_pattern
-    minutes: /1
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.heat_pump_low_temperature
-    state: 'on'
-  actions:
-  - data: {}
-    target:
-      entity_id:
-      - switch.plug_q13_heatpump_brytare
-    action: homeassistant.turn_on
-  mode: single
 - id: '1741249838102'
   alias: MQTT - temperatur vardagsrum
   description: ''
@@ -297,23 +256,6 @@
           retain: true
           topic: home/switch/mqtt_xbox
           payload: 'OFF'
-- id: '1743350149868'
-  alias: HeatPump - OFF Above High Threshold
-  description: ''
-  triggers:
-  - trigger: time_pattern
-    minutes: /1
-  conditions:
-  - condition: state
-    entity_id: binary_sensor.heat_pump_high_temperature
-    state: 'on'
-  actions:
-  - action: homeassistant.turn_off
-    target:
-      entity_id:
-      - switch.plug_q13_heatpump_brytare
-    data: {}
-  mode: single
 - id: '1744054727367'
   alias: mqtt_desktop
   description: ''
@@ -1071,6 +1013,22 @@
     - 'on'
   conditions: []
   actions:
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - light.innelampor_light
+      - switch.innelampor_switch
+      - switch.plug_q20_light_shed
+      - switch.plug_q21_outside_kitchen
+      - switch.plug_q22_outside
+      - switch.tz3000_iiacqpdz_ts011f
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 30
+      milliseconds: 0
   - action: homeassistant.turn_on
     metadata: {}
     data: {}
