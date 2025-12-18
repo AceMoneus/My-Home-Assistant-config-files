@@ -47,17 +47,16 @@ sensor:
   - platform: homeassistant
     id: ha_inside_temperature
     entity_id: sensor.inside_temperature
-
-switch:
-  - platform: homeassistant
-    id: ha_kjell_car_heater
-    entity_id: switch.plug_q08_officecorner_brytare
-  - platform: homeassistant
-    id: ha_bettan_car_heater
-    entity_id: switch.plug_q08_officecorner_brytare
   - platform: homeassistant
     id: ha_lampor
-    entity_id: switch.plug_q08_officecorner_brytare
+    entity_id: switch.home_mqtt_light_button
+  - platform: homeassistant
+    id: ha_bettan_car_heater
+    entity_id: switch.home_mqtt_bettan_carheat
+  - platform: homeassistant
+    id: ha_kjell_car_heater
+    entity_id: switch.home_mqtt_kjell_carheat
+
 
 globals:
   - id: uptime_seconds
@@ -240,27 +239,30 @@ touchscreen:
     address: 0x15
     skip_probe: false
     on_touch:
-      - lambda: |-
-          ESP_LOGI("touch", "=== TOUCH DETECTED ===");
-          ESP_LOGI("touch", "Position: X=%d, Y=%d", touch.x, touch.y);
-          ESP_LOGI("touch", "Touch state: %d", touch.state);
-          
-          if (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170) {
-            ESP_LOGI("touch", "Lampknapp aktiverad!");
-            id(ha_lampor).toggle();
-          }
-          else if (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170) {
-            ESP_LOGI("touch", "Bettan kupévärmare aktiverad!");
-            id(ha_bettan_car_heater).toggle();
-          }
-          else if (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170) {
-            ESP_LOGI("touch", "Kjell kupévärmare aktiverad!");
-            id(ha_kjell_car_heater).toggle();
-          }
-          else {
-            ESP_LOGI("touch", "Touch utanför knappområden");
-          }
-          ESP_LOGI("touch", "======================");
+      - if:
+          condition:
+            lambda: 'return (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170);'
+          then:
+            - homeassistant.service:
+                service: switch.toggle
+                data:
+                  entity_id: switch.home_mqtt_light_button
+      - if:
+          condition:
+            lambda: 'return (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170);'
+          then:
+            - homeassistant.service:
+                service: switch.toggle
+                data:
+                  entity_id: switch.home_mqtt_bettan_carheat
+      - if:
+          condition:
+            lambda: 'return (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170);'
+          then:
+            - homeassistant.service:
+                service: switch.toggle
+                data:
+                  entity_id: switch.home_mqtt_kjell_carheat
 
 interval:
   - interval: 1s
