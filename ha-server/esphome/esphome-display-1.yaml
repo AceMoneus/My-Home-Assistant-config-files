@@ -1,13 +1,15 @@
 esphome:
   name: esphome-display-1
   friendly_name: ESPHome Display 1
-  # Pulsa touch-reset vid boot
-  #on_boot:
-  #  priority: -100
-  #  then:
-  #    - output.turn_off: touchscreen_reset
-  #    - delay: 100ms
-  #    - output.turn_on: touchscreen_reset
+  on_boot:
+    priority: 600
+    then:
+      - delay: 2s
+      - lambda: |-
+          ESP_LOGI("boot", "=== SYSTEM BOOT COMPLETE ===");
+          ESP_LOGI("boot", "I2C SDA: GPIO48, SCL: GPIO47");
+          ESP_LOGI("boot", "Touch Interrupt: GPIO46, Reset: GPIO8");
+          ESP_LOGI("boot", "Checking I2C bus...");
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -24,6 +26,7 @@ wifi:
 captive_portal:
 
 logger:
+  level: WARN
 
 api:
   encryption:
@@ -57,38 +60,48 @@ switch:
     entity_id: switch.plug_q08_officecorner_brytare
 
 globals:
-  # Global timer för upptid
   - id: uptime_seconds
     type: int
     restore_value: no
     initial_value: '0'
 
-# SPI konfiguration för ESP32-S3-LCD-2
+
+#######################################################
+# Configuration for Waveshare ESP32-S3-LCD-2
+# Based on:
+# ESP32-S3 (LX7, 240MHz)
+# Configure as Arduino/esp32-s3-devkitc-1
+#
+# Touch: cst816
+# https://files.waveshare.com/upload/5/51/CST816S_Datasheet_EN.pdf
+#
+# Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
+# https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
+# SPI configuration, standard (17/19) did not work
+
 spi:
-  clk_pin: GPIO39                 # SCK
-  mosi_pin: GPIO38                # MOSI/SDA
+  clk_pin: GPIO39
+  mosi_pin: GPIO38
 
+# I2C for touch
 i2c:
-  sda: GPIO10                      # Istället för GPIO17
-  scl: GPIO11                      # Istället för GPIO18
-  #sda: GPIO17                     # Istället för GPIO6
-  #scl: GPIO18                     # Istället för GPIO5
-  frequency: 10000                 # Vid 50000 fungerade inte touch
+  sda: GPIO48
+  scl: GPIO47
+  frequency: 100000 # 50k did not work
+  scan: true
 
+# Back light
 output:
-  # Bakgrundsbelysning
   - platform: ledc
     pin: GPIO1
     id: backlight_pwm
-  # output för reset-pin till touch
-  #- platform: gpio
-  #  pin: GPIO8
-  #  id: touchscreen_reset
+
 light:
   - platform: monochromatic
     output: backlight_pwm
     name: "Display Backlight"
     restore_mode: ALWAYS_ON
+
 font:
   - file: "gfonts://Roboto"
     id: font_title
@@ -115,77 +128,76 @@ font:
       " !\"/&%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzåäöÅÄÖéÉ"
     ]
 
+# Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
 display:
-  # Display konfiguration för ESP32-S3-LCD-2 (240x320)
   - platform: ili9xxx
     model: st7789v
-    cs_pin: GPIO45                # CS
-    dc_pin: GPIO42                # DC
-    reset_pin: GPIO41             # RESET
-    rotation: 90                  # Roterat 270 grader för landscape, USB-C till vänster
+    cs_pin: GPIO45
+    dc_pin: GPIO42
+    reset_pin: GPIO41
+    rotation: 270
     invert_colors: true
     id: my_display
     pages:
       - id: main_page
         lambda: |-
-          // Landscape: 320 bred x 240 hög
-          it.print(160, 11, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor, Kupévärmare & Temperatur");
+          it.print(160, 14, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor, Kupévärmare & Temperatur");
           
-          // Utomhustemperatur - vänster sida
-          it.rectangle(10, 40, 140, 60);
-          it.print(20, 50, id(font_medium), Color(0, 255, 255), TextAlign::LEFT, "Ute:");
+          // Ruta: x=10, y=40, bredd=140, höjd=60
+          it.filled_rectangle(10, 40, 140, 60, Color(64, 64, 64));
+          it.print(80, 52, id(font_medium), Color(0, 255, 255), TextAlign::CENTER, "Ute:");
           if (id(ha_outside_temperature).has_state()) {
-            it.printf(20, 70, id(font_large), Color(0, 255, 255), "%.1f°C", id(ha_outside_temperature).state);
+            it.printf(80, 80, id(font_huge), Color(0, 255, 255), TextAlign::CENTER, "%.1f°C", id(ha_outside_temperature).state);
           } else {
-            it.print(20, 70, id(font_medium), Color(255, 0, 0), "N/A");
-          }
-          
-          // Inomhustemperatur - höger sida  
-          it.rectangle(170, 40, 140, 60);
-          it.print(180, 50, id(font_medium), Color(255, 165, 0), TextAlign::LEFT, "Inne:");
-          if (id(ha_inside_temperature).has_state()) {
-            it.printf(180, 70, id(font_large), Color(255, 165, 0), "%.1f°C", id(ha_inside_temperature).state);
-          } else {
-            it.print(180, 70, id(font_medium), Color(255, 0, 0), "N/A");
+            it.print(80, 80, id(font_huge), Color(255, 0, 0), TextAlign::CENTER, "N/A");
           }
 
-          // Lampknapp
+          // Ruta: x=170, y=40, bredd=140, höjd=60
+          it.filled_rectangle(170, 40, 140, 60, Color(64, 64, 64));
+          it.print(240, 52, id(font_medium), Color(255, 165, 0), TextAlign::CENTER, "Inne:");
+          if (id(ha_inside_temperature).has_state()) {
+            it.printf(240, 80, id(font_huge), Color(255, 165, 0), TextAlign::CENTER, "%.1f°C", id(ha_inside_temperature).state);
+          } else {
+            it.print(240, 80, id(font_huge), Color(255, 0, 0), TextAlign::CENTER, "N/A");
+          }
+
           if (id(ha_lampor).state) {
             it.filled_rectangle(10, 120, 96, 50, Color(255, 0, 0));
-            it.print(62, 145, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
+            it.print(62, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
+            it.print(62, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "rum");
           } else {
             it.rectangle(10, 120, 96, 50);
-            it.print(62, 145, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
+            it.print(62, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
+            it.print(62, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "rum");
           }
 
-          // Kupévärmare - Bettan
           if (id(ha_bettan_car_heater).state) {
             it.filled_rectangle(116, 120, 96, 50, Color(255, 0, 0));
-            it.print(164, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettan");
-            it.print(164, 155, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettan");
+            it.print(164, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettans");
+            it.print(164, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
           } else {
             it.rectangle(116, 120, 96, 50);
-            it.print(164, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettan");
-            it.print(164, 155, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettan");
+            it.print(164, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettans");
+            it.print(164, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
           }
 
-          // Kupévärmare - Kjell
           if (id(ha_kjell_car_heater).state) {
             it.filled_rectangle(222, 120, 96, 50, Color(255, 0, 0));
-            it.print(270, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjell");
-            it.print(270, 155, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjell");
+            it.print(270, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjells");
+            it.print(270, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
           } else {
             it.rectangle(222, 120, 96, 50);
-            it.print(270, 135, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjell");
-            it.print(270, 155, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjell");
+            it.print(270, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjells");
+            it.print(270, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
           }
 
+          // Veckodag + datum, vänsterjusterat längst ner
           std::string weekday_sv;
           std::string month_sv;
-
           std::string weekday_en = id(ha_time).now().strftime("%A");
           std::string month_en = id(ha_time).now().strftime("%B");
 
+          // Översättningar till svenska
           if (weekday_en == "Monday") weekday_sv = "Måndag";
           else if (weekday_en == "Tuesday") weekday_sv = "Tisdag";
           else if (weekday_en == "Wednesday") weekday_sv = "Onsdag";
@@ -207,55 +219,58 @@ display:
           else if (month_en == "November") month_sv = "November";
           else if (month_en == "December") month_sv = "December";
 
+          // Datumsträngar
           int day = id(ha_time).now().day_of_month;
-          std::string weekday_str = weekday_sv;
           std::string datum_str = std::to_string(day) + " " + month_sv;
+
+          // Veckodag och datun vänsterjusterat, längst ner
+          it.print(10, 195, id(font_medium), Color(255, 255, 255), TextAlign::LEFT, weekday_sv.c_str());
+          it.print(10, 215, id(font_medium), Color(255, 255, 255), TextAlign::LEFT, datum_str.c_str());
+
+          // Tid högerjusterat längst ner
           std::string time_str = id(ha_time).now().strftime("%H:%M");
+          it.print(310, 195, id(font_huge), Color(255, 255, 255), TextAlign::RIGHT, time_str.c_str());
 
-          it.print(10, 220, id(font_medium), Color(255, 255, 255), weekday_str.c_str());
-          it.print(310, 220, id(font_medium), Color(255, 255, 255), TextAlign::RIGHT, datum_str.c_str());
-          it.print(160, 210, id(font_huge), Color(255, 255, 255), TextAlign::CENTER, time_str.c_str());
-
-# Touch controller för ESP32-S3-LCD-2
+# Touch controller for ESP32-S3-Touch-LCD-2
 touchscreen:
   - platform: cst816
     id: my_touchscreen
-    interrupt_pin: GPIO7
-    # Reset av touch sköts via output
+    interrupt_pin: GPIO46
     reset_pin: GPIO8
     address: 0x15
-    skip_probe: true
+    skip_probe: false
     on_touch:
       - lambda: |-
-          ESP_LOGI("touch", "Touch detected at (%d, %d)", touch.x, touch.y);
+          ESP_LOGI("touch", "=== TOUCH DETECTED ===");
+          ESP_LOGI("touch", "Position: X=%d, Y=%d", touch.x, touch.y);
+          ESP_LOGI("touch", "Touch state: %d", touch.state);
           
-          // Lampknapp: x = 10–106
           if (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170) {
-           id(ha_lampor).toggle();
+            ESP_LOGI("touch", "Lampknapp aktiverad!");
+            id(ha_lampor).toggle();
           }
-
-          // Bettan: x = 116–212
-          if (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170) {
+          else if (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170) {
+            ESP_LOGI("touch", "Bettan kupévärmare aktiverad!");
             id(ha_bettan_car_heater).toggle();
           }
-
-          // Kjell: x = 222–318
-          if (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170) {
+          else if (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170) {
+            ESP_LOGI("touch", "Kjell kupévärmare aktiverad!");
             id(ha_kjell_car_heater).toggle();
           }
+          else {
+            ESP_LOGI("touch", "Touch utanför knappområden");
+          }
+          ESP_LOGI("touch", "======================");
 
 interval:
-  # Uppdatera displayen varje sekund
   - interval: 1s
     then:
       - display.page.show: main_page
       - component.update: my_display
-  # Uptime i sekunder
   - interval: 1s
     then:
       - lambda: |-
           id(uptime_seconds) += 1;
-  # Skicka Heartbeat första 5 minutrarna
   - interval: 10s
     then:
       - lambda: |-

@@ -1116,27 +1116,45 @@
   mode: single
 - id: '1765895296033'
   alias: Uppdatera home_away baserat på mobiler
+  description: Sätter home_away till ON om någon mobil är hemma, annars OFF
   triggers:
   - minutes: /1
     trigger: time_pattern
-  conditions: []
+  - entity_id:
+    - binary_sensor.kjells_mobil
+    - binary_sensor.ping_bettans_mobil
+    trigger: state
   actions:
-  - if:
-    - condition: or
-      conditions:
-      - condition: state
-        entity_id: binary_sensor.ping_bettans_mobil
-        state: 'on'
-      - condition: state
-        entity_id: binary_sensor.ping_kjells_mobil
-        state: 'on'
-    then:
-    - data:
-        topic: home/state/home_away
-        payload: 'ON'
-      action: mqtt.publish
-    else:
-    - data:
-        topic: home/state/home_away
-        payload: 'OFF'
-      action: mqtt.publish
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          state:
+          - 'on'
+          entity_id: binary_sensor.kjells_mobil
+        - condition: state
+          state:
+          - 'on'
+          entity_id: binary_sensor.ping_bettans_mobil
+      sequence:
+      - data:
+          topic: home/state/home_away
+          payload: 'ON'
+        action: mqtt.publish
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          state:
+          - 'off'
+          entity_id: binary_sensor.kjells_mobil
+        - condition: state
+          state:
+          - 'off'
+          entity_id: binary_sensor.ping_bettans_mobil
+      sequence:
+      - data:
+          topic: home/state/home_away
+          payload: 'OFF'
+        action: mqtt.publish
