@@ -799,15 +799,16 @@
   description: ''
   triggers:
   - entity_id:
-    - switch.home_mqtt_carheat
+    - switch.home_mqtt_bettan_carheat
     trigger: state
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_carheat
-        state: 'on'
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'on'
       sequence:
       - action: homeassistant.turn_off
         metadata: {}
@@ -827,12 +828,13 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_carheat
+          - switch.home_mqtt_bettan_carheat
         data: {}
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_carheat
-        state: 'off'
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'off'
       sequence:
       - action: switch.turn_off
         data: {}
