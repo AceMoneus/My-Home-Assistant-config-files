@@ -337,3 +337,16 @@
     metadata: {}
     data: {}
   mode: single
+- id: '1766081665075'
+  alias: 'Notify - Bettans kupévärmare '
+  description: ''
+  triggers:
+  - trigger: time
+    at: '21:00:00'
+  conditions: []
+  actions:
+  - action: notify.mobile_app_sm_a236b
+    metadata: {}
+    data:
+      message: Glöm inte kupévärmaren
+  mode: single
