@@ -1,3 +1,17 @@
+#######################################################
+# Configuration for Waveshare ESP32-S3-LCD-2
+# Based on:
+# ESP32-S3 (LX7, 240MHz)
+# Configure as Arduino/esp32-s3-devkitc-1
+#
+# i2c frequency: 100000 50k did not work
+#
+# Touch: cst816
+# https://files.waveshare.com/upload/5/51/CST816S_Datasheet_EN.pdf
+#
+# Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
+# https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
+
 esphome:
   name: esphome-display-1
   friendly_name: ESPHome Display 1
@@ -7,9 +21,7 @@ esphome:
       - delay: 2s
       - lambda: |-
           ESP_LOGI("boot", "=== SYSTEM BOOT COMPLETE ===");
-          ESP_LOGI("boot", "I2C SDA: GPIO48, SCL: GPIO47");
-          ESP_LOGI("boot", "Touch Interrupt: GPIO46, Reset: GPIO8");
-          ESP_LOGI("boot", "Checking I2C bus...");
+          id(needs_redraw) = true;
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -32,6 +44,13 @@ api:
   encryption:
     key: !secret encryption_key
 
+  services:
+    - service: refresh
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
+
 ota:
   - platform: esphome
     password: !secret ota_password
@@ -39,57 +58,87 @@ ota:
 time:
   - platform: homeassistant
     id: ha_time
+    on_time:
+      - seconds: 0
+        minutes: /1
+        then:
+          - lambda: |-
+              id(needs_redraw) = true;
 
+#######################################################
+# SENSORER
 sensor:
   - platform: homeassistant
     id: ha_outside_temperature
     entity_id: sensor.outside_temperature
+    on_value:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
   - platform: homeassistant
     id: ha_inside_temperature
     entity_id: sensor.inside_temperature
+    on_value:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
   - platform: homeassistant
-    id: ha_lampor
-    entity_id: switch.home_mqtt_light_button
+    id: ha_lampor_state
+    entity_id: sensor.mqtt_lampor_numeric
+    on_value:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
   - platform: homeassistant
-    id: ha_bettan_car_heater
-    entity_id: switch.home_mqtt_bettan_carheat
+    id: ha_bettan_state
+    entity_id: sensor.mqtt_bettan_numeric
+    on_value:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
   - platform: homeassistant
-    id: ha_kjell_car_heater
-    entity_id: switch.home_mqtt_kjell_carheat
+    id: ha_kjell_state
+    entity_id: sensor.mqtt_kjell_numeric
+    on_value:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
 
-
+#######################################################
+# GLOBALS
 globals:
   - id: uptime_seconds
     type: int
     restore_value: no
     initial_value: '0'
 
+  - id: ha_last_update
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: needs_redraw
+    type: bool
+    restore_value: no
+    initial_value: 'true'
 
 #######################################################
-# Configuration for Waveshare ESP32-S3-LCD-2
-# Based on:
-# ESP32-S3 (LX7, 240MHz)
-# Configure as Arduino/esp32-s3-devkitc-1
-#
-# Touch: cst816
-# https://files.waveshare.com/upload/5/51/CST816S_Datasheet_EN.pdf
-#
-# Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
-# https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
-# SPI configuration, standard (17/19) did not work
-
+# HARDWARE
 spi:
   clk_pin: GPIO39
   mosi_pin: GPIO38
 
-# I2C for touch
 i2c:
   sda: GPIO48
   scl: GPIO47
-  frequency: 100000 # 50k did not work
+  frequency: 100000
   scan: true
 
-# Back light
 output:
   - platform: ledc
     pin: GPIO1
@@ -101,33 +150,26 @@ light:
     name: "Display Backlight"
     restore_mode: ALWAYS_ON
 
+#######################################################
+# FONTER
 font:
-  - file: "gfonts://Roboto"
-    id: font_title
-    size: 20
-    glyphs: [
-      " !\"/&%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzåäöÅÄÖéÉ"
-    ]
   - file: "gfonts://Roboto"
     id: font_medium
     size: 18
-    glyphs: [
-      " !\"/&%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzåäöÅÄÖéÉ"
-    ]
+    glyphs: " !\"#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°åäöÅÄÖéÉ"
+
   - file: "gfonts://Roboto"
     id: font_large
     size: 24
-    glyphs: [
-      " !\"/&%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzåäöÅÄÖéÉ"
-    ]
+    glyphs: " !\"#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°åäöÅÄÖéÉ"
+
   - file: "gfonts://Roboto"
     id: font_huge
     size: 40
-    glyphs: [
-      " !\"/&%()+*=,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzåäöÅÄÖéÉ"
-    ]
+    glyphs: " !\"#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°åäöÅÄÖéÉ"
 
-# Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
+#######################################################
+# DISPLAY
 display:
   - platform: ili9xxx
     model: st7789v
@@ -137,100 +179,84 @@ display:
     rotation: 270
     invert_colors: true
     id: my_display
+
+    update_interval: never
+
     pages:
       - id: main_page
         lambda: |-
-          it.print(160, 14, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor, Kupévärmare & Temperatur");
-          
-          // Ruta: x=10, y=40, bredd=140, höjd=60
-          it.filled_rectangle(10, 40, 140, 60, Color(64, 64, 64));
-          it.print(80, 52, id(font_medium), Color(0, 255, 255), TextAlign::CENTER, "Ute:");
+          if (!id(needs_redraw)) return;
+
+          bool lampor_on = (id(ha_lampor_state).state == 1.0f);
+          bool bettan_on = (id(ha_bettan_state).state == 1.0f);
+          bool kjell_on  = (id(ha_kjell_state).state == 1.0f);
+
+          it.fill(Color(0,0,0));
+
+          it.print(160, 14, id(font_medium), Color(255,255,255), TextAlign::CENTER,
+                   "Lampor, Kupévärmare & Temperatur");
+
+          it.filled_rectangle(10, 40, 140, 60, Color(64,64,64));
+          it.print(80, 52, id(font_medium), Color(0,255,255), TextAlign::CENTER, "Ute:");
           if (id(ha_outside_temperature).has_state()) {
-            it.printf(80, 80, id(font_huge), Color(0, 255, 255), TextAlign::CENTER, "%.1f°C", id(ha_outside_temperature).state);
-          } else {
-            it.print(80, 80, id(font_huge), Color(255, 0, 0), TextAlign::CENTER, "N/A");
+            it.printf(80, 80, id(font_huge), Color(0,255,255), TextAlign::CENTER,
+                      "%.1f°C", id(ha_outside_temperature).state);
           }
 
-          // Ruta: x=170, y=40, bredd=140, höjd=60
-          it.filled_rectangle(170, 40, 140, 60, Color(64, 64, 64));
-          it.print(240, 52, id(font_medium), Color(255, 165, 0), TextAlign::CENTER, "Inne:");
+          it.filled_rectangle(170, 40, 140, 60, Color(64,64,64));
+          it.print(240, 52, id(font_medium), Color(255,165,0), TextAlign::CENTER, "Inne:");
           if (id(ha_inside_temperature).has_state()) {
-            it.printf(240, 80, id(font_huge), Color(255, 165, 0), TextAlign::CENTER, "%.1f°C", id(ha_inside_temperature).state);
-          } else {
-            it.print(240, 80, id(font_huge), Color(255, 0, 0), TextAlign::CENTER, "N/A");
+            it.printf(240, 80, id(font_huge), Color(255,165,0), TextAlign::CENTER,
+                      "%.1f°C", id(ha_inside_temperature).state);
           }
 
-          if (id(ha_lampor).state) {
-            it.filled_rectangle(10, 120, 96, 50, Color(255, 0, 0));
-            it.print(62, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
-            it.print(62, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "rum");
-          } else {
-            it.rectangle(10, 120, 96, 50);
-            it.print(62, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Lampor");
-            it.print(62, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "rum");
-          }
+          if (lampor_on) it.filled_rectangle(10,120,96,50,Color(255,0,0));
+          else it.rectangle(10,120,96,50);
+          it.print(58,145,id(font_medium),Color(255,255,255),TextAlign::CENTER,"Lampor");
 
-          if (id(ha_bettan_car_heater).state) {
-            it.filled_rectangle(116, 120, 96, 50, Color(255, 0, 0));
-            it.print(164, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettans");
-            it.print(164, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
-          } else {
-            it.rectangle(116, 120, 96, 50);
-            it.print(164, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Bettans");
-            it.print(164, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
-          }
+          if (bettan_on) it.filled_rectangle(116,120,96,50,Color(255,0,0));
+          else it.rectangle(116,120,96,50);
+          it.print(164,133,id(font_medium),Color(255,255,255),TextAlign::CENTER,"Bettans");
+          it.print(164,153,id(font_large),Color(255,255,255),TextAlign::CENTER,"bil");
 
-          if (id(ha_kjell_car_heater).state) {
-            it.filled_rectangle(222, 120, 96, 50, Color(255, 0, 0));
-            it.print(270, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjells");
-            it.print(270, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
-          } else {
-            it.rectangle(222, 120, 96, 50);
-            it.print(270, 133, id(font_medium), Color(255, 255, 255), TextAlign::CENTER, "Kjells");
-            it.print(270, 153, id(font_large), Color(255, 255, 255), TextAlign::CENTER, "bil");
-          }
+          if (kjell_on) it.filled_rectangle(222,120,96,50,Color(255,0,0));
+          else it.rectangle(222,120,96,50);
+          it.print(270,133,id(font_medium),Color(255,255,255),TextAlign::CENTER,"Kjells");
+          it.print(270,153,id(font_large),Color(255,255,255),TextAlign::CENTER,"bil");
 
-          // Veckodag + datum, vänsterjusterat längst ner
-          std::string weekday_sv;
-          std::string month_sv;
-          std::string weekday_en = id(ha_time).now().strftime("%A");
-          std::string month_en = id(ha_time).now().strftime("%B");
+          auto now = id(ha_time).now();
 
-          // Översättningar till svenska
-          if (weekday_en == "Monday") weekday_sv = "Måndag";
-          else if (weekday_en == "Tuesday") weekday_sv = "Tisdag";
-          else if (weekday_en == "Wednesday") weekday_sv = "Onsdag";
-          else if (weekday_en == "Thursday") weekday_sv = "Torsdag";
-          else if (weekday_en == "Friday") weekday_sv = "Fredag";
-          else if (weekday_en == "Saturday") weekday_sv = "Lördag";
-          else if (weekday_en == "Sunday") weekday_sv = "Söndag";
+          const char* weekdays_sv[] = {
+            "söndag", "måndag", "tisdag", "onsdag",
+            "torsdag", "fredag", "lördag"
+          };
+          std::string weekday = weekdays_sv[now.day_of_week];
 
-          if (month_en == "January") month_sv = "Januari";
-          else if (month_en == "February") month_sv = "Februari";
-          else if (month_en == "March") month_sv = "Mars";
-          else if (month_en == "April") month_sv = "April";
-          else if (month_en == "May") month_sv = "Maj";
-          else if (month_en == "June") month_sv = "Juni";
-          else if (month_en == "July") month_sv = "Juli";
-          else if (month_en == "August") month_sv = "Augusti";
-          else if (month_en == "September") month_sv = "September";
-          else if (month_en == "October") month_sv = "Oktober";
-          else if (month_en == "November") month_sv = "November";
-          else if (month_en == "December") month_sv = "December";
+          char date_str[32];
+          now.strftime(date_str, sizeof(date_str), "%d %B %Y");
 
-          // Datumsträngar
-          int day = id(ha_time).now().day_of_month;
-          std::string datum_str = std::to_string(day) + " " + month_sv;
+          char time_str[6];
+          now.strftime(time_str, sizeof(time_str), "%H:%M");
 
-          // Veckodag och datun vänsterjusterat, längst ner
-          it.print(10, 195, id(font_medium), Color(255, 255, 255), TextAlign::LEFT, weekday_sv.c_str());
-          it.print(10, 215, id(font_medium), Color(255, 255, 255), TextAlign::LEFT, datum_str.c_str());
+          it.print(10, 185, id(font_large), Color(255,255,255), TextAlign::LEFT, weekday.c_str());
+          it.print(10, 210, id(font_medium), Color(255,255,255), TextAlign::LEFT, date_str);
 
-          // Tid högerjusterat längst ner
-          std::string time_str = id(ha_time).now().strftime("%H:%M");
-          it.print(310, 195, id(font_huge), Color(255, 255, 255), TextAlign::RIGHT, time_str.c_str());
+          it.print(310, 195, id(font_huge), Color(255,255,255), TextAlign::RIGHT, time_str);
 
-# Touch controller for ESP32-S3-Touch-LCD-2
+          id(needs_redraw) = false;
+
+      - id: error_page
+        lambda: |-
+          if (!id(needs_redraw)) return;
+
+          it.fill(Color(0,0,0));
+          it.print(160,120,id(font_large),Color(255,0,0),TextAlign::CENTER,
+                   "Ingen kontakt med Home Assistant!");
+
+          id(needs_redraw) = false;
+
+#######################################################
+# TOUCH
 touchscreen:
   - platform: cst816
     id: my_touchscreen
@@ -238,44 +264,56 @@ touchscreen:
     reset_pin: GPIO8
     address: 0x15
     skip_probe: false
+
     on_touch:
+      - lambda: |-
+          ESP_LOGI("touch", "Touch event: x=%d, y=%d, gesture=%d, type=%d",
+                   touch.x, touch.y, (int)touch.gesture, (int)touch.type);
+
       - if:
           condition:
             lambda: 'return (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170);'
           then:
+            - lambda: |-
+                ESP_LOGI("touch", "Lampor-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_light_button
+
       - if:
           condition:
             lambda: 'return (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170);'
           then:
+            - lambda: |-
+                ESP_LOGI("touch", "Bettan-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_bettan_carheat
+
       - if:
           condition:
             lambda: 'return (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170);'
           then:
+            - lambda: |-
+                ESP_LOGI("touch", "Kjell-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_kjell_carheat
 
+#######################################################
+# INTERVAL
 interval:
-  - interval: 1s
-    then:
-      - display.page.show: main_page
-      - component.update: my_display
   - interval: 1s
     then:
       - lambda: |-
           id(uptime_seconds) += 1;
-  - interval: 10s
-    then:
-      - lambda: |-
-          if (id(uptime_seconds) <= 300) {
-            ESP_LOGI("heartbeat", "Enheten lever: %s", id(ha_time).now().strftime("%Y-%m-%d %H:%M:%S").c_str());
+          int diff = id(uptime_seconds) - id(ha_last_update);
+
+          if (diff > 120) {
+            id(my_display).show_page(id(error_page));
+          } else {
+            id(my_display).show_page(id(main_page));
           }

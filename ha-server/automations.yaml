@@ -799,15 +799,16 @@
   description: ''
   triggers:
   - entity_id:
-    - switch.home_mqtt_carheat
+    - switch.home_mqtt_bettan_carheat
     trigger: state
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_carheat
-        state: 'on'
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'on'
       sequence:
       - action: homeassistant.turn_off
         metadata: {}
@@ -827,12 +828,13 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_carheat
+          - switch.home_mqtt_bettan_carheat
         data: {}
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_carheat
-        state: 'off'
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'off'
       sequence:
       - action: switch.turn_off
         data: {}
@@ -1158,3 +1160,17 @@
           topic: home/state/home_away
           payload: 'OFF'
         action: mqtt.publish
+- id: '1766143736072'
+  alias: ESPHome Display – Push switch updates
+  description: Skickar uppdateringar till ESPHome-displayen när MQTT-switchar ändras
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_light_button
+    - switch.home_mqtt_bettan_carheat
+    - switch.home_mqtt_kjell_carheat
+    trigger: state
+  - trigger: time_pattern
+    minutes: /1
+  actions:
+  - action: esphome.esphome_display_1_refresh
+  mode: queued

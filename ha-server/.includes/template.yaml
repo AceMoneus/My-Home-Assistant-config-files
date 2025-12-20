@@ -25,6 +25,16 @@
           {% set percent = states('sensor.myups_last') | float %}
           {{ (percent / 100) * 1200 | round(0) | int }}
 
+
+      - name: "mqtt lampor numeric"
+        state: "{{ 1 if is_state('switch.home_mqtt_light_button', 'on') else 0 }}"
+      - name: "mqtt bettan numeric"
+        state: "{{ 1 if is_state('switch.home_mqtt_bettan_carheat', 'on') else 0 }}"
+      - name: "mqtt kjell numeric"
+        state: "{{ 1 if is_state('switch.home_mqtt_kjell_carheat', 'on') else 0 }}"
+
+
+
   - binary_sensor:
     - name: "Sun Down"
       unique_id: "sun_down"
