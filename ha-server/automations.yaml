@@ -1026,6 +1026,7 @@
       - switch.plug_q21_outside_kitchen
       - switch.plug_q22_outside
       - switch.tz3000_iiacqpdz_ts011f
+      - switch.plug_q13_garage_led
   - delay:
       hours: 0
       minutes: 0
@@ -1042,6 +1043,7 @@
       - switch.plug_q21_outside_kitchen
       - switch.plug_q22_outside
       - switch.tz3000_iiacqpdz_ts011f
+      - switch.plug_q13_garage_led
   mode: single
 - id: '1763110119433'
   alias: New automation
@@ -1179,4 +1181,14 @@
     trigger: time_pattern
   actions:
   - action: esphome.esphome_display_1_refresh
+  mode: single
+- id: '1766269827458'
+  alias: Ändra belysning - mqtt state
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.home_mqtt_light_button
+  conditions: []
+  actions: []
   mode: single
