@@ -3,10 +3,12 @@
 # Based on:
 # ESP32-S3 (LX7, 240MHz)
 # Configure as Arduino/esp32-s3-devkitc-1
+# i2c frequency: 100000 (50k in documentation did not work)
 #
-# i2c frequency: 100000 50k did not work
+# Touch: cst816 note: rotation not supported, done mathematically
+# int xr = 320 - touch.y;   // rotate & mirror
+# int yr = touch.x;         // move up
 #
-# Touch: cst816
 # https://files.waveshare.com/upload/5/51/CST816S_Datasheet_EN.pdf
 #
 # Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
@@ -50,6 +52,7 @@ api:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
             id(needs_redraw) = true;
+  reboot_timeout: 0s
 
 ota:
   - platform: esphome
@@ -116,16 +119,22 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
-
   - id: ha_last_update
     type: int
     restore_value: no
     initial_value: '0'
-
   - id: needs_redraw
     type: bool
     restore_value: no
     initial_value: 'true'
+  - id: touch_xr
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: touch_yr
+    type: int
+    restore_value: no
+    initial_value: '0'
 
 #######################################################
 # HARDWARE
@@ -157,12 +166,10 @@ font:
     id: font_medium
     size: 18
     glyphs: " !\"#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°åäöÅÄÖéÉ"
-
   - file: "gfonts://Roboto"
     id: font_large
     size: 24
     glyphs: " !\"#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~°åäöÅÄÖéÉ"
-
   - file: "gfonts://Roboto"
     id: font_huge
     size: 40
@@ -179,9 +186,7 @@ display:
     rotation: 270
     invert_colors: true
     id: my_display
-
     update_interval: never
-
     pages:
       - id: main_page
         lambda: |-
@@ -227,24 +232,23 @@ display:
           auto now = id(ha_time).now();
 
           const char* weekdays_sv[] = {
-            "söndag", "måndag", "tisdag", "onsdag",
-            "torsdag", "fredag", "lördag"
+            "Söndag", "Måndag", "Tisdag", "Onsdag",
+            "Torsdag", "Fredag", "Lördag"
           };
           std::string weekday = weekdays_sv[now.day_of_week];
 
           char date_str[32];
-          now.strftime(date_str, sizeof(date_str), "%d %B %Y");
+          now.strftime(date_str, sizeof(date_str), "%d %B");
 
           char time_str[6];
           now.strftime(time_str, sizeof(time_str), "%H:%M");
 
           it.print(10, 185, id(font_large), Color(255,255,255), TextAlign::LEFT, weekday.c_str());
-          it.print(10, 210, id(font_medium), Color(255,255,255), TextAlign::LEFT, date_str);
+          it.print(10, 215, id(font_large), Color(255,255,255), TextAlign::LEFT, date_str);
 
-          it.print(310, 195, id(font_huge), Color(255,255,255), TextAlign::RIGHT, time_str);
+          it.print(310, 190, id(font_huge), Color(255,255,255), TextAlign::RIGHT, time_str);
 
           id(needs_redraw) = false;
-
       - id: error_page
         lambda: |-
           if (!id(needs_redraw)) return;
@@ -264,40 +268,32 @@ touchscreen:
     reset_pin: GPIO8
     address: 0x15
     skip_probe: false
-
     on_touch:
       - lambda: |-
-          ESP_LOGI("touch", "Touch event: x=%d, y=%d, gesture=%d, type=%d",
-                   touch.x, touch.y, (int)touch.gesture, (int)touch.type);
-
+          int xr = 320 - touch.y;
+          int yr = touch.x;
+          id(touch_xr) = xr;
+          id(touch_yr) = yr;
       - if:
           condition:
-            lambda: 'return (touch.x >= 10 && touch.x <= 106 && touch.y >= 120 && touch.y <= 170);'
+            lambda: 'return (id(touch_xr) >= 80 && id(touch_xr) <= 170 && id(touch_yr) >= 140 && id(touch_yr) <= 220);'
           then:
-            - lambda: |-
-                ESP_LOGI("touch", "Lampor-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_light_button
-
       - if:
           condition:
-            lambda: 'return (touch.x >= 116 && touch.x <= 212 && touch.y >= 120 && touch.y <= 170);'
+            lambda: 'return (id(touch_xr) >= 160 && id(touch_xr) <= 240 && id(touch_yr) >= 150 && id(touch_yr) <= 220);'
           then:
-            - lambda: |-
-                ESP_LOGI("touch", "Bettan-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_bettan_carheat
-
       - if:
           condition:
-            lambda: 'return (touch.x >= 222 && touch.x <= 318 && touch.y >= 120 && touch.y <= 170);'
+            lambda: 'return (id(touch_xr) >= 240 && id(touch_xr) <= 320 && id(touch_yr) >= 160 && id(touch_yr) <= 240);'
           then:
-            - lambda: |-
-                ESP_LOGI("touch", "Kjell-knapp träffad");
             - homeassistant.service:
                 service: switch.toggle
                 data:
@@ -317,3 +313,10 @@ interval:
           } else {
             id(my_display).show_page(id(main_page));
           }
+  - interval: 200ms
+    then:
+      - if:
+          condition:
+            lambda: 'return id(needs_redraw);'
+          then:
+            - component.update: my_display
