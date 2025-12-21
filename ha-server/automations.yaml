@@ -1058,7 +1058,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.home_mqtt_bettan_button
+      entity_id: switch.home_mqtt_light_button
   mode: single
 - id: '1763451186242'
   alias: Väck Victus
@@ -1162,15 +1162,21 @@
         action: mqtt.publish
 - id: '1766143736072'
   alias: ESPHome Display – Push switch updates
-  description: Skickar uppdateringar till ESPHome-displayen när MQTT-switchar ändras
   triggers:
   - entity_id:
     - switch.home_mqtt_light_button
     - switch.home_mqtt_bettan_carheat
     - switch.home_mqtt_kjell_carheat
     trigger: state
-  - trigger: time_pattern
-    minutes: /1
   actions:
   - action: esphome.esphome_display_1_refresh
   mode: queued
+- id: '1766154736754'
+  alias: ESPHome Display – Heartbeat
+  description: ''
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  actions:
+  - action: esphome.esphome_display_1_refresh
+  mode: single
