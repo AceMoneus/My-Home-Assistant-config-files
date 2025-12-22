@@ -1192,3 +1192,17 @@
   conditions: []
   actions: []
   mode: single
+- id: '1766320537187'
+  alias: New automation
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - number.lamp_driveway_fargtemperatur_vid_start
+  conditions: []
+  actions:
+  - action: notify.mobile_app_sm_s908b
+    metadata: {}
+    data:
+      message: Change
+  mode: single
