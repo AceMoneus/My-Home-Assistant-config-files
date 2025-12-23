@@ -46,14 +46,10 @@
     device_id: cf1060197270db5704ae7db13dbb61d1
     entity_id: e6bccb0c96f672b1db2bc7e45873afa9
     domain: switch
-  - type: turn_on
-    device_id: 7be7a99abd383b0c2fc642968d3cfa5f
-    entity_id: d6dfc08e8db5ead711489e1f51b4503e
-    domain: switch
   - delay:
       hours: 0
       minutes: 1
-      seconds: 0
+      seconds: 30
       milliseconds: 0
   - type: turn_on
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
@@ -62,10 +58,6 @@
   - type: turn_on
     device_id: 1a79c81a47913a2a14158863a2086c73
     entity_id: 5543ae2b6ebcf3995ae2451b41a15294
-    domain: switch
-  - type: turn_on
-    device_id: d4b04ea31a7777bd0c9ec56db6cbef39
-    entity_id: 2b6f357ca858d2e65b4a57c93becb8dc
     domain: switch
   - action: switch.turn_off
     metadata: {}
@@ -78,8 +70,9 @@
   description: ''
   triggers:
   - trigger: mqtt
-    topic: home/alarm/mqtt_alarm_state
-    payload: 'OFF'
+    options:
+      topic: home/alarm/mqtt_alarm_state
+      payload: 'OFF'
   conditions: []
   actions:
   - action: switch.turn_on
@@ -94,10 +87,6 @@
   - type: turn_off
     device_id: 1a79c81a47913a2a14158863a2086c73
     entity_id: 5543ae2b6ebcf3995ae2451b41a15294
-    domain: switch
-  - type: turn_off
-    device_id: d4b04ea31a7777bd0c9ec56db6cbef39
-    entity_id: 2b6f357ca858d2e65b4a57c93becb8dc
     domain: switch
   - delay:
       hours: 0
@@ -270,30 +259,21 @@
         entity_id: switch.home_mqtt_desktop
         state: 'on'
       sequence:
-      - type: turn_off
-        device_id: bc8bcd2561716edf395d44e59aa8a195
-        entity_id: 18c3a9f891d134c1be30fde0f425c3aa
-        domain: switch
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
       - action: homeassistant.turn_on
         target:
           entity_id:
           - switch.plug_q15_officedesk
         data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
       - action: homeassistant.turn_off
         metadata: {}
         data: {}
         target:
           entity_id: automation.office_light_off
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 1
+          milliseconds: 0
       - action: homeassistant.turn_on
         target:
           entity_id:
