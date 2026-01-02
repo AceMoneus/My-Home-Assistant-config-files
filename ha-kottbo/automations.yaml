@@ -9,9 +9,10 @@
     trigger: device
   conditions: []
   actions:
-  - data:
-      message: '!! Rök - Vind !!'
-    action: notify.telegram
+  - action: telegram_bot.send_message
+    data:
+      config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
+      message: '!! RÖK!! - Kottbo'
   mode: single
 - id: '1662194898234'
   alias: Telegram - HA Boot
