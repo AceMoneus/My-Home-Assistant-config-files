@@ -42,6 +42,6 @@ git add .
 if git diff --staged --quiet; then
     echo "No changes to commit"
 else
-    git commit -m "Commit bot $SERVER_NAME - $(date '+%Y-%m-%d %H:%M:%S')"
+    git commit -m "Auto sync $SERVER_NAME - $(date '+%Y-%m-%d %H:%M:%S')"
     git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GITHUB_USER}/${GITHUB_REPO}.git main && echo "Sync completed!" || echo "Push failed!"
 fi
