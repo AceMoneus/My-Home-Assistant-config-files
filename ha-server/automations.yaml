@@ -1186,3 +1186,22 @@
     data:
       message: Change
   mode: single
+- id: '1768309334805'
+  alias: Skicka mailnotis vid nytt IMAP-meddelande
+  triggers:
+  - entity_id: sensor.imap_registry_moneus_se_meddelanden
+    trigger: state
+  actions:
+  - data:
+      message: 'Nytt mail från {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'',
+        ''from'') }}
+
+        Ämne: {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'', ''subject'')
+        }}
+
+        Meddelande: {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'',
+        ''body'') }}
+
+        '
+    action: telegram_bot.send_message
+  mode: single
