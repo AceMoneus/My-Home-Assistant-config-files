@@ -1193,8 +1193,6 @@
     trigger: state
   actions:
   - data:
-      message: 'Betta LiveTrack
-
-        '
+      message: LiveTrack
     action: telegram_bot.send_message
   mode: single
