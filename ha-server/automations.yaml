@@ -552,8 +552,8 @@
         data: {}
   - delay:
       hours: 0
-      minutes: 0
-      seconds: 45
+      minutes: 2
+      seconds: 0
       milliseconds: 0
   - target:
       entity_id:
@@ -565,8 +565,8 @@
     data: {}
   - delay:
       hours: 0
-      minutes: 0
-      seconds: 45
+      minutes: 2
+      seconds: 0
       milliseconds: 0
   - target:
       entity_id:
@@ -578,8 +578,8 @@
     data: {}
   - delay:
       hours: 0
-      minutes: 0
-      seconds: 45
+      minutes: 2
+      seconds: 0
       milliseconds: 0
   - target:
       entity_id:
@@ -1193,14 +1193,7 @@
     trigger: state
   actions:
   - data:
-      message: 'Nytt mail från {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'',
-        ''from'') }}
-
-        Ämne: {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'', ''subject'')
-        }}
-
-        Meddelande: {{ state_attr(''sensor.imap_registry_moneus_se_meddelanden'',
-        ''body'') }}
+      message: 'Betta LiveTrack
 
         '
     action: telegram_bot.send_message
