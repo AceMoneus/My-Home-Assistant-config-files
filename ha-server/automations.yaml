@@ -552,8 +552,8 @@
         data: {}
   - delay:
       hours: 0
-      minutes: 2
-      seconds: 0
+      minutes: 0
+      seconds: 45
       milliseconds: 0
   - target:
       entity_id:
@@ -565,8 +565,8 @@
     data: {}
   - delay:
       hours: 0
-      minutes: 2
-      seconds: 0
+      minutes: 0
+      seconds: 45
       milliseconds: 0
   - target:
       entity_id:
@@ -578,8 +578,8 @@
     data: {}
   - delay:
       hours: 0
-      minutes: 2
-      seconds: 0
+      minutes: 0
+      seconds: 45
       milliseconds: 0
   - target:
       entity_id:
@@ -790,11 +790,6 @@
         state:
         - 'on'
       sequence:
-      - action: homeassistant.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: switch.plug_q13_heatpump_brytare
       - action: homeassistant.turn_on
         data: {}
         target:
@@ -1186,13 +1181,29 @@
     data:
       message: Change
   mode: single
-- id: '1768309334805'
-  alias: Skicka mailnotis vid nytt IMAP-meddelande
+- id: '1768673214791'
+  alias: Hemma Connected
+  description: ''
   triggers:
-  - entity_id: sensor.imap_registry_moneus_se_meddelanden
-    trigger: state
+  - type: connected
+    device_id: 48ff0d2f8a8905d21f4b7d8758975c49
+    entity_id: 1bb3bddf60e3cec59aec86b53f857133
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: state
+    entity_id: switch.home_mqtt_mqtt_wf_arm
+    state:
+    - 'on'
   actions:
-  - data:
-      message: LiveTrack
-    action: telegram_bot.send_message
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
+      message: Hemma
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.home_mqtt_mqtt_wf_arm
+    data: {}
   mode: single
