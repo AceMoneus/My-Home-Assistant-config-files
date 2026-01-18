@@ -103,9 +103,18 @@ switch:
       qos: 2
       retain: true
     - name: home_mqtt_bettan_carheat
-      unique_id: home_mqttbettan__carheat
+      unique_id: home_mqtt_bettan__carheat
       command_topic: "home/switch/mqtt_bettan_carheat"
       state_topic: "home/switch/mqtt_bettan_carheat"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_mqtt_wf_arm
+      unique_id: home_mqtt_mqtt_wf_arm
+      command_topic: "home/switch/mqtt_wf_arm"
+      state_topic: "home/switch/mqtt_wf_arm"
       payload_on: "ON"
       payload_off: "OFF"
       optimistic: false
