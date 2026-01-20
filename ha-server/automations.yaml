@@ -774,48 +774,6 @@
         '
     action: telegram_bot.send_message
   mode: single
-- id: '1760814343855'
-  alias: Bettans motorvärmare
-  description: ''
-  triggers:
-  - entity_id:
-    - switch.home_mqtt_bettan_carheat
-    trigger: state
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_bettan_carheat
-        state:
-        - 'on'
-      sequence:
-      - action: homeassistant.turn_on
-        data: {}
-        target:
-          entity_id: switch.plug_outside_driveway
-      - delay:
-          hours: 1
-          minutes: 0
-          seconds: 0
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        target:
-          entity_id:
-          - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat
-        data: {}
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_bettan_carheat
-        state:
-        - 'off'
-      sequence:
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.plug_outside_driveway
-  mode: restart
 - id: '1762203466396'
   alias: 'Strömövervakning: Faser över 20A i 2 minuter'
   description: ''
@@ -1207,3 +1165,65 @@
       entity_id: switch.home_mqtt_mqtt_wf_arm
     data: {}
   mode: single
+- id: '1768751130552'
+  alias: Bettans motorvärmare
+  description: ''
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_bettan_carheat
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_outside_driveway
+      - delay:
+          hours: 1
+          minutes: 0
+          seconds: 0
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_outside_driveway
+          - switch.home_mqtt_bettan_carheat
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_outside_driveway
+          - switch.home_mqtt_bettan_carheat
+        data: {}
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_bettan_carheat
+        state:
+        - 'off'
+      sequence:
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.plug_outside_driveway
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 10
+          milliseconds: 0
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.plug_outside_driveway
+  mode: restart
