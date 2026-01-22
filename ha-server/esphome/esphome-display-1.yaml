@@ -13,10 +13,11 @@
 #
 # Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
 # https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
-
 esphome:
   name: esphome-display-1
   friendly_name: ESPHome Display 1
+  min_version: 2026.1.0
+
   on_boot:
     priority: 600
     then:
@@ -29,6 +30,10 @@ esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
+
+psram:
+  mode: octal
+  speed: 80MHz
 
 wifi:
   ssid: !secret wifi_ssid
@@ -45,18 +50,19 @@ logger:
 api:
   encryption:
     key: !secret encryption_key
-
   services:
-    - service: refresh
+    - service: test_log
       then:
-        - lambda: |-
-            id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
-  reboot_timeout: 0s
+        - logger.log: "Test service called from HA!"
+    - service: force_refresh
+      then:
+        - component.update: esphome_display_1
 
 ota:
   - platform: esphome
     password: !secret ota_password
+
+safe_mode:
 
 time:
   - platform: homeassistant
@@ -145,7 +151,7 @@ spi:
 i2c:
   sda: GPIO48
   scl: GPIO47
-  frequency: 100000
+  frequency: 400000
   scan: true
 
 output:
@@ -185,7 +191,7 @@ display:
     reset_pin: GPIO41
     rotation: 270
     invert_colors: true
-    id: my_display
+    id: esphome_display_1
     update_interval: never
     pages:
       - id: main_page
@@ -249,6 +255,7 @@ display:
           it.print(310, 190, id(font_huge), Color(255,255,255), TextAlign::RIGHT, time_str);
 
           id(needs_redraw) = false;
+
       - id: error_page
         lambda: |-
           if (!id(needs_redraw)) return;
@@ -276,7 +283,7 @@ touchscreen:
           id(touch_yr) = yr;
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 80 && id(touch_xr) <= 170 && id(touch_yr) >= 140 && id(touch_yr) <= 220);'
+            lambda: 'return (id(touch_xr) >= 10 && id(touch_xr) <= 106 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
             - homeassistant.service:
                 service: switch.toggle
@@ -284,7 +291,7 @@ touchscreen:
                   entity_id: switch.home_mqtt_light_button
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 160 && id(touch_xr) <= 240 && id(touch_yr) >= 150 && id(touch_yr) <= 220);'
+            lambda: 'return (id(touch_xr) >= 116 && id(touch_xr) <= 212 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
             - homeassistant.service:
                 service: switch.toggle
@@ -292,7 +299,7 @@ touchscreen:
                   entity_id: switch.home_mqtt_bettan_carheat
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 240 && id(touch_xr) <= 320 && id(touch_yr) >= 160 && id(touch_yr) <= 240);'
+            lambda: 'return (id(touch_xr) >= 222 && id(touch_xr) <= 318 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
             - homeassistant.service:
                 service: switch.toggle
@@ -309,9 +316,9 @@ interval:
           int diff = id(uptime_seconds) - id(ha_last_update);
 
           if (diff > 120) {
-            id(my_display).show_page(id(error_page));
+            id(esphome_display_1).show_page(id(error_page));
           } else {
-            id(my_display).show_page(id(main_page));
+            id(esphome_display_1).show_page(id(main_page));
           }
   - interval: 200ms
     then:
@@ -319,4 +326,4 @@ interval:
           condition:
             lambda: 'return id(needs_redraw);'
           then:
-            - component.update: my_display
+            - component.update: esphome_display_1
