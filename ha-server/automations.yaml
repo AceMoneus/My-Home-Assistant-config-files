@@ -685,17 +685,6 @@
       - light.lamp_shed
       - light.lamp_woodshed
   mode: single
-- id: '1756744484664'
-  alias: Update Cloudflare DDNS
-  description: Update Cloudflare DDNS
-  triggers:
-  - entity_id: sensor.external_ip
-    trigger: state
-  conditions:
-  - condition: template
-    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
-  actions:
-  - action: shell_command.update_ddns
 - id: '1759147194593'
   alias: GitHub commits
   description: GitHub commits

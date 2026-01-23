@@ -1,10 +1,3 @@
 - platform: worxlandroid
   host: !secret shaun_ip
   pin: !secret shaun_pin
-
-- platform: rest
-  name: External IP
-  resource: https://api.ipify.org
-  method: GET
-  scan_interval: 300  # uppdateras var 5:e minut
-  value_template: "{{ value }}"
