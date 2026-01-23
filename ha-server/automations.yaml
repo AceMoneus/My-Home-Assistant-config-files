@@ -1104,16 +1104,17 @@
     - switch.home_mqtt_kjell_carheat
     trigger: state
   actions:
-  - action: esphome.esphome_display_1_refresh
+  - action: esphome.esphome_display_1_force_refresh
+    data: {}
   mode: queued
 - id: '1766154736754'
   alias: ESPHome Display – Heartbeat
-  description: ''
+  description: Tvingar uppdatering av displayen varje minut
   triggers:
   - minutes: /1
     trigger: time_pattern
   actions:
-  - action: esphome.esphome_display_1_refresh
+  - action: esphome.esphome_display_1_force_refresh
   mode: single
 - id: '1766269827458'
   alias: Ändra belysning - mqtt state
