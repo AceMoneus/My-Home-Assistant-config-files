@@ -13,56 +13,54 @@
 #
 # Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
 # https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
+#######################################################
 esphome:
   name: esphome-display-1
   friendly_name: ESPHome Display 1
   min_version: 2026.1.0
-
-  on_boot:
-    priority: 600
-    then:
-      - delay: 2s
-      - lambda: |-
-          ESP_LOGI("boot", "=== SYSTEM BOOT COMPLETE ===");
-          id(needs_redraw) = true;
 
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
 
+packages:
+  network: !include common/network.yaml
+  system: !include common/system.yaml
+  firmware: !include common/firmware.yaml
+
+#######################################################
+# GLOBALS
+globals:
+  - id: fw_version
+    type: std::string
+    restore_value: no
+    initial_value: "\"v1.1.7\""
+  - id: uptime_seconds
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: ha_last_update
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: needs_redraw
+    type: bool
+    restore_value: no
+    initial_value: 'true'
+  - id: touch_xr
+    type: int
+    restore_value: no
+    initial_value: '0'
+  - id: touch_yr
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+#######################################################
 psram:
   mode: octal
   speed: 80MHz
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  ap:
-    ssid: !secret fallback_ssid
-    password: !secret fallback_password
-
-captive_portal:
-
-logger:
-  level: WARN
-
-api:
-  encryption:
-    key: !secret encryption_key
-  services:
-    - service: test_log
-      then:
-        - logger.log: "Test service called from HA!"
-    - service: force_refresh
-      then:
-        - component.update: esphome_display_1
-
-ota:
-  - platform: esphome
-    password: !secret ota_password
-
-safe_mode:
 
 time:
   - platform: homeassistant
@@ -117,30 +115,6 @@ sensor:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
             id(needs_redraw) = true;
-
-#######################################################
-# GLOBALS
-globals:
-  - id: uptime_seconds
-    type: int
-    restore_value: no
-    initial_value: '0'
-  - id: ha_last_update
-    type: int
-    restore_value: no
-    initial_value: '0'
-  - id: needs_redraw
-    type: bool
-    restore_value: no
-    initial_value: 'true'
-  - id: touch_xr
-    type: int
-    restore_value: no
-    initial_value: '0'
-  - id: touch_yr
-    type: int
-    restore_value: no
-    initial_value: '0'
 
 #######################################################
 # HARDWARE

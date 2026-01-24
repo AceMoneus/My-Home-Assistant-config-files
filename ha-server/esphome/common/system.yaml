@@ -1,0 +1,11 @@
+logger:
+
+api:
+  encryption:
+    key: !secret encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+safe_mode:
