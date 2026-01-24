@@ -1,14 +1,4 @@
   - sensor:
-      - name: "Heat pump time on low"
-        unique_id: heat_pump_time_on_low
-        unit_of_measurement: min
-        state: >
-          {% if is_state('binary_sensor.low_effekt', 'on') %}
-            {{ ((now() - states.binary_sensor.low_effekt_status.last_changed).total_seconds() / 60) | round(0) }}
-          {% else %}
-            0
-          {% endif %}
-
       - name: "Sun angle"
         unique_id: sun_angle
         unit_of_measurement: "°"
@@ -25,15 +15,12 @@
           {% set percent = states('sensor.myups_last') | float %}
           {{ (percent / 100) * 1200 | round(0) | int }}
 
-
       - name: "mqtt lampor numeric"
         state: "{{ 1 if is_state('switch.home_mqtt_light_button', 'on') else 0 }}"
       - name: "mqtt bettan numeric"
         state: "{{ 1 if is_state('switch.home_mqtt_bettan_carheat', 'on') else 0 }}"
       - name: "mqtt kjell numeric"
         state: "{{ 1 if is_state('switch.home_mqtt_kjell_carheat', 'on') else 0 }}"
-
-
 
   - binary_sensor:
     - name: "Sun Down"
