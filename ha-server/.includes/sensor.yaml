@@ -1,3 +1,8 @@
 - platform: worxlandroid
   host: !secret shaun_ip
   pin: !secret shaun_pin
+
+- platform: command_line
+  name: ESPHome Builder Version
+  command: "docker ps --format '{{.Names}}' | grep esphome | xargs docker inspect | jq -r '.[0].Config.Labels[\"io.hass.version\"]'"
+  scan_interval: 3600

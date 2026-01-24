@@ -1,3 +1,4 @@
+#######################################################
 esphome:
   name: esphome-cam-3dprinter1
   platformio_options:
@@ -11,30 +12,22 @@ esp32:
   framework:
     type: arduino
 
+packages:
+  network: !include common/network.yaml
+  system: !include common/system.yaml
+  firmware: !include common/firmware.yaml
+#######################################################
+# GLOBALS
+globals:
+  - id: fw_version
+    type: std::string
+    restore_value: no
+    initial_value: "\"v1.8\""
+#######################################################
+
 psram:
   mode: octal
   speed: 80MHz
-
-logger:
-
-api:
-  encryption:
-    key: !secret encryption_key
-
-ota:
-  - platform: esphome
-    password: !secret ota_password
-
-safe_mode:
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  ap:
-    ssid: !secret fallback_ssid
-    password: !secret fallback_password
-
-captive_portal:
 
 esp32_camera:
   id: espcam
