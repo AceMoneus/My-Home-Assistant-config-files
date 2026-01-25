@@ -1,0 +1,17 @@
+text_sensor:
+  - platform: template
+    name: "Firmware Version"
+    id: fw_version_sensor
+    icon: "mdi:information-outline"
+    entity_category: diagnostic
+    lambda: |-
+      ESP_LOGI("version", "Firmware Version: %s", id(fw_version).c_str());
+      return std::string(id(fw_version));
+
+  - platform: template
+    name: "ESPHome Version"
+    id: esphome_version
+    icon: "mdi:chip"
+    entity_category: diagnostic
+    lambda: |-
+      return std::string(ESPHOME_VERSION);
