@@ -15,14 +15,13 @@ packages:
   network: !include common/network.yaml
   system: !include common/system.yaml
   firmware: !include common/firmware.yaml
-  esp32_ble_tracker: !include common/bl_tracker.yaml
 #######################################################
 # GLOBALS
 globals:
   - id: fw_version
     type: std::string
     restore_value: no
-    initial_value: "\"v1.3\""
+    initial_value: "\"v1.4\""
 #######################################################
 
 uart:
