@@ -24,6 +24,14 @@ esp32:
   framework:
     type: arduino
 
+api:
+  services:
+    - service: force_display_refresh
+      then:
+        - lambda: |-
+            id(needs_redraw) = true;
+            id(esphome_display_1).update();
+
 packages:
   network: !include common/network.yaml
   system: !include common/system.yaml
@@ -35,7 +43,7 @@ globals:
   - id: fw_version
     type: std::string
     restore_value: no
-    initial_value: "\"v1.1.7\""
+    initial_value: "\"v1.1.8\""
   - id: uptime_seconds
     type: int
     restore_value: no
@@ -65,6 +73,11 @@ psram:
 time:
   - platform: homeassistant
     id: ha_time
+    on_time_sync:
+      then:
+        - lambda: |-
+            id(ha_last_update) = id(uptime_seconds);
+            id(needs_redraw) = true;
     on_time:
       - seconds: 0
         minutes: /1
@@ -163,7 +176,7 @@ display:
     cs_pin: GPIO45
     dc_pin: GPIO42
     reset_pin: GPIO41
-    rotation: 270
+    rotation: 90
     invert_colors: true
     id: esphome_display_1
     update_interval: never
@@ -251,34 +264,42 @@ touchscreen:
     skip_probe: false
     on_touch:
       - lambda: |-
-          int xr = 320 - touch.y;
-          int yr = touch.x;
-          id(touch_xr) = xr;
-          id(touch_yr) = yr;
+          id(touch_xr) = touch.y;
+          id(touch_yr) = 240 - touch.x;
+          ESP_LOGD("touch", "Touch detected: raw(x=%d, y=%d) → display(xr=%d, yr=%d)",
+                  touch.x, touch.y, id(touch_xr), id(touch_yr));
+
+      # Lampor
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 10 && id(touch_xr) <= 106 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
+            lambda: 'return (id(touch_xr) >= 75 && id(touch_xr) <= 107 && id(touch_yr) >= 89 && id(touch_yr) <= 144);'
           then:
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_light_button
+
+      # Bettans bil
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 116 && id(touch_xr) <= 212 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
+            lambda: 'return (id(touch_xr) >= 146 && id(touch_xr) <= 182 && id(touch_yr) >= 80 && id(touch_yr) <= 144);'
           then:
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_bettan_carheat
+
+      # Kjells bil
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 222 && id(touch_xr) <= 318 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
+            lambda: 'return (id(touch_xr) >= 226 && id(touch_xr) <= 238 && id(touch_yr) >= 102 && id(touch_yr) <= 175);'
           then:
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_kjell_carheat
+
+
 
 #######################################################
 # INTERVAL
