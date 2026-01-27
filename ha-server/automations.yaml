@@ -29,8 +29,9 @@
   description: ''
   triggers:
   - trigger: mqtt
-    topic: home/alarm/mqtt_alarm_state
-    payload: 'ON'
+    options:
+      topic: home/alarm/mqtt_alarm_state
+      payload: 'ON'
   conditions: []
   actions:
   - action: switch.turn_on
@@ -48,8 +49,8 @@
     domain: switch
   - delay:
       hours: 0
-      minutes: 1
-      seconds: 30
+      minutes: 2
+      seconds: 0
       milliseconds: 0
   - type: turn_on
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
@@ -90,7 +91,7 @@
     domain: switch
   - delay:
       hours: 0
-      minutes: 1
+      minutes: 2
       seconds: 0
       milliseconds: 0
   - type: turn_off
@@ -100,10 +101,6 @@
   - type: turn_off
     device_id: cf1060197270db5704ae7db13dbb61d1
     entity_id: e6bccb0c96f672b1db2bc7e45873afa9
-    domain: switch
-  - type: turn_off
-    device_id: 7be7a99abd383b0c2fc642968d3cfa5f
-    entity_id: d6dfc08e8db5ead711489e1f51b4503e
     domain: switch
   - action: switch.turn_off
     metadata: {}
