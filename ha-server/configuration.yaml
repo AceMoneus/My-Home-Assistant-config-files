@@ -21,9 +21,6 @@ homeassistant:
 logger:
   default: info
 
-device_tracker:
-  - platform: bluetooth_le_tracker 
-
 #####################################################
 # ssl etc...
 http:
