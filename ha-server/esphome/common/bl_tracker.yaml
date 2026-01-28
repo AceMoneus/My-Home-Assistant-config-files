@@ -7,9 +7,13 @@ esp32_ble_tracker:
 binary_sensor:
   - platform: ble_presence
     mac_address: "A4:75:B9:52:F6:35"
-    name: "kjell_mobil"
+    name: "Samsung S22"
     device_class: presence
   - platform: ble_presence
     mac_address: "A4:75:B9:52:F6:35"
-    name: "bettan_mobil"
+    name: "Samsung A35"
+    device_class: presence
+  - platform: ble_presence
+    mac_address: "B0:D5:FB:D1:11:50"
+    name: "Pixel 10 Pro"
     device_class: presence
