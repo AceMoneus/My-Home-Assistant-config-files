@@ -5,9 +5,9 @@
 # Configure as Arduino/esp32-s3-devkitc-1
 # i2c frequency: 100000 (50k in documentation did not work)
 #
-# Touch: cst816 note: rotation not supported, done mathematically
-# int xr = 320 - touch.y;   // rotate & mirror
-# int yr = touch.x;         // move up
+# Touch: cst816 rotation not supported, done mathematically
+# id(touch_xr) = 320 - touch.x;
+# id(touch_yr) = touch.y;
 #
 # https://files.waveshare.com/upload/5/51/CST816S_Datasheet_EN.pdf
 #
@@ -30,7 +30,6 @@ api:
       then:
         - lambda: |-
             id(needs_redraw) = true;
-            id(esphome_display_1).update();
 
 packages:
   network: !include common/network.yaml
@@ -43,7 +42,7 @@ globals:
   - id: fw_version
     type: std::string
     restore_value: no
-    initial_value: "\"v1.1.8\""
+    initial_value: "\"v1.2.0\""
   - id: uptime_seconds
     type: int
     restore_value: no
@@ -52,10 +51,6 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
-  - id: needs_redraw
-    type: bool
-    restore_value: no
-    initial_value: 'true'
   - id: touch_xr
     type: int
     restore_value: no
@@ -64,6 +59,10 @@ globals:
     type: int
     restore_value: no
     initial_value: '0'
+  - id: needs_redraw
+    type: bool
+    restore_value: no
+    initial_value: 'true'
 
 #######################################################
 psram:
@@ -77,13 +76,11 @@ time:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
     on_time:
       - seconds: 0
         minutes: /1
         then:
-          - lambda: |-
-              id(needs_redraw) = true;
+          - component.update: esphome_display_1
 
 #######################################################
 # SENSORER
@@ -95,7 +92,7 @@ sensor:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
+        - component.update: esphome_display_1
   - platform: homeassistant
     id: ha_inside_temperature
     entity_id: sensor.inside_temperature
@@ -103,7 +100,7 @@ sensor:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
+        - component.update: esphome_display_1
   - platform: homeassistant
     id: ha_lampor_state
     entity_id: sensor.mqtt_lampor_numeric
@@ -111,7 +108,7 @@ sensor:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
+        - component.update: esphome_display_1
   - platform: homeassistant
     id: ha_bettan_state
     entity_id: sensor.mqtt_bettan_numeric
@@ -119,7 +116,7 @@ sensor:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
+        - component.update: esphome_display_1
   - platform: homeassistant
     id: ha_kjell_state
     entity_id: sensor.mqtt_kjell_numeric
@@ -127,7 +124,7 @@ sensor:
       then:
         - lambda: |-
             id(ha_last_update) = id(uptime_seconds);
-            id(needs_redraw) = true;
+        - component.update: esphome_display_1
 
 #######################################################
 # HARDWARE
@@ -183,8 +180,6 @@ display:
     pages:
       - id: main_page
         lambda: |-
-          if (!id(needs_redraw)) return;
-
           bool lampor_on = (id(ha_lampor_state).state == 1.0f);
           bool bettan_on = (id(ha_bettan_state).state == 1.0f);
           bool kjell_on  = (id(ha_kjell_state).state == 1.0f);
@@ -241,20 +236,14 @@ display:
 
           it.print(310, 190, id(font_huge), Color(255,255,255), TextAlign::RIGHT, time_str);
 
-          id(needs_redraw) = false;
-
       - id: error_page
         lambda: |-
-          if (!id(needs_redraw)) return;
-
           it.fill(Color(0,0,0));
           it.print(160,120,id(font_large),Color(255,0,0),TextAlign::CENTER,
-                   "Ingen kontakt med Home Assistant!");
-
-          id(needs_redraw) = false;
+                   "Ingen kontakt med HA!");
 
 #######################################################
-# TOUCH
+# TOUCH - MED TESTLÄGE
 touchscreen:
   - platform: cst816
     id: my_touchscreen
@@ -264,42 +253,40 @@ touchscreen:
     skip_probe: false
     on_touch:
       - lambda: |-
-          id(touch_xr) = touch.y;
-          id(touch_yr) = 240 - touch.x;
-          ESP_LOGD("touch", "Touch detected: raw(x=%d, y=%d) → display(xr=%d, yr=%d)",
-                  touch.x, touch.y, id(touch_xr), id(touch_yr));
-
-      # Lampor
+          id(touch_xr) = 320 - touch.x;
+          id(touch_yr) = touch.y;
+          
+          ESP_LOGI("touch", "===========================================");
+          ESP_LOGI("touch", "RAW: x=%d, y=%d", touch.x, touch.y);
+          ESP_LOGI("touch", "DISPLAY: xr=%d, yr=%d", id(touch_xr), id(touch_yr));
+          ESP_LOGI("touch", "===========================================");
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 75 && id(touch_xr) <= 107 && id(touch_yr) >= 89 && id(touch_yr) <= 144);'
+            lambda: 'return (id(touch_xr) >= 10 && id(touch_xr) <= 106 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
+            - logger.log: ">>> LAMPOR <<<"
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_light_button
-
-      # Bettans bil
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 146 && id(touch_xr) <= 182 && id(touch_yr) >= 80 && id(touch_yr) <= 144);'
+            lambda: 'return (id(touch_xr) >= 116 && id(touch_xr) <= 212 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
+            - logger.log: ">>> BETTANS <<<"
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_bettan_carheat
-
-      # Kjells bil
       - if:
           condition:
-            lambda: 'return (id(touch_xr) >= 226 && id(touch_xr) <= 238 && id(touch_yr) >= 102 && id(touch_yr) <= 175);'
+            lambda: 'return (id(touch_xr) >= 222 && id(touch_xr) <= 318 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
           then:
+            - logger.log: ">>> KJELLS <<<"
             - homeassistant.service:
                 service: switch.toggle
                 data:
                   entity_id: switch.home_mqtt_kjell_carheat
-
-
 
 #######################################################
 # INTERVAL
@@ -315,10 +302,4 @@ interval:
           } else {
             id(esphome_display_1).show_page(id(main_page));
           }
-  - interval: 200ms
-    then:
-      - if:
-          condition:
-            lambda: 'return id(needs_redraw);'
-          then:
-            - component.update: esphome_display_1
+          id(esphome_display_1).update();
