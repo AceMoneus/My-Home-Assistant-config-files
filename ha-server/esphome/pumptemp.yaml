@@ -1,15 +1,17 @@
 #######################################################
+substitutions:
+  device_name: pumptemp
+  friendly_name: "PumpTemp"
+
 esphome:
-  name: pumptemp
-  friendly_name: PumpTemp
+  name: ${device_name}
+  friendly_name: ${friendly_name}
 
 esp8266:
   board: esp01_1m
 
 packages:
-  network: !include common/network.yaml
-  system: !include common/system.yaml
-  firmware: !include common/firmware.yaml
+  common: !include common/common.yaml
 #######################################################
 # GLOBALS
 globals:

@@ -1,6 +1,11 @@
 #######################################################
+substitutions:
+  device_name: esphome-cam-3dprinter1
+  friendly_name: "ESPHome Cam 3DPrinter1"
+
 esphome:
-  name: esphome-cam-3dprinter1
+  name: ${device_name}
+  friendly_name: ${friendly_name}
   platformio_options:
     build_flags: "-DBOARD_HAS_PSRAM"
     board_build.arduino.memory_type: qio_opi
@@ -13,9 +18,7 @@ esp32:
     type: arduino
 
 packages:
-  network: !include common/network.yaml
-  system: !include common/system.yaml
-  firmware: !include common/firmware.yaml
+  common: !include common/common.yaml
 #######################################################
 # GLOBALS
 globals:
