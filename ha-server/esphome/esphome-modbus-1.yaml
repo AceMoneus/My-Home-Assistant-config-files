@@ -2,9 +2,13 @@
 # Configuration for ESP32-S3-Relay-1CH
 # https://www.waveshare.com/wiki/ESP32-S3-Relay-1CH
 #######################################################
-esphome:
-  name: esphome-modbus-1
+substitutions:
+  device_name: esphome-modbus-1
   friendly_name: "ESPHome Modbus 1"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
 
 esp32:
   board: esp32-s3-devkitc-1

@@ -1,0 +1,30 @@
+#######################################################
+substitutions:
+  device_name: bt-proxy-1
+  friendly_name: "BT Proxy 1"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+packages:
+  common: !include common/common.yaml
+#######################################################
+# GLOBALS
+globals:
+  - id: fw_version
+    type: std::string
+    restore_value: no
+    initial_value: "\"v1.1\""
+  - id: mac_cache
+    type: std::vector<std::pair<std::string, uint32_t>>
+#######################################################
+esp32_ble_tracker:
+bluetooth_proxy:
+  active: true
+
