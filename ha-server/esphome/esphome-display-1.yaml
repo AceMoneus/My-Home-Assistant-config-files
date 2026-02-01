@@ -14,10 +14,13 @@
 # Display: st7789T3 (ili9xxx/st7789v the only one that seems to work)
 # https://files.waveshare.com/wiki/2.8inch-Capacitive-Touch-LCD/ST7789T3_SPEC_V1.0.pdf
 #######################################################
+substitutions:
+  device_name: esphome-display-1
+  friendly_name: "ESPHome Display 1"
+
 esphome:
-  name: esphome-display-1
-  friendly_name: ESPHome Display 1
-  min_version: 2026.1.0
+  name: ${device_name}
+  friendly_name: ${friendly_name}
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -32,10 +35,7 @@ api:
             id(needs_redraw) = true;
 
 packages:
-  network: !include common/network.yaml
-  system: !include common/system.yaml
-  firmware: !include common/firmware.yaml
-
+  common: !include common/common.yaml
 #######################################################
 # GLOBALS
 globals:
