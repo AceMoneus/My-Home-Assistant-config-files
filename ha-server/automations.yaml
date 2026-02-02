@@ -1193,3 +1193,65 @@
         target:
           entity_id: switch.plug_outside_driveway
   mode: restart
+- id: '1769854132894'
+  alias: Home/Away
+  description: Home/Away
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.home_away
+    to: 'on'
+    id: home
+  - trigger: state
+    entity_id: binary_sensor.home_away
+    to: 'off'
+    for:
+      minutes: 2
+    id: away
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: home
+      sequence:
+      - action: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_q24_bed_lights
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
+      - action: telegram_bot.send_message
+        metadata: {}
+        data:
+          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
+          message: Larm Av
+    - conditions:
+      - condition: trigger
+        id: away
+      sequence:
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.plug_q24_bed_lights
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
+      - action: telegram_bot.send_message
+        metadata: {}
+        data:
+          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
+          message: Larm På
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id:
+          - switch.home_mqtt_desktop
+          - switch.home_mqtt_xbox
+        data: {}
+    default: []
+  mode: single
