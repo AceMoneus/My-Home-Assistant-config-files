@@ -1,0 +1,21 @@
+  - name: "dark"
+    state_topic: "home/state/dark"
+    payload_on: "ON"
+    payload_off: "OFF"
+    qos: 2
+  - name: "evening"
+    state_topic: "home/state/evening"
+    payload_on: "ON"
+    payload_off: "OFF"
+    qos: 2
+  - name: "morning"
+    state_topic: "home/state/morning"
+    payload_on: "ON"
+    payload_off: "OFF"
+    qos: 2
+  - name: "home_away"
+    state_topic: "home/state/home_away"
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: presence
+    qos: 2
