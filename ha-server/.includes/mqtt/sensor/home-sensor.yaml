@@ -1,0 +1,12 @@
+  - name: "MQTT Temperatur Vardagsrum"
+    state_topic: "home/temp/livingroom"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
+  - name: "MQTT Temperatur Sovrum"
+    state_topic: "home/temp/bedroom"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"
+  - name: "MQTT Temperatur Ute"
+    state_topic: "home/temp/outside"
+    unit_of_measurement: '°C'
+    value_template: "{{ value }}"

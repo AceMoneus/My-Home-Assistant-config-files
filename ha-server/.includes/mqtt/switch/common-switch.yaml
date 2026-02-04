@@ -1,0 +1,46 @@
+
+    - name: home_mqtt_evening_lights
+      unique_id: home_mqtt_evening_lights
+      command_topic: "home/switch/evening_lights"
+      state_topic: "home/switch/evening_lights"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_morning_lights
+      unique_id: home_mqtt_morning_lights 
+      command_topic: "home/switch/morning_lights"
+      state_topic: "home/switch/morning_lights"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_outside_lights
+      unique_id: home_mqtt_outside_lights 
+      command_topic: "home/switch/outside_lights"
+      state_topic: "home/switch/outside_lights"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_kjell_carheat
+      unique_id: home_mqtt_kjell_carheat
+      command_topic: "home/switch/mqtt_kjell_carheat"
+      state_topic: "home/switch/mqtt_kjell_carheat"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true
+    - name: home_mqtt_bettan_carheat
+      unique_id: home_mqtt_bettan_carheat
+      command_topic: "home/switch/mqtt_bettan_carheat"
+      state_topic: "home/switch/mqtt_bettan_carheat"
+      payload_on: "ON"
+      payload_off: "OFF"
+      optimistic: false
+      qos: 2
+      retain: true

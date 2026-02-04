@@ -1,0 +1,12 @@
+  - name: "MQTT Timestamp Kottbo"
+    state_topic: "kottbo/timestamp"
+    device_class: "timestamp"
+    value_template: "{{ as_datetime(value) }}"
+    unique_id: "mqtt_timestamp_kottbo"
+    qos: 2
+  - name: "MQTT Timestamp Quarry"
+    state_topic: "quarry/timestamp"
+    device_class: "timestamp"
+    value_template: "{{ as_datetime(value) }}"
+    unique_id: "mqtt_timestamp_quarry"
+    qos: 2

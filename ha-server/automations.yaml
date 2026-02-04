@@ -599,37 +599,11 @@
   actions:
   - action: switch.turn_off
     metadata: {}
-    data: {}
     target:
       entity_id:
-      - switch.innelampor_switch
-      - switch.utelampor_switch
-  - action: light.turn_off
-    metadata: {}
+      - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_evening_lights
     data: {}
-    target:
-      entity_id:
-      - light.innelampor_light
-      - light.utelampor_light
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.innelampor_switch
-      - switch.utelampor_switch
-  - action: light.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - light.innelampor_light
-      - light.utelampor_light
   mode: single
 - id: '1755033929887'
   alias: 'Släck utelampor efter 5 min. '
@@ -938,31 +912,7 @@
     metadata: {}
     data: {}
     target:
-      entity_id:
-      - light.innelampor_light
-      - switch.innelampor_switch
-      - switch.plug_q20_light_shed
-      - switch.plug_q21_outside_kitchen
-      - switch.plug_q22_outside
-      - switch.tz3000_iiacqpdz_ts011f
-      - switch.plug_q13_garage_led
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - action: homeassistant.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - light.innelampor_light
-      - switch.innelampor_switch
-      - switch.plug_q20_light_shed
-      - switch.plug_q21_outside_kitchen
-      - switch.plug_q22_outside
-      - switch.tz3000_iiacqpdz_ts011f
-      - switch.plug_q13_garage_led
+      entity_id: switch.home_mqtt_evening_lights
   mode: single
 - id: '1763110119433'
   alias: New automation
@@ -1009,33 +959,11 @@
   actions:
   - action: switch.turn_off
     metadata: {}
-    data: {}
     target:
       entity_id:
-      - switch.innelampor_switch
-  - action: light.turn_off
-    metadata: {}
+      - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_morning_lights
     data: {}
-    target:
-      entity_id:
-      - light.innelampor_light
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.innelampor_switch
-  - action: light.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - light.innelampor_light
   mode: single
 - id: '1765895296033'
   alias: Uppdatera home_away baserat på mobiler
@@ -1081,16 +1009,6 @@
           topic: home/state/home_away
           payload: 'OFF'
         action: mqtt.publish
-- id: '1766269827458'
-  alias: Ändra belysning - mqtt state
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - switch.home_mqtt_light_button
-  conditions: []
-  actions: []
-  mode: single
 - id: '1766320537187'
   alias: New automation
   description: ''
@@ -1254,4 +1172,95 @@
           - switch.home_mqtt_xbox
         data: {}
     default: []
+  mode: single
+- id: '1770125964946'
+  alias: Kvällslampor
+  description: Kvällslampor
+  triggers:
+  - trigger: state
+    entity_id: switch.home_mqtt_evening_lights
+    to: 'on'
+  - trigger: state
+    entity_id: switch.home_mqtt_evening_lights
+    to: 'off'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_evening_lights
+        state: 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        target:
+          entity_id:
+          - switch.plug_q05_kitchen_window
+          - switch.plug_q09_upper_hall
+          - switch.plug_q03_bedroom
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_evening_lights
+        state: 'off'
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_q05_kitchen_window
+          - switch.plug_q09_upper_hall
+          - switch.plug_q03_bedroom
+  mode: single
+- id: '1770126253740'
+  alias: Morgonlampor
+  description: Morgonlampor
+  triggers:
+  - trigger: state
+    entity_id: switch.home_mqtt_morning_lights
+    to: 'on'
+  - trigger: state
+    entity_id: switch.home_mqtt_morning_lights
+    to: 'off'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_morning_lights
+        state: 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        target:
+          entity_id:
+          - switch.plug_q05_kitchen_window
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_morning_lights
+        state: 'off'
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_q05_kitchen_window
+  mode: single
+- id: '1770127009432'
+  alias: Turn on Morning lights
+  description: ''
+  triggers:
+  - trigger: time
+    at: 06:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  - trigger: time
+    at: 07:00:00
+    weekday:
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.home_mqtt_morning_lights
   mode: single
