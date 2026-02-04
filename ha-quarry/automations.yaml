@@ -34,89 +34,6 @@
         photo:
         - url: https://pm3.se/wp-content/uploads/2019/05/startheropic.jpg
   mode: single
-- id: '1665669714501'
-  alias: MoodOffNight
-  triggers:
-  - at: '23:15:00'
-    trigger: time
-  actions:
-  - data: {}
-    target:
-      entity_id:
-      - switch.plug_q02_brytare
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_off
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_off
-- id: '1665681561017'
-  alias: MoodOnSunset
-  description: ''
-  triggers:
-  - entity_id: sun.sun
-    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
-    below: 1.5
-    trigger: numeric_state
-  conditions: []
-  actions:
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_on
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 30
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_on
-  mode: single
 - id: '1670625054247'
   alias: Telegram - Reboot
   description: ''
@@ -130,34 +47,6 @@
   - service: hassio.host_reboot
     data: {}
   mode: single
-- id: '1671720554204'
-  alias: Ute - Sunset on
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sun.sun
-    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
-    below: 0
-  condition: []
-  action:
-  - service: homeassistant.turn_on
-    data: {}
-    target:
-      entity_id: switch.ute_1_switch
-  mode: single
-- id: '1671720962679'
-  alias: Ute - Turn off midnight
-  description: ''
-  trigger:
-  - platform: time
-    at: 00:15:00
-  condition: []
-  action:
-  - service: homeassistant.turn_off
-    data: {}
-    target:
-      entity_id: switch.ute_1_switch
-  mode: single
 - id: '1675081741277'
   alias: Telegram - HA shut down
   description: ''
@@ -170,140 +59,6 @@
     metadata: {}
     data:
       message: Quarry - shutdown
-  mode: single
-- id: '1700064352600'
-  alias: ButtonMoodOn
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.indoor_lights
-    from: 'off'
-    to: 'on'
-  condition: []
-  action:
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_3
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-    action: homeassistant.turn_on
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 3
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_3
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-    action: homeassistant.turn_on
-  mode: single
-- id: '1700064411390'
-  alias: ButtonMoodOff
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - input_boolean.indoor_lights
-    from: 'on'
-    to: 'off'
-  condition: []
-  action:
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_3
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-    action: homeassistant.turn_off
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 3
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_3
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-    action: homeassistant.turn_off
-  mode: single
-- id: '1705157412065'
-  alias: All lights off att 10:00
-  description: ''
-  triggers:
-  - at: '10:00:00'
-    trigger: time
-  conditions: []
-  actions:
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.ute_1_switch
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-      - switch.plug_q06_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_off
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 15
-      milliseconds: 0
-  - data: {}
-    target:
-      entity_id:
-      - switch.tz3000_gjnozsaz_ts011f_switch_2
-      - switch.tz3000_gjnozsaz_ts011f_switch_4
-      - switch.tz3000_gjnozsaz_ts011f_switch_6
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_2
-      - switch.plug_q11_switch_2
-      - switch.plug_q12_brytare
-      - switch.ute_1_switch
-      - switch.plug_q06_brytare
-      - switch.plug_q14_brytare
-      - switch.plug_q02_brytare
-      - switch.plug_q04_brytare
-    action: homeassistant.turn_off
   mode: single
 - id: '1730722395853'
   alias: MQTT Timestamp
@@ -337,16 +92,85 @@
     metadata: {}
     data: {}
   mode: single
-- id: '1766081665075'
-  alias: 'Notify - Bettans kupévärmare '
-  description: ''
+- id: '1770126534862'
+  alias: Kvällslampor
+  description: Kvällslampor
   triggers:
-  - trigger: time
-    at: '21:00:00'
+  - trigger: state
+    entity_id: switch.home_mqtt_evening_lights
+    to: 'on'
+  - trigger: state
+    entity_id: switch.home_mqtt_evening_lights
+    to: 'off'
   conditions: []
   actions:
-  - action: notify.mobile_app_sm_a236b
-    metadata: {}
-    data:
-      message: Glöm inte kupévärmaren
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_evening_lights
+        state: 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.tz3000_gjnozsaz_ts011f_switch_2
+          - switch.tz3000_gjnozsaz_ts011f_switch_6
+          - switch.plug_q11_switch_2
+          - switch.plug_q12_brytare
+          - switch.plug_q06_brytare
+          - switch.plug_q14_brytare
+          - switch.plug_q02_brytare
+          - switch.plug_q04_brytare
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_evening_lights
+        state: 'off'
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.tz3000_gjnozsaz_ts011f_switch_2
+          - switch.tz3000_gjnozsaz_ts011f_switch_6
+          - switch.plug_q11_switch_2
+          - switch.plug_q12_brytare
+          - switch.plug_q06_brytare
+          - switch.plug_q14_brytare
+          - switch.plug_q02_brytare
+          - switch.plug_q04_brytare
+  mode: single
+- id: '1770126814431'
+  alias: Morgonlampor
+  description: Morgonlampor
+  triggers:
+  - trigger: state
+    entity_id: switch.home_mqtt_morning_lights
+    to: 'on'
+  - trigger: state
+    entity_id: switch.home_mqtt_morning_lights
+    to: 'off'
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_morning_lights
+        state: 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q04_brytare
+          - switch.tz3000_gjnozsaz_ts011f_switch_6
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_morning_lights
+        state: 'off'
+      sequence:
+      - action: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.plug_q04_brytare
+          - switch.tz3000_gjnozsaz_ts011f_switch_6
   mode: single
