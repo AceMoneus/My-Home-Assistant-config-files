@@ -24,7 +24,7 @@ http:
 #####################################################
 # Includes
 automation: !include automations.yaml
-scene: !include scenes.yaml
+group: !include .includes/group.yaml
 input_boolean: !include .includes/input_boolean.yaml
 binary_sensor: !include .includes/binary_sensor.yaml
 template: !include .includes/template.yaml
