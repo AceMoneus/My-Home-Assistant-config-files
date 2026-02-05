@@ -175,6 +175,19 @@
     device_id: 320f85bb8c37630908b398697b964688
     entity_id: b396468ce103664334f441b219296fd7
     domain: light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - type: turn_off
+    device_id: 56b8b7496203c0ca67bd39639101b7a3
+    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
+    domain: switch
+  - type: turn_off
+    device_id: 320f85bb8c37630908b398697b964688
+    entity_id: b396468ce103664334f441b219296fd7
+    domain: light
   mode: single
 - id: '1742762100304'
   alias: MQTT - temperatur sovrum
@@ -244,7 +257,7 @@
           payload: 'OFF'
 - id: '1744054727367'
   alias: mqtt_desktop
-  description: ''
+  description: mqtt_desktop
   triggers:
   - entity_id:
     - switch.home_mqtt_desktop
@@ -291,7 +304,30 @@
       - delay:
           hours: 0
           minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.plug_q15_officedesk
+        data: {}
+        enabled: true
+      - delay:
+          hours: 0
+          minutes: 0
           seconds: 45
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id:
+          - light.lamp_lantern_lampa
+          - switch.plug_q08_officecorner_brytare
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
           milliseconds: 0
       - action: homeassistant.turn_off
         metadata: {}
@@ -312,33 +348,57 @@
           entity_id: automation.office_light_off
   mode: single
 - id: '1744619970068'
-  alias: mqtt_xbox
-  description: ''
+  alias: mqtt_bedroom_light
+  description: mqtt_bedroom_light
   triggers:
   - entity_id:
-    - switch.home_mqtt_xbox
+    - switch.home_mqtt_bedroom_light
     trigger: state
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_xbox
-        state: 'on'
+        entity_id: switch.home_mqtt_bedroom_light
+        state:
+        - 'on'
       sequence:
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.plug_q18_xbox_brytare
+          entity_id:
+          - switch.plug_q03_bedroom
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q03_bedroom
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_xbox
-        state: 'off'
+        entity_id: switch.home_mqtt_bedroom_light
+        state:
+        - 'off'
       sequence:
       - action: switch.turn_off
         data: {}
         target:
-          entity_id: switch.plug_q18_xbox_brytare
+          entity_id:
+          - switch.plug_q03_bedroom
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q03_bedroom
   mode: single
 - id: '1745215029019'
   alias: Set Values at HA Start
@@ -549,42 +609,33 @@
         data: {}
   - delay:
       hours: 0
-      minutes: 0
-      seconds: 45
+      minutes: 2
+      seconds: 0
       milliseconds: 0
-  - target:
-      entity_id:
-      - light.lamp_driveway
-      - light.lamp_garage
-      - light.lamp_woodshed
-      - light.lamp_shed
-    action: light.turn_off
+  - action: homeassistant.turn_off
+    metadata: {}
+    target:
+      entity_id: group.outdoor_lighting
     data: {}
   - delay:
       hours: 0
       minutes: 0
-      seconds: 45
+      seconds: 5
       milliseconds: 0
-  - target:
-      entity_id:
-      - light.lamp_driveway
-      - light.lamp_garage
-      - light.lamp_woodshed
-      - light.lamp_shed
-    action: light.turn_off
+  - action: homeassistant.turn_off
+    metadata: {}
+    target:
+      entity_id: group.outdoor_lighting
     data: {}
   - delay:
       hours: 0
       minutes: 0
-      seconds: 45
+      seconds: 5
       milliseconds: 0
-  - target:
-      entity_id:
-      - light.lamp_driveway
-      - light.lamp_garage
-      - light.lamp_woodshed
-      - light.lamp_shed
-    action: light.turn_off
+  - action: homeassistant.turn_off
+    metadata: {}
+    target:
+      entity_id: group.outdoor_lighting
     data: {}
   mode: restart
 - id: '1754981360756'
@@ -603,59 +654,32 @@
       entity_id:
       - switch.home_mqtt_morning_lights
       - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_bedroom_light
     data: {}
-  mode: single
-- id: '1755033929887'
-  alias: 'Släck utelampor efter 5 min. '
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - light.lamp_driveway
-    to: 'on'
-  - trigger: state
-    entity_id:
-    - light.lamp_garage
-    to: 'on'
-  - trigger: state
-    entity_id:
-    - light.lamp_shed
-    to: 'on'
-  - trigger: state
-    entity_id:
-    - light.lamp_woodshed
-    to: 'on'
-  conditions: []
-  actions:
+  - action: homeassistant.turn_off
+    metadata: {}
+    target:
+      entity_id: group.outdoor_lighting
+    data: {}
   - delay:
       hours: 0
-      minutes: 5
-      seconds: 0
+      minutes: 0
+      seconds: 5
       milliseconds: 0
-  - action: light.turn_off
+  - action: switch.turn_off
     metadata: {}
-    data: {}
     target:
       entity_id:
-      - light.lamp_driveway
-      - light.lamp_garage
-      - light.lamp_woodshed
-      - light.lamp_shed
-  - delay:
-      hours: 0
-      minutes: 5
-      seconds: 0
-      milliseconds: 0
-  - action: light.turn_off
-    metadata: {}
+      - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_bedroom_light
     data: {}
+  - action: homeassistant.turn_off
+    metadata: {}
     target:
-      entity_id:
-      - light.lamp_driveway
-      - light.lamp_garage
-      - light.lamp_shed
-      - light.lamp_woodshed
-  mode: single
+      entity_id: group.outdoor_lighting
+    data: {}
+  mode: restart
 - id: '1759147194593'
   alias: GitHub commits
   description: GitHub commits
@@ -858,8 +882,8 @@
     action: telegram_bot.send_message
   mode: single
 - id: '1762602864883'
-  alias: Outside
-  description: ''
+  alias: mqtt_outside_lights
+  description: mqtt_outside_lights
   triggers:
   - entity_id:
     - switch.home_mqtt_outside_lights
@@ -874,13 +898,20 @@
         - 'on'
       sequence:
       - action: homeassistant.turn_on
-        data: {}
+        metadata: {}
         target:
-          entity_id:
-          - switch.tz3000_iiacqpdz_ts011f
-          - switch.plug_q22_outside
-          - switch.plug_q21_outside_kitchen
-          - switch.plug_q20_light_shed
+          entity_id: group.outdoor_mood_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        metadata: {}
+        target:
+          entity_id: group.outdoor_mood_lights
+        data: {}
     - conditions:
       - condition: state
         state:
@@ -888,12 +919,19 @@
         entity_id: switch.home_mqtt_outside_lights
       sequence:
       - action: homeassistant.turn_off
+        metadata: {}
         target:
-          entity_id:
-          - switch.plug_q21_outside_kitchen
-          - switch.tz3000_iiacqpdz_ts011f
-          - switch.plug_q22_outside
-          - switch.plug_q20_light_shed
+          entity_id: group.outdoor_mood_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        metadata: {}
+        target:
+          entity_id: group.outdoor_mood_lights
         data: {}
   mode: single
 - id: '1762609393709'
@@ -912,25 +950,22 @@
     metadata: {}
     data: {}
     target:
-      entity_id: switch.home_mqtt_evening_lights
-  mode: single
-- id: '1763110119433'
-  alias: New automation
-  description: ''
-  triggers:
-  - device_id: 693371e4bc2605fd745df4a0c39a3da3
-    domain: zha
-    type: remote_button_short_press
-    subtype: button
-    trigger: device
-  conditions: []
-  actions:
-  - action: switch.toggle
+      entity_id:
+      - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_bedroom_light
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: homeassistant.turn_on
     metadata: {}
     data: {}
     target:
-      entity_id: switch.home_mqtt_light_button
-  mode: single
+      entity_id:
+      - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_bedroom_light
+  mode: restart
 - id: '1763451186242'
   alias: Väck Victus
   description: ''
@@ -963,8 +998,22 @@
       entity_id:
       - switch.home_mqtt_evening_lights
       - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_bedroom_light
     data: {}
-  mode: single
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id:
+      - switch.home_mqtt_evening_lights
+      - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_bedroom_light
+    data: {}
+  mode: restart
 - id: '1765895296033'
   alias: Uppdatera home_away baserat på mobiler
   description: Sätter home_away till ON om någon mobil är hemma, annars OFF
@@ -975,6 +1024,11 @@
     - binary_sensor.kjells_mobil
     - binary_sensor.ping_bettans_mobil
     trigger: state
+  - trigger: state
+    entity_id:
+    - device_tracker.bs_a23
+    - device_tracker.cyril_s_s22_ultra
+    - device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
   actions:
   - choose:
     - conditions:
@@ -988,6 +1042,18 @@
           state:
           - 'on'
           entity_id: binary_sensor.ping_bettans_mobil
+        - condition: state
+          entity_id: device_tracker.cyril_s_s22_ultra
+          state:
+          - home
+        - condition: state
+          entity_id: device_tracker.bs_a23
+          state:
+          - home
+        - condition: state
+          entity_id: device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
+          state:
+          - home
       sequence:
       - data:
           topic: home/state/home_away
@@ -1004,25 +1070,23 @@
           state:
           - 'off'
           entity_id: binary_sensor.ping_bettans_mobil
+        - condition: state
+          entity_id: device_tracker.cyril_s_s22_ultra
+          state:
+          - not_home
+        - condition: state
+          entity_id: device_tracker.bs_a23
+          state:
+          - not_home
+        - condition: state
+          entity_id: device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
+          state:
+          - not_home
       sequence:
       - data:
           topic: home/state/home_away
           payload: 'OFF'
         action: mqtt.publish
-- id: '1766320537187'
-  alias: New automation
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - number.lamp_driveway_fargtemperatur_vid_start
-  conditions: []
-  actions:
-  - action: notify.mobile_app_sm_s908b
-    metadata: {}
-    data:
-      message: Change
-  mode: single
 - id: '1768673214791'
   alias: Hemma Connected
   description: ''
@@ -1050,8 +1114,8 @@
     data: {}
   mode: single
 - id: '1768751130552'
-  alias: Bettans motorvärmare
-  description: ''
+  alias: mqtt_bettan_carheat
+  description: mqtt_bettan_carheat
   triggers:
   - entity_id:
     - switch.home_mqtt_bettan_carheat
@@ -1100,7 +1164,9 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id: switch.plug_outside_driveway
+          entity_id:
+          - switch.plug_outside_driveway
+          - switch.home_mqtt_bettan_carheat_2
       - delay:
           hours: 0
           minutes: 0
@@ -1109,7 +1175,9 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id: switch.plug_outside_driveway
+          entity_id:
+          - switch.plug_outside_driveway
+          - switch.home_mqtt_bettan_carheat_2
   mode: restart
 - id: '1769854132894'
   alias: Home/Away
@@ -1132,24 +1200,43 @@
       - condition: trigger
         id: home
       sequence:
-      - action: switch.turn_on
-        data: {}
-        target:
-          entity_id: switch.plug_q24_bed_lights
-      - action: switch.turn_off
-        metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
       - action: telegram_bot.send_message
         metadata: {}
         data:
           config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
           message: Larm Av
+      - action: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_q24_bed_lights
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_q24_bed_lights
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
     - conditions:
       - condition: trigger
         id: away
       sequence:
+      - action: telegram_bot.send_message
+        metadata: {}
+        data:
+          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
+          message: Larm På
       - action: switch.turn_off
         data: {}
         target:
@@ -1159,11 +1246,27 @@
         target:
           entity_id: switch.home_mqtt_alarm_state
         data: {}
-      - action: telegram_bot.send_message
+      - action: switch.turn_off
         metadata: {}
-        data:
-          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
-          message: Larm På
+        target:
+          entity_id:
+          - switch.home_mqtt_desktop
+          - switch.home_mqtt_xbox
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id: switch.plug_q24_bed_lights
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
       - action: switch.turn_off
         metadata: {}
         target:
@@ -1192,22 +1295,40 @@
         state: 'on'
       sequence:
       - action: homeassistant.turn_on
+        metadata: {}
         target:
-          entity_id:
-          - switch.plug_q05_kitchen_window
-          - switch.plug_q09_upper_hall
-          - switch.plug_q03_bedroom
+          entity_id: group.evening_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        metadata: {}
+        target:
+          entity_id: group.evening_lights
+        data: {}
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_evening_lights
         state: 'off'
       sequence:
       - action: homeassistant.turn_off
+        metadata: {}
         target:
-          entity_id:
-          - switch.plug_q05_kitchen_window
-          - switch.plug_q09_upper_hall
-          - switch.plug_q03_bedroom
+          entity_id: group.evening_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        metadata: {}
+        target:
+          entity_id: group.evening_lights
+        data: {}
   mode: single
 - id: '1770126253740'
   alias: Morgonlampor
@@ -1228,18 +1349,40 @@
         state: 'on'
       sequence:
       - action: homeassistant.turn_on
+        metadata: {}
         target:
-          entity_id:
-          - switch.plug_q05_kitchen_window
+          entity_id: group.morning_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        metadata: {}
+        target:
+          entity_id: group.morning_lights
+        data: {}
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_morning_lights
         state: 'off'
       sequence:
       - action: homeassistant.turn_off
+        metadata: {}
         target:
-          entity_id:
-          - switch.plug_q05_kitchen_window
+          entity_id: group.morning_lights
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        metadata: {}
+        target:
+          entity_id: group.morning_lights
+        data: {}
   mode: single
 - id: '1770127009432'
   alias: Turn on Morning lights
@@ -1263,4 +1406,83 @@
   - action: switch.turn_on
     target:
       entity_id: switch.home_mqtt_morning_lights
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: switch.turn_on
+    target:
+      entity_id: switch.home_mqtt_morning_lights
+  mode: restart
+- id: '1770194512079'
+  alias: mqtt_xbox
+  description: mqtt_xbox
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_xbox
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_xbox
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q18_xbox_brytare
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_xbox
+        state:
+        - 'off'
+      sequence:
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q18_xbox_brytare
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q18_xbox_brytare
   mode: single
+- id: '1770223922668'
+  alias: Utebelysning när det blir mörkt
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.sun_down
+    from:
+    to:
+    - 'on'
+  conditions: []
+  actions:
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: group.outdoor_lighting
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - action: homeassistant.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: group.outdoor_lighting
+  mode: restart
