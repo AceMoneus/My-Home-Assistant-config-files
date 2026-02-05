@@ -36,6 +36,7 @@ frontend:
 #####################################################
 # Includes
 automation: !include automations.yaml
+group: !include .includes/group.yaml
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
