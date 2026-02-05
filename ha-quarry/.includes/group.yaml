@@ -1,0 +1,6 @@
+garmin_controls:
+  name: Garmin Controls
+  entities:
+    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_bettan_carheat_2
+    - switch.home_mqtt_alarm_state
