@@ -1118,7 +1118,7 @@
   description: mqtt_bettan_carheat
   triggers:
   - entity_id:
-    - switch.home_mqtt_bettan_carheat
+    - switch.home_mqtt_bettan_carheat2
     trigger: state
   conditions: []
   actions:
@@ -1142,7 +1142,7 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat
+          - switch.home_mqtt_bettan_carheat2
         data: {}
       - delay:
           hours: 0
@@ -1153,7 +1153,7 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat
+          - switch.home_mqtt_bettan_carheat2
         data: {}
     - conditions:
       - condition: state
@@ -1166,7 +1166,7 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat_2
+          - switch.home_mqtt_bettan_carheat2
       - delay:
           hours: 0
           minutes: 0
@@ -1177,7 +1177,7 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat_2
+          - switch.home_mqtt_bettan_carheat2
   mode: restart
 - id: '1769854132894'
   alias: Home/Away

@@ -3,7 +3,6 @@ morning_lights:
   icon: mdi:lightbulb-group
   entities:
     - switch.plug_q05_kitchen_window
-    - switch.plug_q09_upper_hall
 
 evening_lights:
   name: Kvällslampor
