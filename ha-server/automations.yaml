@@ -346,7 +346,7 @@
         data: {}
         target:
           entity_id: automation.office_light_off
-  mode: single
+  mode: restart
 - id: '1744619970068'
   alias: mqtt_bedroom_light
   description: mqtt_bedroom_light
@@ -399,7 +399,7 @@
         target:
           entity_id:
           - switch.plug_q03_bedroom
-  mode: single
+  mode: restart
 - id: '1745215029019'
   alias: Set Values at HA Start
   description: ''
@@ -933,7 +933,7 @@
         target:
           entity_id: group.outdoor_mood_lights
         data: {}
-  mode: single
+  mode: restart
 - id: '1762609393709'
   alias: Tänd lampor när det blir mörkt
   description: ''
@@ -1125,7 +1125,7 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_bettan_carheat
+        entity_id: switch.home_mqtt_bettan_carheat2
         state:
         - 'on'
       sequence:
@@ -1157,7 +1157,7 @@
         data: {}
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_bettan_carheat
+        entity_id: switch.home_mqtt_bettan_carheat2
         state:
         - 'off'
       sequence:
@@ -1329,7 +1329,7 @@
         target:
           entity_id: group.evening_lights
         data: {}
-  mode: single
+  mode: restart
 - id: '1770126253740'
   alias: Morgonlampor
   description: Morgonlampor
@@ -1383,7 +1383,7 @@
         target:
           entity_id: group.morning_lights
         data: {}
-  mode: single
+  mode: restart
 - id: '1770127009432'
   alias: Turn on Morning lights
   description: ''
@@ -1457,7 +1457,7 @@
         target:
           entity_id:
           - switch.plug_q18_xbox_brytare
-  mode: single
+  mode: restart
 - id: '1770223922668'
   alias: Utebelysning när det blir mörkt
   description: ''
