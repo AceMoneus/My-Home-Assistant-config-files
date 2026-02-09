@@ -36,12 +36,13 @@ frontend:
 #####################################################
 # Includes
 automation: !include automations.yaml
-scene: !include .includes/scene.yaml
-mqtt: !include .includes/mqtt.yaml
-template: !include .includes/template.yaml
+group: !include .includes/group.yaml
+mqtt:
+  switch: !include_dir_merge_list .includes/mqtt/switch
+  sensor: !include_dir_merge_list .includes/mqtt/sensor
+  binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor
 sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml
-binary_sensor: !include .includes/binary_sensor.yaml
-input_number: !include .includes/input_number.yaml
+template: !include .includes/template.yaml
 utility_meter: !include .includes/utility_meter.yaml
 

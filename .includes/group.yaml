@@ -1,0 +1,32 @@
+morning_lights:
+  name: Morgonlampor
+  icon: mdi:lightbulb-group
+  entities:
+    - switch.plug_q05_kitchen_window
+
+evening_lights:
+  name: Kvällslampor
+  icon: mdi:lightbulb-group
+  entities:
+    - switch.plug_q05_kitchen_window
+    - switch.plug_q09_upper_hall
+    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_morning_lights
+
+outdoor_mood_lights:
+  name: UteMyslampor
+  icon: mdi:lightbulb-group
+  entities:
+    - switch.tz3000_iiacqpdz_ts011f
+    - switch.plug_q22_outside
+    - switch.plug_q21_outside_kitchen
+    - switch.plug_q20_light_shed
+
+outdoor_lighting:
+  name: Utebelysning
+  icon: mdi:lightbulb-group
+  entities:
+    - light.lamp_driveway
+    - light.lamp_garage
+    - light.lamp_woodshed
+    - light.lamp_shed

@@ -1,0 +1,107 @@
+#######################################################
+# Configuration for ESP32-S3-Relay-1CH
+# https://www.waveshare.com/wiki/ESP32-S3-Relay-1CH
+#######################################################
+substitutions:
+  device_name: esphome-modbus-1
+  friendly_name: "ESPHome Modbus 1"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
+
+packages:
+  network: !include common/network.yaml
+  system: !include common/system.yaml
+  firmware: !include common/firmware.yaml
+#######################################################
+# GLOBALS
+globals:
+  - id: fw_version
+    type: std::string
+    restore_value: no
+    initial_value: "\"v1.4\""
+#######################################################
+
+uart:
+  id: rs485_uart
+  tx_pin: GPIO17
+  rx_pin: GPIO18
+  baud_rate: 19200
+  parity: EVEN
+  stop_bits: 1
+
+modbus:
+  id: modbus_hub
+  uart_id: rs485_uart
+
+modbus_controller:
+  - id: ecl_controller
+    address: 0x01
+    modbus_id: modbus_hub
+    update_interval: 10s
+
+sensor:
+  - platform: modbus_controller
+    modbus_controller_id: ecl_controller
+    name: "Outdoor temperature"
+    id: outdoor_temp
+    register_type: holding
+    address: 11200
+    value_type: S_WORD
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+      - or:
+        - lambda: 'return (x == 192.0) ? NAN : x;'
+  - platform: modbus_controller
+    modbus_controller_id: ecl_controller
+    name: "Supply temperature"
+    id: supply_temp
+    register_type: holding
+    address: 11202
+    value_type: S_WORD
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+      - or:
+        - lambda: 'return (x == 192.0) ? NAN : x;'
+  - platform: modbus_controller
+    modbus_controller_id: ecl_controller
+    name: "Return temperature"
+    id: return_temp
+    register_type: holding
+    address: 11203
+    value_type: S_WORD
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+      - or:
+        - lambda: 'return (x == 192.0) ? NAN : x;'
+  - platform: modbus_controller
+    modbus_controller_id: ecl_controller
+    name: "Requested room temperature"
+    id: desired_room_temp
+    register_type: holding
+    address: 11179
+    value_type: S_WORD
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+#  - platform: modbus_controller
+#    modbus_controller_id: ecl_controller
+#    name: "Room temperature"
+#    id: room_temp
+#    register_type: holding
+#    address: 11201
+#    value_type: S_WORD
+#    unit_of_measurement: "°C"
+#    filters:
+#      - multiply: 0.1
+#      - or:
+#        - lambda: 'return (x == 192.0) ? NAN : x;'
