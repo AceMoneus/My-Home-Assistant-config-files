@@ -659,7 +659,8 @@
   - action: homeassistant.turn_off
     metadata: {}
     target:
-      entity_id: group.outdoor_lighting
+      entity_id:
+      - switch.home_mqtt_outside_lights
     data: {}
   - delay:
       hours: 0
@@ -677,7 +678,8 @@
   - action: homeassistant.turn_off
     metadata: {}
     target:
-      entity_id: group.outdoor_lighting
+      entity_id:
+      - switch.home_mqtt_outside_lights
     data: {}
   mode: restart
 - id: '1759147194593'
