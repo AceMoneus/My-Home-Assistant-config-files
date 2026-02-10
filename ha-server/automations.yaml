@@ -658,10 +658,11 @@
     data: {}
   - action: homeassistant.turn_off
     metadata: {}
+    data: {}
     target:
       entity_id:
-      - switch.home_mqtt_outside_lights
-    data: {}
+      - switch.home_mqtt_outside_mood_lights
+      - switch.home_mqtt_outside_lighting
   - delay:
       hours: 0
       minutes: 0
@@ -677,10 +678,11 @@
     data: {}
   - action: homeassistant.turn_off
     metadata: {}
+    data: {}
     target:
       entity_id:
-      - switch.home_mqtt_outside_lights
-    data: {}
+      - switch.home_mqtt_outside_mood_lights
+      - switch.home_mqtt_outside_lighting
   mode: restart
 - id: '1759147194593'
   alias: GitHub commits
@@ -884,18 +886,18 @@
     action: telegram_bot.send_message
   mode: single
 - id: '1762602864883'
-  alias: mqtt_outside_lights
-  description: mqtt_outside_lights
+  alias: mqtt_outside_mood_lights
+  description: mqtt_outside_mood_lights
   triggers:
   - entity_id:
-    - switch.home_mqtt_outside_lights
+    - switch.home_mqtt_outside_mood_lights
     trigger: state
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_outside_lights
+        entity_id: switch.home_mqtt_outside_mood_lights
         state:
         - 'on'
       sequence:
@@ -918,7 +920,7 @@
       - condition: state
         state:
         - 'off'
-        entity_id: switch.home_mqtt_outside_lights
+        entity_id: switch.home_mqtt_outside_mood_lights
       sequence:
       - action: homeassistant.turn_off
         metadata: {}
@@ -955,6 +957,8 @@
       entity_id:
       - switch.home_mqtt_evening_lights
       - switch.home_mqtt_bedroom_light
+      - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_outside_mood_lights
   - delay:
       hours: 0
       minutes: 0
@@ -967,6 +971,8 @@
       entity_id:
       - switch.home_mqtt_evening_lights
       - switch.home_mqtt_bedroom_light
+      - switch.home_mqtt_morning_lights
+      - switch.home_mqtt_outside_mood_lights
   mode: restart
 - id: '1763451186242'
   alias: Väck Victus
@@ -1460,31 +1466,57 @@
           entity_id:
           - switch.plug_q18_xbox_brytare
   mode: restart
-- id: '1770223922668'
-  alias: Utebelysning när det blir mörkt
-  description: ''
+- id: '1770659739460'
+  alias: mqtt_outside_lighting
+  description: mqtt_outside_lighting
   triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.sun_down
-    from:
-    to:
-    - 'on'
+  - entity_id:
+    - switch.home_mqtt_outside_lighting
+    trigger: state
   conditions: []
   actions:
-  - action: homeassistant.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: group.outdoor_lighting
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: homeassistant.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: group.outdoor_lighting
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_outside_lighting
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        metadata: {}
+        target:
+          entity_id:
+          - group.outdoor_lighting
+        data: {}
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: group.outdoor_lighting
+    - conditions:
+      - condition: state
+        state:
+        - 'off'
+        entity_id: switch.home_mqtt_outside_lighting
+      sequence:
+      - action: homeassistant.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: group.outdoor_lighting
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: group.outdoor_lighting
   mode: restart
