@@ -34,11 +34,18 @@
   optimistic: false
   qos: 2
   retain: true
-- name: home_mqtt_outside_lights
-  unique_id: home_mqtt_outside_lights 
-  command_topic: "home/switch/outside_lights"
-  state_topic: "home/switch/outside_lights"
-  payload_on: "ON"
+- name: home_mqtt_outside_mood_lights
+  unique_id: home_mqtt_outside_mood_lights
+  command_topic: "home/switch/outside_mood_lights"
+  state_topic: "home/switch/outside_mood_lights"
+  payload_off: "OFF"
+  optimistic: false
+  qos: 2
+  retain: true
+- name: home_mqtt_outside_lighting
+  unique_id: home_mqtt_outside_lighting
+  command_topic: "home/switch/outside_lighting"
+  state_topic: "home/switch/outside_lighting"
   payload_off: "OFF"
   optimistic: false
   qos: 2
