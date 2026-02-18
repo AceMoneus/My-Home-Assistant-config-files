@@ -338,6 +338,7 @@
       - 581f1029f083c2080c0473d9474f765c
       - 3c603425ec80b6c20b9305731f00c441
       - 5b19d1ce1b19a015b80485d12cb2f3b7
+      entity_id: switch.plug13
     action: homeassistant.turn_on
   mode: single
 - id: '1697571878770'
@@ -353,6 +354,7 @@
       device_id:
       - 581f1029f083c2080c0473d9474f765c
       - 5b19d1ce1b19a015b80485d12cb2f3b7
+      entity_id: switch.plug13
     action: homeassistant.turn_off
   mode: single
 - id: '1698688508680'
@@ -370,6 +372,7 @@
       entity_id:
       - switch.plug_outside_1_switch
       - switch.silver_1_hall_switch
+      - switch.plug13
       device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
     action: homeassistant.turn_off
   mode: single
