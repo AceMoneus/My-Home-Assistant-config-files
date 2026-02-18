@@ -1174,7 +1174,6 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat2
       - delay:
           hours: 0
           minutes: 0
@@ -1185,7 +1184,6 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat2
   mode: restart
 - id: '1769854132894'
   alias: Home/Away
