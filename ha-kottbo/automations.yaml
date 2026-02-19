@@ -287,23 +287,24 @@
 - id: '1679756929851'
   alias: Auto - Bathroom Heat Fan - OFF 15 min
   description: ''
-  trigger:
-  - platform: device
-    type: turned_on
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
-  condition: []
-  action:
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.plug_bathroom_heat
+    to:
+    - 'on'
+  conditions: []
+  actions:
   - delay:
       hours: 0
       minutes: 15
       seconds: 0
       milliseconds: 0
-  - type: turn_off
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
 - id: '1682782508740'
   alias: Telegram - kök över -5
@@ -440,22 +441,23 @@
 - id: '1707382797030'
   alias: Auto - Bathroom Heat Fan - OFF 20 min
   description: ''
-  trigger:
-  - platform: device
-    type: turned_on
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
+  triggers:
+  - trigger: state
+    entity_id:
+    - switch.plug_bathroom_heat
+    to:
+    - 'on'
     for:
       hours: 0
       minutes: 20
       seconds: 0
-  condition: []
-  action:
-  - type: turn_off
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
+  conditions: []
+  actions:
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
 - id: '1711699263720'
   alias: Fläkt badrum 60%
@@ -512,28 +514,29 @@
 - id: '1727098712935'
   alias: Button - Bathroom Heat ON
   description: ''
-  trigger:
+  triggers:
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: button_1
+    trigger: device
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_double_press
     subtype: button_1
+    trigger: device
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_long_press
     subtype: button_1
-  condition: []
-  action:
-  - type: toggle
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
+    trigger: device
+  conditions: []
+  actions:
+  - action: switch.toggle
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
 - id: '1727098782425'
   alias: Button - Shower Fan ON
@@ -564,32 +567,33 @@
 - id: '1727098850376'
   alias: Button - Bathroom Fans OFF
   description: ''
-  trigger:
+  triggers:
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_short_press
     subtype: both_buttons
+    trigger: device
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_double_press
     subtype: both_buttons
+    trigger: device
   - device_id: 007697a642cf1ede749051acf25b8174
     domain: zha
-    platform: device
     type: remote_button_long_press
     subtype: both_buttons
-  condition: []
-  action:
+    trigger: device
+  conditions: []
+  actions:
   - type: turn_off
     device_id: fb56394856ae26ac1579b07640e92d16
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
     domain: switch
-  - type: turn_off
-    device_id: a75a12f213bf4c57d3edb6d381b3f360
-    entity_id: fda237c86c0caf227302187483084202
-    domain: switch
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
 - id: '1727255982082'
   alias: Shower Fan at 05:00
