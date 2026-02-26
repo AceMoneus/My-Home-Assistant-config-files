@@ -2,18 +2,6 @@
 #####################################################
 # HA config
 default_config:
-homeassistant:
-  auth_providers:
-    - type: homeassistant
-    - type: trusted_networks
-      trusted_networks:
-        - 192.168.2.0/24
-        - 192.168.3.0/24
-        - 172.27.0.0/16
-  external_url: !secret external_url
-  internal_url: !secret internal_url
-  allowlist_external_dirs:
-    - "/config/www/"
 
 #####################################################
 # ssl etc...
@@ -32,6 +20,8 @@ remote_homeassistant:
 # Includes
 automation: !include automations.yaml
 command_line: !include .includes/command_line.yaml
+homeassistant: !include .includes/homeassistant.yaml
+influxdb: !include .includes/influxdb.yaml
 mqtt: !include .includes/mqtt.yaml
 sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml

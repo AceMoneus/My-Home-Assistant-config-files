@@ -1,0 +1,15 @@
+media_dirs: 
+  media: /config/www/media
+auth_providers:
+  - type: homeassistant
+  - type: trusted_networks
+    trusted_networks:
+      - !secret trusted_network_1
+      - !secret trusted_network_2
+      - !secret trusted_network_3
+      - !secret trusted_network_4
+external_url: !secret external_url
+internal_url: !secret internal_url
+allowlist_external_dirs:
+  - /config/www/
+  - /config/www/media/
