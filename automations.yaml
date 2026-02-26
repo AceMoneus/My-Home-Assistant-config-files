@@ -1051,10 +1051,6 @@
           - 'on'
           entity_id: binary_sensor.ping_bettans_mobil
         - condition: state
-          entity_id: device_tracker.cyril_s_s22_ultra
-          state:
-          - home
-        - condition: state
           entity_id: device_tracker.bs_a23
           state:
           - home
@@ -1078,10 +1074,6 @@
           state:
           - 'off'
           entity_id: binary_sensor.ping_bettans_mobil
-        - condition: state
-          entity_id: device_tracker.cyril_s_s22_ultra
-          state:
-          - not_home
         - condition: state
           entity_id: device_tracker.bs_a23
           state:
@@ -1174,7 +1166,6 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat2
       - delay:
           hours: 0
           minutes: 0
@@ -1185,7 +1176,6 @@
         target:
           entity_id:
           - switch.plug_outside_driveway
-          - switch.home_mqtt_bettan_carheat2
   mode: restart
 - id: '1769854132894'
   alias: Home/Away
