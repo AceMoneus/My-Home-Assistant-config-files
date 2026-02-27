@@ -1,0 +1,62 @@
+- sensor:
+    - name: "telemetry_temperature_inhouse"
+      unique_id: "telemetry_temperature_inhouse"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: "{{ states('sensor.temp_livingroom_temperature_2') }}"
+
+    - name: "telemetry_humidity_inhouse"
+      unique_id: "telemetry_humidity_inhouse"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: "{{ states('sensor.temp_livingroom_humidity_2') }}"
+
+    - name: "telemetry_temperature_outside"
+      unique_id: "telemetry_temperature_outside"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: "{{ states('sensor.temp_outside_temperatur') }}"
+
+    - name: "telemetry_humidity_outside"
+      unique_id: "telemetry_humidity_outside"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: "{{ states('sensor.temp_outside_luftfuktighet') }}"
+
+    - name: "telemetry_energy_delivered"
+      unique_id: "telemetry_energy_delivered"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state: "{{ states('sensor.frient_energy_summering_av_leverans') }}"
+
+    - name: "telemetry_energy_received"
+      unique_id: "telemetry_energy_received"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state: "{{ states('sensor.frient_energy_summering_mottagen') }}"
+
+    - name: "telemetry_total_power"
+      unique_id: "telemetry_total_power"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_total_effekt') }}"
+
+    - name: "telemetry_power_l1"
+      unique_id: "telemetry_power_l1"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_effekt_fas_a') }}"
+
+    - name: "telemetry_power_l2"
+      unique_id: "telemetry_power_l2"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_effekt_fas_b') }}"
+
+    - name: "telemetry_power_l3"
+      unique_id: "telemetry_power_l3"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_effekt_fas_c') }}"
+
+
