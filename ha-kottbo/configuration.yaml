@@ -4,14 +4,6 @@
 default_config:
 
 #####################################################
-# ssl etc...
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-  - 172.30.33.0/24
-  - 172.27.55.0/24
-
-#####################################################
 # HACS Remote Home-Assistant
 remote_homeassistant:
   instances:
@@ -21,8 +13,9 @@ remote_homeassistant:
 automation: !include automations.yaml
 command_line: !include .includes/command_line.yaml
 homeassistant: !include .includes/homeassistant.yaml
+http: !include .includes/http.yaml
 influxdb: !include .includes/influxdb.yaml
 mqtt: !include .includes/mqtt.yaml
 sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml
-template: !include .includes/template.yaml
+template: !include_dir_merge_list .includes/templates/
