@@ -1,0 +1,13 @@
+host: !secret influx_host
+port: 8086
+database: !secret influx_db
+username: !secret influx_user
+password: !secret influx_password
+max_retries: 3
+default_measurement: state
+tags:
+  site: !secret influx_site
+
+#include:
+#  entities:
+#    - sensor.temp_basement_luftfuktighet

@@ -1,32 +1,8 @@
 #####################################################
 # Loads default set of integrations.
 default_config:
-homeassistant:
-  media_dirs: 
-    media: /config/www/media
-  auth_providers:
-    - type: homeassistant
-    - type: trusted_networks
-      trusted_networks:
-        - !secret trusted_network_1
-        - !secret trusted_network_2
-        - !secret trusted_network_3
-        - !secret trusted_network_4
-  external_url: !secret external_url
-  internal_url: !secret internal_url
-  allowlist_external_dirs:
-    - /config/www/
-    - /config/www/media/
-
 logger:
   default: info
-
-#####################################################
-# ssl etc...
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-  - 172.30.33.0/24
 
 #####################################################
 # Load frontend themes from the themes folder
@@ -37,6 +13,9 @@ frontend:
 # Includes
 automation: !include automations.yaml
 group: !include .includes/group.yaml
+homeassistant: !include .includes/homeassistant.yaml
+http: !include .includes/http.yaml
+influxdb: !include .includes/influxdb.yaml
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
@@ -45,4 +24,3 @@ sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml
 template: !include .includes/template.yaml
 utility_meter: !include .includes/utility_meter.yaml
-
