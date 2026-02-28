@@ -1,0 +1,61 @@
+- sensor:
+    - name: "telemetry_temperature_inhouse"
+      unique_id: "telemetry_temperature_inhouse"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: "{{ states('ssensor.temp_livingroom_temperatur') }}"
+
+    - name: "telemetry_humidity_inhouse"
+      unique_id: "telemetry_humidity_inhouse"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: "{{ states('sensor.temp_livingroom_luftfuktighet') }}"
+
+    - name: "telemetry_temperature_outside"
+      unique_id: "telemetry_temperature_outside"
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state: "{{ states('sensor.temp_outside_driveway_temperatur') }}"
+
+    - name: "telemetry_humidity_outside"
+      unique_id: "telemetry_humidity_outside"
+      unit_of_measurement: "%"
+      device_class: humidity
+      state: "{{ states('sensor.temp_outside_driveway_luftfuktighet') }}"
+
+    - name: "telemetry_total_power"
+      unique_id: "telemetry_total_power"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_total_effekt') }}"
+
+    - name: "telemetry_power_l1"
+      unique_id: "telemetry_power_l1"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_effekt') }}"
+
+    - name: "telemetry_power_l2"
+      unique_id: "telemetry_power_l2"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_effekt_fas_b') }}"
+
+    - name: "telemetry_power_l3"
+      unique_id: "telemetry_power_l3"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_effekt_fas_c') }}"
+
+    - name: "telemetry_energy_imported"
+      unique_id: "telemetry_energy_imported"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_summering_av_leverans') }}"
+
+    - name: "telemetry_energy_exported"
+      unique_id: "telemetry_energy_exported"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_electricity_summering_mottagen') }}"
+
