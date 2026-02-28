@@ -3,13 +3,13 @@
       unique_id: "telemetry_temperature_inhouse"
       unit_of_measurement: "°C"
       device_class: temperature
-      state: "{{ states('sensor.temp_livingroom_temperature_2') }}"
+      state: "{{ states('sensor.temp_kitchen_temperature') }}"
 
     - name: "telemetry_humidity_inhouse"
       unique_id: "telemetry_humidity_inhouse"
       unit_of_measurement: "%"
       device_class: humidity
-      state: "{{ states('sensor.temp_livingroom_humidity_2') }}"
+      state: "{{ states('sensor.temp_kitchen_humidity') }}"
 
     - name: "telemetry_temperature_outside"
       unique_id: "telemetry_temperature_outside"
@@ -22,18 +22,6 @@
       unit_of_measurement: "%"
       device_class: humidity
       state: "{{ states('sensor.temp_outside_luftfuktighet') }}"
-
-    - name: "telemetry_energy_delivered"
-      unique_id: "telemetry_energy_delivered"
-      unit_of_measurement: "kWh"
-      device_class: energy
-      state: "{{ states('sensor.frient_energy_summering_av_leverans') }}"
-
-    - name: "telemetry_energy_received"
-      unique_id: "telemetry_energy_received"
-      unit_of_measurement: "kWh"
-      device_class: energy
-      state: "{{ states('sensor.frient_energy_summering_mottagen') }}"
 
     - name: "telemetry_total_power"
       unique_id: "telemetry_total_power"
@@ -59,4 +47,14 @@
       device_class: power
       state: "{{ states('sensor.frient_energy_effekt_fas_c') }}"
 
+    - name: "telemetry_energy_imported"
+      unique_id: "telemetry_energy_imported"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_summering_av_leverans') }}"
 
+    - name: "telemetry_energy_exported"
+      unique_id: "telemetry_energy_exported"
+      unit_of_measurement: "W"
+      device_class: power
+      state: "{{ states('sensor.frient_energy_summering_mottagen') }}"
