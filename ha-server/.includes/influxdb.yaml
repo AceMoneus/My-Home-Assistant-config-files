@@ -8,6 +8,15 @@ default_measurement: state
 tags:
   site: !secret influx_site
 
-#include:
-#  entities:
-#    - sensor.temp_basement_luftfuktighet
+include:
+  entities:
+    - sensor.telemetry_temperature_inhouse
+    - sensor.telemetry_humidity_inhouse
+    - sensor.telemetry_temperature_outside
+    - sensor.telemetry_humidity_outside
+    - sensor.telemetry_total_power
+    - sensor.telemetry_power_l1
+    - sensor.telemetry_power_l2
+    - sensor.telemetry_power_l3
+    - sensor.telemetry_energy_imported
+    - sensor.telemetry_energy_exported
