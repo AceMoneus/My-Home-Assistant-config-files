@@ -1028,14 +1028,11 @@
   triggers:
   - minutes: /1
     trigger: time_pattern
-  - entity_id:
-    - binary_sensor.kjells_mobil
-    - binary_sensor.ping_bettans_mobil
-    trigger: state
   - trigger: state
     entity_id:
+    - binary_sensor.ping_bettans_mobil
+    - binary_sensor.192_168_2_203
     - device_tracker.bs_a23
-    - device_tracker.cyril_s_s22_ultra
     - device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
   actions:
   - choose:
@@ -1045,7 +1042,7 @@
         - condition: state
           state:
           - 'on'
-          entity_id: binary_sensor.kjells_mobil
+          entity_id: binary_sensor.192_168_2_203
         - condition: state
           state:
           - 'on'
@@ -1069,7 +1066,7 @@
         - condition: state
           state:
           - 'off'
-          entity_id: binary_sensor.kjells_mobil
+          entity_id: binary_sensor.192_168_2_203
         - condition: state
           state:
           - 'off'
@@ -1088,7 +1085,7 @@
           payload: 'OFF'
         action: mqtt.publish
 - id: '1768673214791'
-  alias: Hemma Connected
+  alias: WAF Connected
   description: ''
   triggers:
   - type: connected
