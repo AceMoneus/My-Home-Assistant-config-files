@@ -6,6 +6,7 @@ password: !secret influx_password
 max_retries: 3
 default_measurement: state
 tags:
+  entity_id: true
   site: !secret influx_site
 
 include:
