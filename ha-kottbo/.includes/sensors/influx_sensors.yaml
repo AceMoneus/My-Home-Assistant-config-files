@@ -1,0 +1,233 @@
+###############################
+# Indoor climate
+###############################
+- platform: statistics
+  name: influx_stats_temperature_inhouse
+  entity_id: sensor.temp_kitchen_temperature
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_humidity_inhouse
+  entity_id: sensor.temp_kitchen_humidity
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Outdoor climate
+###############################
+- platform: statistics
+  name: influx_stats_temperature_outside
+  entity_id: sensor.temp_outside_temperatur
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_humidity_outside
+  entity_id: sensor.temp_outside_luftfuktighet
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Basement
+###############################
+- platform: statistics
+  name: influx_stats_basement_temperature
+  entity_id: sensor.temp_basement_temperatur
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_basement_humidity
+  entity_id: sensor.temp_basement_luftfuktighet
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Bedroom
+###############################
+- platform: statistics
+  name: influx_stats_bedroom_temperature
+  entity_id: sensor.temp_bedroom_temperatur
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_bedroom_humidity
+  entity_id: sensor.temp_bedroom_luftfuktighet
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Attic
+###############################
+- platform: statistics
+  name: influx_stats_attic_temperature
+  entity_id: sensor.temp_attic_temperatur
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_attic_humidity
+  entity_id: sensor.temp_attic_luftfuktighet
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Ground – Dry side
+###############################
+- platform: statistics
+  name: influx_stats_ground_dry_side_temperature
+  entity_id: sensor.ground_dry_side_temperature
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_ground_dry_side_humidity
+  entity_id: sensor.ground_dry_side_humidity
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Ground – Wet side
+###############################
+- platform: statistics
+  name: influx_stats_ground_wet_side_temperature
+  entity_id: sensor.ground_wet_side_temperature
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_ground_wet_side_humidity
+  entity_id: sensor.ground_wet_side_humidity
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+
+###############################
+# Power – Total
+###############################
+- platform: statistics
+  name: influx_stats_total_power
+  entity_id: sensor.frient_energy_total_effekt
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_total_power_min
+  entity_id: sensor.frient_energy_total_effekt
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_total_power_max
+  entity_id: sensor.frient_energy_total_effekt
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+
+
+###############################
+# Power – L1
+###############################
+- platform: statistics
+  name: influx_stats_power_l1
+  entity_id: sensor.frient_energy_effekt_fas_a
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l1_min
+  entity_id: sensor.frient_energy_effekt_fas_a
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l1_max
+  entity_id: sensor.frient_energy_effekt_fas_a
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+
+
+###############################
+# Power – L2
+###############################
+- platform: statistics
+  name: influx_stats_power_l2
+  entity_id: sensor.frient_energy_effekt_fas_b
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l2_min
+  entity_id: sensor.frient_energy_effekt_fas_b
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l2_max
+  entity_id: sensor.frient_energy_effekt_fas_b
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+
+
+###############################
+# Power – L3
+###############################
+- platform: statistics
+  name: influx_stats_power_l3
+  entity_id: sensor.frient_energy_effekt_fas_c
+  state_characteristic: mean
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l3_min
+  entity_id: sensor.frient_energy_effekt_fas_c
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+
+- platform: statistics
+  name: influx_stats_power_l3_max
+  entity_id: sensor.frient_energy_effekt_fas_c
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+
+
+###############################
+# Energy – hourly (utility meter)
+###############################
+utility_meter:
+  influx_energy_imported_hourly:
+    source: sensor.frient_energy_summering_av_leverans
+    cycle: hourly

@@ -1,0 +1,231 @@
+template:
+  - trigger:
+      - platform: time_pattern
+        minutes: "5"
+
+    sensor:
+
+      #############################
+      # Indoor climate
+      #############################
+      - name: influx_telemetry_temperature_inhouse
+        unique_id: influx_telemetry_temperature_inhouse
+        state: "{{ states('sensor.influx_stats_temperature_inhouse') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_humidity_inhouse
+        unique_id: influx_telemetry_humidity_inhouse
+        state: "{{ states('sensor.influx_stats_humidity_inhouse') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Outdoor climate
+      #############################
+      - name: influx_telemetry_temperature_outside
+        unique_id: influx_telemetry_temperature_outside
+        state: "{{ states('sensor.influx_stats_temperature_outside') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_humidity_outside
+        unique_id: influx_telemetry_humidity_outside
+        state: "{{ states('sensor.influx_stats_humidity_outside') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Basement
+      #############################
+      - name: influx_telemetry_basement_temperature
+        unique_id: influx_telemetry_basement_temperature
+        state: "{{ states('sensor.influx_stats_basement_temperature') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_basement_humidity
+        unique_id: influx_telemetry_basement_humidity
+        state: "{{ states('sensor.influx_stats_basement_humidity') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Bedroom
+      #############################
+      - name: influx_telemetry_bedroom_temperature
+        unique_id: influx_telemetry_bedroom_temperature
+        state: "{{ states('sensor.influx_stats_bedroom_temperature') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_bedroom_humidity
+        unique_id: influx_telemetry_bedroom_humidity
+        state: "{{ states('sensor.influx_stats_bedroom_humidity') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Attic
+      #############################
+      - name: influx_telemetry_attic_temperature
+        unique_id: influx_telemetry_attic_temperature
+        state: "{{ states('sensor.influx_stats_attic_temperature') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_attic_humidity
+        unique_id: influx_telemetry_attic_humidity
+        state: "{{ states('sensor.influx_stats_attic_humidity') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Ground – Dry side
+      #############################
+      - name: influx_telemetry_ground_dry_side_temperature
+        unique_id: influx_telemetry_ground_dry_side_temperature
+        state: "{{ states('sensor.influx_stats_ground_dry_side_temperature') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_ground_dry_side_humidity
+        unique_id: influx_telemetry_ground_dry_side_humidity
+        state: "{{ states('sensor.influx_stats_ground_dry_side_humidity') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Ground – Wet side
+      #############################
+      - name: influx_telemetry_ground_wet_side_temperature
+        unique_id: influx_telemetry_ground_wet_side_temperature
+        state: "{{ states('sensor.influx_stats_ground_wet_side_temperature') | float(default=0) | round(1) }}"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+
+      - name: influx_telemetry_ground_wet_side_humidity
+        unique_id: influx_telemetry_ground_wet_side_humidity
+        state: "{{ states('sensor.influx_stats_ground_wet_side_humidity') | float(default=0) | round(0) }}"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+      #############################
+      # Power – Total
+      #############################
+      - name: influx_telemetry_total_power_mean
+        unique_id: influx_telemetry_total_power_mean
+        state: "{{ states('sensor.influx_stats_total_power') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_total_power_min
+        unique_id: influx_telemetry_total_power_min
+        state: "{{ states('sensor.influx_stats_total_power_min') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_total_power_max
+        unique_id: influx_telemetry_total_power_max
+        state: "{{ states('sensor.influx_stats_total_power_max') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      #############################
+      # Power – L1
+      #############################
+      - name: influx_telemetry_power_l1_mean
+        unique_id: influx_telemetry_power_l1_mean
+        state: "{{ states('sensor.influx_stats_power_l1') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l1_min
+        unique_id: influx_telemetry_power_l1_min
+        state: "{{ states('sensor.influx_stats_power_l1_min') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l1_max
+        unique_id: influx_telemetry_power_l1_max
+        state: "{{ states('sensor.influx_stats_power_l1_max') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      #############################
+      # Power – L2
+      #############################
+      - name: influx_telemetry_power_l2_mean
+        unique_id: influx_telemetry_power_l2_mean
+        state: "{{ states('sensor.influx_stats_power_l2') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l2_min
+        unique_id: influx_telemetry_power_l2_min
+        state: "{{ states('sensor.influx_stats_power_l2_min') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l2_max
+        unique_id: influx_telemetry_power_l2_max
+        state: "{{ states('sensor.influx_stats_power_l2_max') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      #############################
+      # Power – L3
+      #############################
+      - name: influx_telemetry_power_l3_mean
+        unique_id: influx_telemetry_power_l3_mean
+        state: "{{ states('sensor.influx_stats_power_l3') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l3_min
+        unique_id: influx_telemetry_power_l3_min
+        state: "{{ states('sensor.influx_stats_power_l3_min') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      - name: influx_telemetry_power_l3_max
+        unique_id: influx_telemetry_power_l3_max
+        state: "{{ states('sensor.influx_stats_power_l3_max') | float(default=0) | round(0) }}"
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+
+      #############################
+      # Energy Consumption (hourly)
+      #############################
+      - name: influx_telemetry_energy_imported
+        unique_id: influx_telemetry_energy_imported
+        state: "{{ states('sensor.influx_energy_imported_hourly') | float(default=0) | round(3) }}"
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: total
