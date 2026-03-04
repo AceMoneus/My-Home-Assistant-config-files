@@ -8,15 +8,89 @@ default_measurement: state
 tags:
   site: !secret influx_site
 
-include:
-  entities:
-    - sensor.telemetry_temperature_inhouse
-    - sensor.telemetry_humidity_inhouse
-    - sensor.telemetry_temperature_outside
-    - sensor.telemetry_humidity_outside
-    - sensor.telemetry_total_power
-    - sensor.telemetry_power_l1
-    - sensor.telemetry_power_l2
-    - sensor.telemetry_power_l3
-    - sensor.telemetry_energy_imported
-    - sensor.telemetry_energy_exported
+influxdb:
+  host: !secret influxdb_host
+  port: 8086
+  database: homeassistant
+  username: !secret influxdb_user
+  password: !secret influxdb_password
+  max_retries: 3
+  default_measurement: state
+
+  include:
+    entities:
+
+      #############################
+      # Indoor climate
+      #############################
+      - sensor.influx_telemetry_temperature_inhouse
+      - sensor.influx_telemetry_humidity_inhouse
+
+      #############################
+      # Outdoor climate
+      #############################
+      - sensor.influx_telemetry_temperature_outside
+      - sensor.influx_telemetry_humidity_outside
+
+      #############################
+      # Basement
+      #############################
+      - sensor.influx_telemetry_basement_temperature
+      - sensor.influx_telemetry_basement_humidity
+
+      #############################
+      # Bedroom
+      #############################
+      - sensor.influx_telemetry_bedroom_temperature
+      - sensor.influx_telemetry_bedroom_humidity
+
+      #############################
+      # Attic
+      #############################
+      - sensor.influx_telemetry_attic_temperature
+      - sensor.influx_telemetry_attic_humidity
+
+      #############################
+      # Ground – Dry side
+      #############################
+      - sensor.influx_telemetry_ground_dry_side_temperature
+      - sensor.influx_telemetry_ground_dry_side_humidity
+
+      #############################
+      # Ground – Wet side
+      #############################
+      - sensor.influx_telemetry_ground_wet_side_temperature
+      - sensor.influx_telemetry_ground_wet_side_humidity
+
+      #############################
+      # Power – Total
+      #############################
+      - sensor.influx_telemetry_total_power_mean
+      - sensor.influx_telemetry_total_power_min
+      - sensor.influx_telemetry_total_power_max
+
+      #############################
+      # Power – L1
+      #############################
+      - sensor.influx_telemetry_power_l1_mean
+      - sensor.influx_telemetry_power_l1_min
+      - sensor.influx_telemetry_power_l1_max
+
+      #############################
+      # Power – L2
+      #############################
+      - sensor.influx_telemetry_power_l2_mean
+      - sensor.influx_telemetry_power_l2_min
+      - sensor.influx_telemetry_power_l2_max
+
+      #############################
+      # Power – L3
+      #############################
+      - sensor.influx_telemetry_power_l3_mean
+      - sensor.influx_telemetry_power_l3_min
+      - sensor.influx_telemetry_power_l3_max
+
+      #############################
+      # Energy Consumption (hourly)
+      #############################
+      - sensor.influx_telemetry_energy_imported

@@ -732,51 +732,6 @@
       message: '!! Rök - Sovrum !!'
     action: notify.telegram
   mode: single
-- id: '1746528303004'
-  alias: Publish sensor data to MQTT
-  description: ''
-  triggers:
-  - entity_id:
-    - sensor.temp_attic_luftfuktighet
-    - sensor.temp_attic_temperatur
-    - sensor.temp_basement_luftfuktighet
-    - sensor.temp_basement_temperatur
-    - sensor.temp_bathroom_luftfuktighet
-    - sensor.temp_bathroom_temperatur
-    - sensor.temp_kitchen_humidity
-    - sensor.temp_kitchen_temperature
-    - sensor.temp_bedroom_luftfuktighet
-    - sensor.temp_bedroom_temperatur
-    - sensor.temp_outside_luftfuktighet
-    - sensor.temp_outside_temperatur
-    - sensor.frient_energy_summering_av_leverans
-    - binary_sensor.baksida_person_detected
-    - binary_sensor.framsida_person_detected
-    - binary_sensor.hall_person_detected
-    trigger: state
-  actions:
-  - data:
-      topic: "{% if trigger.entity_id == 'sensor.temp_attic_luftfuktighet' %}\n  statistics/kottbo/humidity/attic\n{%
-        elif trigger.entity_id == 'sensor.temp_basement_luftfuktighet' %}\n  statistics/kottbo/humidity/basement\n{%
-        elif trigger.entity_id == 'sensor.temp_bathroom_luftfuktighet' %}\n  statistics/kottbo/humidity/bathroom\n{%
-        elif trigger.entity_id == 'sensor.temp_kitchen_humidity' %}\n  statistics/kottbo/humidity/kitchen\n{%
-        elif trigger.entity_id == 'sensor.temp_bedroom_luftfuktighet' %}\n  statistics/kottbo/humidity/bedroom\n{%
-        elif trigger.entity_id == 'sensor.temp_outside_luftfuktighet' %}\n  statistics/kottbo/humidity/outside\n{%
-        elif trigger.entity_id == 'sensor.temp_attic_temperatur' %}\n  statistics/kottbo/temperature/attic\n{%
-        elif trigger.entity_id == 'sensor.temp_basement_temperatur' %}\n  statistics/kottbo/temperature/basement\n{%
-        elif trigger.entity_id == 'sensor.temp_bathroom_temperatur' %}\n  statistics/kottbo/temperature/bathroom\n{%
-        elif trigger.entity_id == 'sensor.temp_kitchen_temperature' %}\n  statistics/kottbo/temperature/kitchen\n{%
-        elif trigger.entity_id == 'sensor.temp_bedroom_temperatur' %}\n  statistics/kottbo/temperature/bedroom\n{%
-        elif trigger.entity_id == 'sensor.temp_outside_temperatur' %}\n  statistics/kottbo/temperature/outside\n{%
-        elif trigger.entity_id == 'sensor.frient_energy_summering_av_leverans' %}\n
-        \ statistics/kottbo/electricity/power_consumed_summation\n{% elif trigger.entity_id
-        == 'binary_sensor.baksida_person_detected' %}\n  actions/kottbo/person_detected_back\n{%
-        elif trigger.entity_id == 'binary_sensor.framsida_person_detected' %}\n  actions/kottbo/person_detected_front\n{%
-        elif trigger.entity_id == 'binary_sensor.hall_person_detected' %}\n  actions/kottbo/person_detected_hall\n{%
-        endif %}\n"
-      payload: '{{ trigger.to_state.state }}'
-    action: mqtt.publish
-  mode: single
 - id: '1750769007053'
   alias: Alarm ON
   description: ''
