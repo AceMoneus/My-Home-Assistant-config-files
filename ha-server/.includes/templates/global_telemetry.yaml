@@ -3,7 +3,7 @@
       unique_id: "telemetry_temperature_inhouse"
       unit_of_measurement: "°C"
       device_class: temperature
-      state: "{{ states('ssensor.temp_livingroom_temperatur') }}"
+      state: "{{ states('sensor.temp_livingroom_temperatur') }}"
 
     - name: "telemetry_humidity_inhouse"
       unique_id: "telemetry_humidity_inhouse"
