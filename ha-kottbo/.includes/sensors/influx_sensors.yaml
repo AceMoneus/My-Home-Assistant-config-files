@@ -223,11 +223,3 @@
   max_age:
     hours: 1
 
-
-###############################
-# Energy – hourly (utility meter)
-###############################
-utility_meter:
-  influx_energy_imported_hourly:
-    source: sensor.frient_energy_summering_av_leverans
-    cycle: hourly

@@ -1,0 +1,6 @@
+###############################
+# Energy – hourly (utility meter)
+###############################
+influx_energy_imported_hourly:
+  source: sensor.frient_energy_summering_av_leverans
+  cycle: hourly
