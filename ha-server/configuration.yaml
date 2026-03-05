@@ -20,7 +20,7 @@ mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
   binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor
-sensor: !include .includes/sensor.yaml
+sensor: !include_dir_merge_list .includes/sensors/
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
 utility_meter: !include .includes/utility_meter.yaml
