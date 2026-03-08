@@ -79,3 +79,12 @@
   optimistic: false
   qos: 2
   retain: true
+- name: home_mqtt_kitchen_tv
+  unique_id: home_mqtt_kitchen_tv
+  command_topic: "home/switch/mqtt_kitchen_tv"
+  state_topic: "home/switch/mqtt_kitchen_tv"
+  payload_on: "ON"
+  payload_off: "OFF"
+  optimistic: false
+  qos: 2
+  retain: true
