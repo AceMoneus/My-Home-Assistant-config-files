@@ -348,18 +348,18 @@
           entity_id: automation.office_light_off
   mode: restart
 - id: '1744619970068'
-  alias: mqtt_bedroom_light
-  description: mqtt_bedroom_light
+  alias: mqtt_kitchen_tv
+  description: mqtt_kitchen_tv
   triggers:
   - entity_id:
-    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_kitchen_tv
     trigger: state
   conditions: []
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_bedroom_light
+        entity_id: switch.home_mqtt_kitchen_tv
         state:
         - 'on'
       sequence:
@@ -367,7 +367,7 @@
         data: {}
         target:
           entity_id:
-          - switch.plug_q03_bedroom
+          - switch.plug_q26_kitchen_tv
       - delay:
           hours: 0
           minutes: 0
@@ -376,11 +376,10 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id:
-          - switch.plug_q03_bedroom
+          entity_id: switch.plug_q26_kitchen_tv
     - conditions:
       - condition: state
-        entity_id: switch.home_mqtt_bedroom_light
+        entity_id: switch.home_mqtt_kitchen_tv
         state:
         - 'off'
       sequence:
@@ -388,7 +387,7 @@
         data: {}
         target:
           entity_id:
-          - switch.plug_q03_bedroom
+          - switch.plug_q26_kitchen_tv
       - delay:
           hours: 0
           minutes: 0
@@ -398,7 +397,7 @@
         data: {}
         target:
           entity_id:
-          - switch.plug_q03_bedroom
+          - switch.plug_q26_kitchen_tv
   mode: restart
 - id: '1745215029019'
   alias: Set Values at HA Start
@@ -1506,4 +1505,55 @@
         data: {}
         target:
           entity_id: group.outdoor_lighting
+  mode: restart
+- id: '1772919196591'
+  alias: mqtt_bedroom_light
+  description: mqtt_bedroom_light
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_bedroom_light
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_bedroom_light
+        state:
+        - 'on'
+      sequence:
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_q03_bedroom
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: switch.plug_q03_bedroom
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_bedroom_light
+        state:
+        - 'off'
+      sequence:
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q03_bedroom
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+      - action: switch.turn_off
+        data: {}
+        target:
+          entity_id:
+          - switch.plug_q03_bedroom
   mode: restart
