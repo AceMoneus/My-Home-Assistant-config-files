@@ -1,6 +1,5 @@
 #####################################################
 # Loads default set of integrations.
-default_config:
 logger:
   default: info
 
