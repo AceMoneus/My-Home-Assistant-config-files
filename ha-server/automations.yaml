@@ -1546,6 +1546,7 @@
         target:
           entity_id:
           - switch.plug_q03_bedroom
+          - switch.plug_q21_outside_kitchen
       - delay:
           hours: 0
           minutes: 0
@@ -1556,4 +1557,5 @@
         target:
           entity_id:
           - switch.plug_q03_bedroom
+          - switch.plug_q21_outside_kitchen
   mode: restart
