@@ -1,7 +1,7 @@
 #####################################################
 # Loads default set of integrations.
 logger:
-  default: info
+  default: warning
 
 #####################################################
 # Load frontend themes from the themes folder
