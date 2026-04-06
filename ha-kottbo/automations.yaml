@@ -728,9 +728,9 @@
     trigger: device
   conditions: []
   actions:
-  - data:
-      message: '!! Rök - Sovrum !!'
-    action: notify.telegram
+  - action: telegram_bot.send_message
+    data:
+      message: Kottbo RÖK!!
   mode: single
 - id: '1750769007053'
   alias: Alarm ON
