@@ -1,5 +1,5 @@
 - id: '1659996473008'
-  alias: Röklarm Vind
+  alias: Röklarm - Vind
   description: ''
   triggers:
   - type: smoke
@@ -718,10 +718,10 @@
     domain: switch
   mode: single
 - id: '1746094619730'
-  alias: Röklarm Sovrum
+  alias: Röklarm - Sovrum
   description: ''
   triggers:
-  - type: turned_on
+  - type: smoke
     device_id: 024e02e67b53ecc78f7c3285a4973bfe
     entity_id: f0f30cd10f6696aad0457d8b9631573b
     domain: binary_sensor
@@ -730,7 +730,7 @@
   actions:
   - action: telegram_bot.send_message
     data:
-      message: Kottbo RÖK!!
+      message: '!!RÖK!! - sovrum'
   mode: single
 - id: '1750769007053'
   alias: Alarm ON
@@ -846,4 +846,20 @@
       - switch.plug_jul_3
       - switch.plug_jul_5
     action: homeassistant.turn_off
+  mode: single
+- id: '1775549502532'
+  alias: Röklarm - Källartrapp
+  description: ''
+  triggers:
+  - type: smoke
+    device_id: 64fa55795a47cadabb88399cf5b37cc6
+    entity_id: 681e7d9eab4751c88edbddef792114d7
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - action: telegram_bot.send_message
+    data:
+      config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
+      message: '!! RÖK!! - källartrapp'
   mode: single
