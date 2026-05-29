@@ -9,6 +9,7 @@ evening_lights:
   name: "Group Kvällslampor"
   icon: mdi:lightbulb-group
   entities:
+    - switch.grillplats_plug_7 #Matplats
     - switch.grillplats_plug_10 #Övre hall
     - switch.grillplats_plug_3 #Köksfönster
     - switch.grillplats_plug_9 #Vardagsrum uppfart
