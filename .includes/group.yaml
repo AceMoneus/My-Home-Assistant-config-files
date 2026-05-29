@@ -1,27 +1,33 @@
 morning_lights:
-  name: Group Morgonlampor
+  name: "Group Morgonlampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.plug_q05_kitchen_window
+    - switch.grillplats_plug_5 #Telefonlampa
+    - switch.grillplats_plug #Burspråk
 
 evening_lights:
-  name: Group Kvällslampor
+  name: "Group Kvällslampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.plug_q05_kitchen_window
-    - switch.plug_q09_upper_hall
+    - switch.grillplats_plug_10 #Övre hall
+    - switch.grillplats_plug_3 #Köksfönster
+    - switch.grillplats_plug_9 #Vardagsrum uppfart
+    - switch.grillplats_plug_8 #Vardagsrum gård
+    - switch.grillplats_plug_3 #Köksfönster
+    - switch.grillplats_plug_13 #Pysselrum
+    - switch.grillplats_plug_12 #Gästrum
     - switch.home_mqtt_bedroom_light
     - switch.home_mqtt_morning_lights
 
 outdoor_mood_lights:
-  name: Group UteMyslampor
+  name: "Group UteMyslampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.plug_q20_light_shed
-    - switch.plug_q21_outside_kitchen
-    - switch.plug_q22_outside
-    - switch.tz3000_iiacqpdz_ts011f
-    - switch.plug_q13_garage_led
+    - switch.tofsmygga_plug_outdoor #Altan
+    - switch.tofsmygga_plug_outdoor_2 #Köksutgång
+    - switch.s4 #LED Garage
+    - switch.s4_2 #LED Boden
+    - switch.s4_3 #LED Lekstuga
 
 outdoor_lighting:
   name: "Group Utebelysning"
