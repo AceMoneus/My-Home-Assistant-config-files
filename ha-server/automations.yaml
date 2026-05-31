@@ -36,21 +36,15 @@
   actions:
   - action: switch.turn_on
     metadata: {}
-    data: {}
     target:
-      entity_id: switch.home_mqtt_alarm_lock
-  - type: turn_on
-    device_id: e6a4676373bd4c4efd57db1c14ca512e
-    entity_id: 72cbbb3562934fcf5fe06749f485e486
-    domain: switch
-  - type: turn_on
-    device_id: cf1060197270db5704ae7db13dbb61d1
-    entity_id: e6bccb0c96f672b1db2bc7e45873afa9
-    domain: switch
+      entity_id:
+      - switch.grillplats_plug_2
+      - switch.grillplats_plug_4
+    data: {}
   - delay:
       hours: 0
-      minutes: 2
-      seconds: 0
+      minutes: 0
+      seconds: 45
       milliseconds: 0
   - type: turn_on
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
@@ -60,11 +54,6 @@
     device_id: 1a79c81a47913a2a14158863a2086c73
     entity_id: 5543ae2b6ebcf3995ae2451b41a15294
     domain: switch
-  - action: switch.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id: switch.home_mqtt_alarm_lock
   mode: single
 - id: '1738679758106'
   alias: Alarm Home - Turn OFF
@@ -76,11 +65,6 @@
       payload: 'OFF'
   conditions: []
   actions:
-  - action: switch.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id: switch.home_mqtt_alarm_lock
   - type: turn_off
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
     entity_id: 0b0b134052d0b3bed0e32c73109cf6fd
@@ -91,22 +75,16 @@
     domain: switch
   - delay:
       hours: 0
-      minutes: 2
-      seconds: 0
+      minutes: 0
+      seconds: 10
       milliseconds: 0
-  - type: turn_off
-    device_id: e6a4676373bd4c4efd57db1c14ca512e
-    entity_id: 72cbbb3562934fcf5fe06749f485e486
-    domain: switch
-  - type: turn_off
-    device_id: cf1060197270db5704ae7db13dbb61d1
-    entity_id: e6bccb0c96f672b1db2bc7e45873afa9
-    domain: switch
   - action: switch.turn_off
     metadata: {}
-    data: {}
     target:
-      entity_id: switch.home_mqtt_alarm_lock
+      entity_id:
+      - switch.grillplats_plug_6
+      - switch.grillplats_plug_2
+    data: {}
   mode: single
 - id: '1741249838102'
   alias: MQTT - temperatur vardagsrum
@@ -130,34 +108,26 @@
   alias: Office Light ON
   description: ''
   triggers:
-  - type: motion
-    device_id: dcf13e9873ef57f82078a10741570d4e
-    entity_id: fade32c97c94e8f9249714af3b2e2411
+  - type: occupied
+    device_id: 3bfa5eb2def8ac4c19ccee5e2bdc0fc2
+    entity_id: 994aa3b3788071bf369315ebd64a57ce
     domain: binary_sensor
     trigger: device
   conditions: []
   actions:
-  - type: turn_on
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-  - type: turn_on
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.grillplats_plug_15
+    data: {}
   mode: single
 - id: '1741454189677'
   alias: Office Light OFF
   description: ''
   triggers:
   - type: turned_on
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-    trigger: device
-  - type: turned_on
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
+    device_id: 4eb538e60466eb8dba61d285a24ffb71
+    entity_id: 143a055d718752228c7572d577e2e785
     domain: switch
     trigger: device
   conditions: []
@@ -167,27 +137,11 @@
       minutes: 1
       seconds: 0
       milliseconds: 0
-  - type: turn_off
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
-  - type: turn_off
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - type: turn_off
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
-  - type: turn_off
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      device_id: 4eb538e60466eb8dba61d285a24ffb71
+    data: {}
   mode: single
 - id: '1742762100304'
   alias: MQTT - temperatur sovrum
@@ -271,8 +225,7 @@
       sequence:
       - action: homeassistant.turn_on
         target:
-          entity_id:
-          - switch.plug_q15_officedesk
+          entity_id: switch.grillplats_plug_16
         data: {}
       - action: homeassistant.turn_off
         metadata: {}
@@ -286,9 +239,7 @@
           milliseconds: 0
       - action: homeassistant.turn_on
         target:
-          entity_id:
-          - light.lamp_lantern_lampa
-          - switch.plug_q08_officecorner_brytare
+          entity_id: switch.grillplats_plug_15
         data: {}
     - conditions:
       - condition: state
@@ -297,19 +248,7 @@
       sequence:
       - action: switch.turn_off
         target:
-          entity_id:
-          - switch.plug_q15_officedesk
-        data: {}
-        enabled: true
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_off
-        target:
-          entity_id:
-          - switch.plug_q15_officedesk
+          entity_id: switch.grillplats_plug_16
         data: {}
         enabled: true
       - delay:
@@ -322,25 +261,7 @@
         data: {}
         target:
           entity_id:
-          - light.lamp_lantern_lampa
-          - switch.plug_q08_officecorner_brytare
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id:
-          - light.lamp_lantern_lampa
-          - switch.plug_q08_officecorner_brytare
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 1
-          milliseconds: 0
+          - switch.grillplats_plug_15
       - action: homeassistant.turn_on
         metadata: {}
         data: {}
@@ -366,8 +287,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id:
-          - switch.plug_q26_kitchen_tv
+          entity_id: switch.grillplats_plug_4
       - delay:
           hours: 0
           minutes: 0
@@ -376,7 +296,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.plug_q26_kitchen_tv
+          entity_id: switch.grillplats_plug_4
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_kitchen_tv
@@ -386,8 +306,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q26_kitchen_tv
+          entity_id: switch.grillplats_plug_4
       - delay:
           hours: 0
           minutes: 0
@@ -396,8 +315,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q26_kitchen_tv
+          entity_id: switch.grillplats_plug_4
   mode: restart
 - id: '1745215029019'
   alias: Set Values at HA Start
@@ -644,7 +562,12 @@
   - trigger: state
     entity_id:
     - binary_sensor.dark
-    to: 'off'
+    to:
+    - 'off'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
   conditions: []
   actions:
   - action: switch.turn_off
@@ -973,21 +896,6 @@
       - switch.home_mqtt_morning_lights
       - switch.home_mqtt_outside_mood_lights
   mode: restart
-- id: '1763451186242'
-  alias: Väck Victus
-  description: ''
-  triggers:
-  - trigger: time_pattern
-    minutes: /5
-  conditions: []
-  actions:
-  - device_id: 23906c9fbc4a8b42da5797cca8e90dab
-    domain: button
-    entity_id: 726b440c173acbe599106fa2d37f013b
-    type: press
-    metadata:
-      secondary: false
-  mode: single
 - id: '1764586567605'
   alias: Släck innelampor när Evening = off
   description: ''
@@ -1189,20 +1097,16 @@
     id: away
   conditions: []
   actions:
+  - action: telegram_bot.send_message
+    metadata: {}
+    data:
+      config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
+      message: Larm Av
   - choose:
     - conditions:
       - condition: trigger
         id: home
       sequence:
-      - action: telegram_bot.send_message
-        metadata: {}
-        data:
-          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
-          message: Larm Av
-      - action: switch.turn_on
-        data: {}
-        target:
-          entity_id: switch.plug_q24_bed_lights
       - action: switch.turn_off
         metadata: {}
         target:
@@ -1213,10 +1117,6 @@
           minutes: 0
           seconds: 5
           milliseconds: 0
-      - action: switch.turn_on
-        data: {}
-        target:
-          entity_id: switch.plug_q24_bed_lights
       - action: switch.turn_off
         metadata: {}
         target:
@@ -1231,10 +1131,6 @@
         data:
           config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
           message: Larm På
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.plug_q24_bed_lights
       - action: switch.turn_on
         metadata: {}
         target:
@@ -1252,10 +1148,6 @@
           minutes: 0
           seconds: 5
           milliseconds: 0
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.plug_q24_bed_lights
       - action: switch.turn_on
         metadata: {}
         target:
@@ -1525,7 +1417,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.plug_q03_bedroom
+          entity_id: switch.grillplats_plug_11
       - delay:
           hours: 0
           minutes: 0
@@ -1534,7 +1426,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.plug_q03_bedroom
+          entity_id: switch.grillplats_plug_11
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_bedroom_light
@@ -1545,8 +1437,7 @@
         data: {}
         target:
           entity_id:
-          - switch.plug_q03_bedroom
-          - switch.plug_q21_outside_kitchen
+          - switch.grillplats_plug_11
       - delay:
           hours: 0
           minutes: 0
@@ -1556,6 +1447,5 @@
         data: {}
         target:
           entity_id:
-          - switch.plug_q03_bedroom
-          - switch.plug_q21_outside_kitchen
+          - switch.grillplats_plug_11
   mode: restart
