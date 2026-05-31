@@ -25,11 +25,4 @@
   optimistic: false
   qos: 2
   retain: true
-- name: victus_sleep
-  unique_id: victus_sleep
-  command_topic: "HASS.Agent/switch/VICTUS/sleep/state"
-  state_topic: "HASS.Agent/switch/VICTUS/sleep/state"
-  payload_on: "ON"
-  payload_off: "OFF"
-  optimistic: false
-  qos: 2
+  
