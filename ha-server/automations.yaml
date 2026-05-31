@@ -39,7 +39,7 @@
     target:
       entity_id:
       - switch.grillplats_plug_2
-      - switch.grillplats_plug_4
+      - switch.grillplats_plug_6
     data: {}
   - delay:
       hours: 0
