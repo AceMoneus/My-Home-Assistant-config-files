@@ -39,7 +39,7 @@
     target:
       entity_id:
       - switch.grillplats_plug_2
-      - switch.grillplats_plug_4
+      - switch.grillplats_plug_6
     data: {}
   - delay:
       hours: 0
@@ -108,34 +108,26 @@
   alias: Office Light ON
   description: ''
   triggers:
-  - type: motion
-    device_id: dcf13e9873ef57f82078a10741570d4e
-    entity_id: fade32c97c94e8f9249714af3b2e2411
+  - type: occupied
+    device_id: 3bfa5eb2def8ac4c19ccee5e2bdc0fc2
+    entity_id: 994aa3b3788071bf369315ebd64a57ce
     domain: binary_sensor
     trigger: device
   conditions: []
   actions:
-  - type: turn_on
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-  - type: turn_on
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id: switch.grillplats_plug_15
+    data: {}
   mode: single
 - id: '1741454189677'
   alias: Office Light OFF
   description: ''
   triggers:
   - type: turned_on
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-    trigger: device
-  - type: turned_on
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
+    device_id: 4eb538e60466eb8dba61d285a24ffb71
+    entity_id: 143a055d718752228c7572d577e2e785
     domain: switch
     trigger: device
   conditions: []
@@ -145,27 +137,11 @@
       minutes: 1
       seconds: 0
       milliseconds: 0
-  - type: turn_off
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
-  - type: turn_off
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - type: turn_off
-    device_id: 56b8b7496203c0ca67bd39639101b7a3
-    entity_id: aa356f42d1dddd8c66f3e2a9840901e9
-    domain: switch
-  - type: turn_off
-    device_id: 320f85bb8c37630908b398697b964688
-    entity_id: b396468ce103664334f441b219296fd7
-    domain: light
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      device_id: 4eb538e60466eb8dba61d285a24ffb71
+    data: {}
   mode: single
 - id: '1742762100304'
   alias: MQTT - temperatur sovrum
@@ -463,40 +439,6 @@
       topic: home/temp/outside
       payload: '{{ states(''sensor.motion_lyktstolpe_temperatur'') }}'
   mode: single
-- id: '1753913054788'
-  alias: Set Shaun state
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.worxlandroid_state
-  conditions: []
-  actions:
-  - action: input_text.set_value
-    metadata: {}
-    data:
-      value: '{{ states(''sensor.worxlandroid_state'') }}'
-    target:
-      entity_id: input_text.shaun_state
-  mode: single
-- id: '1754489259881'
-  alias: Reset Shaun State
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.192_168_2_4
-    from:
-    to: 'on'
-  conditions: []
-  actions:
-  - action: input_text.set_value
-    metadata: {}
-    data:
-      value: '-'
-    target:
-      entity_id: input_text.shaun_state
-  mode: single
 - id: '1754568986656'
   alias: Tänd lampor vid rörelse om det är mörkt
   description: ''
@@ -586,7 +528,12 @@
   - trigger: state
     entity_id:
     - binary_sensor.dark
-    to: 'off'
+    to:
+    - 'off'
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
   conditions: []
   actions:
   - action: switch.turn_off
@@ -956,8 +903,6 @@
     trigger: time_pattern
   - trigger: state
     entity_id:
-    - binary_sensor.ping_bettans_mobil
-    - binary_sensor.192_168_2_203
     - device_tracker.bs_a23
     - device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
   actions:
@@ -965,14 +910,6 @@
     - conditions:
       - condition: or
         conditions:
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.192_168_2_203
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.ping_bettans_mobil
         - condition: state
           entity_id: device_tracker.bs_a23
           state:
@@ -989,14 +926,6 @@
     - conditions:
       - condition: and
         conditions:
-        - condition: state
-          state:
-          - 'off'
-          entity_id: binary_sensor.192_168_2_203
-        - condition: state
-          state:
-          - 'off'
-          entity_id: binary_sensor.ping_bettans_mobil
         - condition: state
           entity_id: device_tracker.bs_a23
           state:
