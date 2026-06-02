@@ -439,40 +439,6 @@
       topic: home/temp/outside
       payload: '{{ states(''sensor.motion_lyktstolpe_temperatur'') }}'
   mode: single
-- id: '1753913054788'
-  alias: Set Shaun state
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - sensor.worxlandroid_state
-  conditions: []
-  actions:
-  - action: input_text.set_value
-    metadata: {}
-    data:
-      value: '{{ states(''sensor.worxlandroid_state'') }}'
-    target:
-      entity_id: input_text.shaun_state
-  mode: single
-- id: '1754489259881'
-  alias: Reset Shaun State
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.192_168_2_4
-    from:
-    to: 'on'
-  conditions: []
-  actions:
-  - action: input_text.set_value
-    metadata: {}
-    data:
-      value: '-'
-    target:
-      entity_id: input_text.shaun_state
-  mode: single
 - id: '1754568986656'
   alias: Tänd lampor vid rörelse om det är mörkt
   description: ''
@@ -937,8 +903,6 @@
     trigger: time_pattern
   - trigger: state
     entity_id:
-    - binary_sensor.ping_bettans_mobil
-    - binary_sensor.192_168_2_203
     - device_tracker.bs_a23
     - device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
   actions:
@@ -946,14 +910,6 @@
     - conditions:
       - condition: or
         conditions:
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.192_168_2_203
-        - condition: state
-          state:
-          - 'on'
-          entity_id: binary_sensor.ping_bettans_mobil
         - condition: state
           entity_id: device_tracker.bs_a23
           state:
@@ -970,14 +926,6 @@
     - conditions:
       - condition: and
         conditions:
-        - condition: state
-          state:
-          - 'off'
-          entity_id: binary_sensor.192_168_2_203
-        - condition: state
-          state:
-          - 'off'
-          entity_id: binary_sensor.ping_bettans_mobil
         - condition: state
           entity_id: device_tracker.bs_a23
           state:
