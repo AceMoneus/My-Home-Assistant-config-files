@@ -863,3 +863,20 @@
       config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
       message: '!! RÖK!! - källartrapp'
   mode: single
+- id: '1780480674940'
+  alias: Mount ha_kottbo NFS vid HA-start
+  description: ''
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions: []
+  actions:
+  - delay:
+      seconds: 120
+  - action: shell_command.mount_ha_kottbo
+    data: {}
+  - delay:
+      seconds: 120
+  - action: shell_command.mount_ha_kottbo
+    data: {}
+  mode: single
