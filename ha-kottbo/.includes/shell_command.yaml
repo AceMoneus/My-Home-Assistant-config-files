@@ -1,1 +1,2 @@
-  git_sync: 'bash /config/scripts/git_sync.sh'
+git_sync: 'bash /config/scripts/git_sync.sh'
+mount_ha_kottbo: 'bash /config/scripts/mount_ha_kottbo.sh'

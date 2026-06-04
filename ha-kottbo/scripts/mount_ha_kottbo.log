@@ -1,0 +1,53 @@
+=== 2026-06-03 12:13:58 ===
+Starting mount script...
+=== 2026-06-03 12:24:38 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 12:52:57 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 13:00:28 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 13:06:56 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 13:13:16 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 13:13:58 ===
+Starting mount script...
+SUCCESS: NFS mounted at /mnt/ha_kottbo
+
+=== 2026-06-03 13:26:14 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-03 13:28:15 START ===
+Attempt 1/5...
+mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
+=== 2026-06-03 13:36:57 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-03 13:38:20 START ===
+Attempt 1/5...
+mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
+=== 2026-06-03 14:04:02 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-03 14:06:04 START ===
+Attempt 1/5...
+mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
+=== 2026-06-03 14:21:52 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-03 15:17:40 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-03 15:19:41 START ===
+Attempt 1/5...
+mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
