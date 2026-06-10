@@ -2,9 +2,8 @@
 #####################################################
 # HA config
 default_config:
-
 logger:
-  default: warning
+  default: info
 
 #####################################################
 # HACS Remote Home-Assistant
