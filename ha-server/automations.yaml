@@ -28,24 +28,29 @@
   alias: Alarm Home - Turn ON
   description: ''
   triggers:
-  - trigger: mqtt
-    options:
-      topic: home/alarm/mqtt_alarm_state
-      payload: 'ON'
+  - topic: home/alarm/mqtt_alarm_state
+    payload: 'ON'
+    trigger: mqtt
   conditions: []
   actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.myggbett_door_window_sensor_dorr
+        state:
+        - 'on'
+      sequence:
+      - action: notify.mobile_app_pixel_10_pro_xl
+        data:
+          message: Fönster öppet!
+          title: Larm på
   - action: switch.turn_on
-    metadata: {}
     target:
       entity_id:
       - switch.grillplats_plug_2
       - switch.grillplats_plug_6
-    data: {}
   - delay:
-      hours: 0
-      minutes: 0
       seconds: 45
-      milliseconds: 0
   - type: turn_on
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
     entity_id: 0b0b134052d0b3bed0e32c73109cf6fd
