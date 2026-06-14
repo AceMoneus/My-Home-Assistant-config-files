@@ -168,52 +168,6 @@
       topic: home/temp/bedroom
       payload: '{{ states(''sensor.temp_bedroom_temperatur'') }}'
   mode: single
-- id: '1742805240156'
-  alias: Button - Office Desk
-  description: ''
-  use_blueprint:
-    path: damru/ikea_E1743-E2201-E2213_ZHA-Z2M_control-anything.yaml
-    input:
-      remote_devices:
-      - f82d662e17c98ec3c980f2aded863636
-      on_press_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_desktop
-          payload: 'ON'
-      off_press_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_desktop
-          payload: 'OFF'
-      on_double_press_action: []
-      off_double_press_action: []
-      on_hold_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_xbox
-          payload: 'ON'
-      off_hold_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_xbox
-          payload: 'OFF'
 - id: '1744054727367'
   alias: mqtt_desktop
   description: mqtt_desktop
@@ -1402,3 +1356,37 @@
           entity_id:
           - switch.grillplats_plug_11
   mode: restart
+- id: '1781348246968'
+  alias: Button - Desktop
+  description: ''
+  use_blueprint:
+    path: Skaronator/ikea-bilresa-dual-button.yaml
+    input:
+      button1_event:
+      - event.bilresa_dual_button_knapp_1
+      button2_event:
+      - event.bilresa_dual_button_knapp_2
+      button1_single:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_desktop
+        data: {}
+      button2_single:
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_desktop
+        data: {}
+- id: '1781379431796'
+  alias: Send user message
+  description: ''
+  triggers: []
+  actions:
+  - data:
+      topic: test/message
+      payload: "{\n  \"target\": \"{{ target }}\",\n  \"message\": \"{{ message }}\"\n}\n"
+      qos: 1
+      retain: true
+    action: mqtt.publish
+  mode: single
