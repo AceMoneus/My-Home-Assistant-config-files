@@ -87,3 +87,9 @@ SUCCESS: Mounted on attempt 1
 === 2026-06-10 15:47:33 START ===
 Attempt 1/5...
 mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
+=== 2026-06-13 22:23:05 START ===
+Attempt 1/5...
+SUCCESS: Mounted on attempt 1
+=== 2026-06-13 22:25:06 START ===
+Attempt 1/5...
+mount: mounting unas.moneus.lan:/var/nfs/shared/ha_kottbo on /mnt/ha_kottbo failed: Operation timed out
