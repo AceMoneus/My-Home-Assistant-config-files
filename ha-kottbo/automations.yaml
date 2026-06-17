@@ -16,16 +16,15 @@
   mode: single
 - id: '1662194898234'
   alias: Telegram - HA Boot
-  description: ''
   triggers:
-  - event: start
-    trigger: homeassistant
-  conditions: []
+  - trigger: homeassistant
+    event: start
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - action: script.send_user_message
     data:
-      message: Kottbo - Booted
+      target: local
+      telegram: false
+      message: Booted
   mode: single
 - id: '1662207023146'
   alias: Telegram - Reply with Status
@@ -879,4 +878,19 @@
       seconds: 120
   - action: shell_command.mount_ha_kottbo
     data: {}
+  mode: single
+- id: '1781691136256'
+  alias: Standard Notify Block
+  description: ''
+  triggers: []
+  actions:
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
+    data:
+      skip_condition: true
+      variables:
+        target: kjell
+        message: DIN TEXT HÄR
+        telegram: true
   mode: single
