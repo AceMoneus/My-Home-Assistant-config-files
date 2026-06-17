@@ -1,28 +1,20 @@
 - id: '1738673008459'
-  alias: System - Telegram Startup
+  alias: HA Boot & Shutdown
   description: ''
   triggers:
   - trigger: homeassistant
     event: start
-  conditions: []
-  actions:
-  - action: telegram_bot.send_message
-    metadata: {}
-    data:
-      message: '- HA-Server Start -'
-  mode: single
-- id: '1738673046516'
-  alias: System - Telegram Shutdown
-  description: ''
-  triggers:
+    id: started
   - trigger: homeassistant
     event: shutdown
+    id: shutdown
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - action: script.send_user_message
     data:
-      message: '- HA-Server Shutdown -'
+      target: local
+      telegram: false
+      message: '{{ trigger.id }}'
   mode: single
 - id: '1738679737175'
   alias: Alarm Home - Turn ON
@@ -628,19 +620,18 @@
   triggers:
   - entity_id: sensor.myups_status
     trigger: state
+  conditions: []
   actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
+  - action: script.send_user_message
     data:
-      skip_condition: true
-      variables:
-        target: kjell
-        message: 'UPS-status ändrad till:
-
-          {{ states(''sensor.myups_status'') }}
-
-          '
+      target: local
+      telegram: false
+      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
+  - action: script.send_user_message
+    data:
+      target: kjell
+      telegram: true
+      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
   mode: single
 - id: '1762203466396'
   alias: 'Strömövervakning: Faser över 20A i 2 minuter'
@@ -1409,29 +1400,6 @@
         target:
           entity_id: switch.home_mqtt_desktop
         data: {}
-- id: '1781379431796'
-  alias: Send user message
-  description: ''
-  triggers: []
-  actions:
-  - action: mqtt.publish
-    data:
-      topic: quarry/message
-      payload: "{\n  \"target\": \"{{ target }}\",\n  \"message\": \"{{ message }}\"\n}\n"
-      qos: 1
-      retain: true
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ target in [''kjell'', ''both''] }}'
-      sequence:
-      - data:
-          message: '{{ message }}'
-        action: telegram_bot.send_message
-  mode: single
-  variables:
-    target: '{{ target | default(''unknown'') }}'
-    message: '{{ message | default('''') }}'
 - id: '1781638175577'
   alias: Röklarm notifiering
   description: ''
