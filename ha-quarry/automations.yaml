@@ -174,3 +174,50 @@
           - switch.plug_q04_brytare
           - switch.tz3000_gjnozsaz_ts011f_switch_6
   mode: single
+- id: '1781637271521'
+  alias: Handle incoming user message
+  description: ''
+  triggers:
+  - trigger: mqtt
+    options:
+      topic: quarry/message
+  - minutes: /1
+    trigger: time_pattern
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.payload_json.target == ''kjell'' }}'
+      sequence:
+      - data:
+          message: '{{ trigger.payload_json.message }}'
+        action: notify.mobile_app_kjellmobil
+      - action: telegram_bot.send_message
+        metadata: {}
+        data:
+          entity_id:
+          - notify.telegram_bot_5417174722_981670876
+          message: Test
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.payload_json.target == ''bettan'' }}'
+      sequence:
+      - data:
+          message: '{{ trigger.payload_json.message }}'
+        action: notify.mobile_app_bettan_phone
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.payload_json.target == ''both'' }}'
+      sequence:
+      - data:
+          message: '{{ trigger.payload_json.message }}'
+        action: notify.mobile_app_kjellmobil
+      - data:
+          message: '{{ trigger.payload_json.message }}'
+        action: notify.mobile_app_bettan_phone
+  - data:
+      topic: quarry/message
+      payload: ''
+      retain: true
+    action: mqtt.publish
+  mode: single
