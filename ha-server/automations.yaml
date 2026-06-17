@@ -624,19 +624,23 @@
   mode: single
 - id: '1760364391930'
   alias: UPS status notifiering
-  description: Skickar aktuell UPS-status via Telegram
+  description: Skickar aktuell UPS-status via Send user message
   triggers:
   - entity_id: sensor.myups_status
     trigger: state
-  conditions: []
   actions:
-  - data:
-      message: 'UPS-status ändrad till:
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
+    data:
+      skip_condition: true
+      variables:
+        target: kjell
+        message: 'UPS-status ändrad till:
 
-        {{ states(''sensor.myups_status'') }}
+          {{ states(''sensor.myups_status'') }}
 
-        '
-    action: telegram_bot.send_message
+          '
   mode: single
 - id: '1762203466396'
   alias: 'Strömövervakning: Faser över 20A i 2 minuter'
@@ -1412,11 +1416,64 @@
   actions:
   - action: mqtt.publish
     data:
-      topic: test/message
+      topic: quarry/message
       payload: "{\n  \"target\": \"{{ target }}\",\n  \"message\": \"{{ message }}\"\n}\n"
       qos: 1
       retain: true
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ target in [''kjell'', ''both''] }}'
+      sequence:
+      - data:
+          message: '{{ message }}'
+        action: telegram_bot.send_message
   mode: single
   variables:
     target: '{{ target | default(''unknown'') }}'
     message: '{{ message | default('''') }}'
+- id: '1781638175577'
+  alias: Röklarm notifiering
+  description: ''
+  triggers:
+  - type: smoke
+    device_id: 7fe07ddc8393c1de1a097f765a6b5a25
+    entity_id: f7c744934958df61bb43936fe669f49c
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 152e232011bbe9be8597b785f31d6ea4
+    entity_id: 31f1c32e143657dc4b656e4b218feea4
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 4405a823e4dbdfe433dafadcef20bb02
+    entity_id: d68c43bae8381400aab5fee7c24a4fa0
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 168b90f422d73f51b485c0f95b6b0420
+    entity_id: 9b69756594a9261b457d4ea345f33b91
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 5d41e438a1dcd2d648e133fea1848af8
+    entity_id: 0869495be16500b7bb992448c47ede4c
+    domain: binary_sensor
+    trigger: device
+  actions:
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
+    data:
+      skip_condition: true
+      variables:
+        target: both
+        message: '{{ meddelande }}'
+  mode: single
+  variables:
+    plats: "{% set mapping = {\n  'f7c744934958df61bb43936fe669f49c': '3D‑printer',\n
+      \ '31f1c32e143657dc4b656e4b218feea4': 'Serverskåp',\n  'd68c43bae8381400aab5fee7c24a4fa0':
+      'Källartrappa',\n  '9b69756594a9261b457d4ea345f33b91': 'Övervåning',\n  '0869495be16500b7bb992448c47ede4c':
+      'Garage'\n} %} {{ mapping[trigger.entity_id] }}\n"
+    meddelande: 'Röklarm: {{ plats }}'
