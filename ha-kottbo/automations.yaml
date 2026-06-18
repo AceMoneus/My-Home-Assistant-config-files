@@ -14,18 +14,6 @@
       config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
       message: '!! RÖK!! - Kottbo'
   mode: single
-- id: '1662194898234'
-  alias: Telegram - HA Boot
-  triggers:
-  - trigger: homeassistant
-    event: start
-  actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      telegram: false
-      message: Booted
-  mode: single
 - id: '1662207023146'
   alias: Telegram - Reply with Status
   description: ''
@@ -159,33 +147,35 @@
       message: Temperatur Kök under 3 grader
   mode: single
 - id: '1670409339675'
-  alias: Telegram - Reboot
-  description: ''
-  trigger:
-  - platform: event
-    event_type: telegram_command
-    event_data:
-      command: /reboot
-  condition: []
-  action:
-  - service: notify.mobile_app_sm_s908b
-    data:
-      message: Reboot Kottbo
-  - service: hassio.host_reboot
-    data: {}
-  mode: single
-- id: '1670409459063'
-  alias: Telegram - Shutdown notice
+  alias: Remote Reboot
   description: ''
   triggers:
-  - event: shutdown
-    trigger: homeassistant
+  - event_type: telegram_command
+    event_data:
+      command: /reboot
+    trigger: event
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - data: {}
+    action: hassio.host_reboot
+  mode: single
+- id: '1670409459063'
+  alias: HA Boot & Shutdown
+  description: ''
+  triggers:
+  - trigger: homeassistant
+    event: start
+    id: started
+  - trigger: homeassistant
+    event: shutdown
+    id: shutdown
+  conditions: []
+  actions:
+  - action: script.send_user_message
     data:
-      message: HA Kottbo shutting down
+      target: local
+      telegram: false
+      message: '{{ trigger.id }}'
   mode: single
 - id: '1670480699279'
   alias: Temp under 16 - Element ON
@@ -878,19 +868,4 @@
       seconds: 120
   - action: shell_command.mount_ha_kottbo
     data: {}
-  mode: single
-- id: '1781691136256'
-  alias: Standard Notify Block
-  description: ''
-  triggers: []
-  actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
-    data:
-      skip_condition: true
-      variables:
-        target: kjell
-        message: DIN TEXT HÄR
-        telegram: true
   mode: single
