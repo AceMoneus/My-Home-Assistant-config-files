@@ -34,9 +34,6 @@ template: !include .includes/template.yaml
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
-shell_command: !include .includes/shell_command.yaml
+script: !include .includes/scripts.yaml
 sensor: !include .includes/sensor.yaml
-
-
-
-
+shell_command: !include .includes/shell_command.yaml

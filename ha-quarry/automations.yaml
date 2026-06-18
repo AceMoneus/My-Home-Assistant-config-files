@@ -6,11 +6,15 @@
     trigger: homeassistant
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
     data:
-      message: Quarry - boot
-      config_entry_id: 01JZW2KMWHY2K8KQ69B38H6D05
+      skip_condition: true
+      variables:
+        target: local
+        message: Quarry started
+        telegram: false
   mode: single
 - id: '1662207023146'
   alias: Telegram Reply with Status
@@ -55,10 +59,15 @@
     trigger: homeassistant
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
     data:
-      message: Quarry - shutdown
+      skip_condition: true
+      variables:
+        target: local
+        message: Quarry shut down
+        telegram: false
   mode: single
 - id: '1730722395853'
   alias: MQTT Timestamp
@@ -92,132 +101,71 @@
     metadata: {}
     data: {}
   mode: single
-- id: '1770126534862'
-  alias: Kvällslampor
-  description: Kvällslampor
-  triggers:
-  - trigger: state
-    entity_id: switch.home_mqtt_evening_lights
-    to: 'on'
-  - trigger: state
-    entity_id: switch.home_mqtt_evening_lights
-    to: 'off'
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_evening_lights
-        state: 'on'
-      sequence:
-      - action: homeassistant.turn_on
-        data: {}
-        target:
-          entity_id:
-          - switch.tz3000_gjnozsaz_ts011f_switch_2
-          - switch.tz3000_gjnozsaz_ts011f_switch_6
-          - switch.plug_q11_switch_2
-          - switch.plug_q12_brytare
-          - switch.plug_q06_brytare
-          - switch.plug_q14_brytare
-          - switch.plug_q02_brytare
-          - switch.plug_q04_brytare
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_evening_lights
-        state: 'off'
-      sequence:
-      - action: homeassistant.turn_off
-        target:
-          entity_id:
-          - switch.tz3000_gjnozsaz_ts011f_switch_2
-          - switch.tz3000_gjnozsaz_ts011f_switch_6
-          - switch.plug_q11_switch_2
-          - switch.plug_q12_brytare
-          - switch.plug_q06_brytare
-          - switch.plug_q14_brytare
-          - switch.plug_q02_brytare
-          - switch.plug_q04_brytare
-  mode: single
-- id: '1770126814431'
-  alias: Morgonlampor
-  description: Morgonlampor
-  triggers:
-  - trigger: state
-    entity_id: switch.home_mqtt_morning_lights
-    to: 'on'
-  - trigger: state
-    entity_id: switch.home_mqtt_morning_lights
-    to: 'off'
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_morning_lights
-        state: 'on'
-      sequence:
-      - action: homeassistant.turn_on
-        data: {}
-        target:
-          entity_id:
-          - switch.plug_q04_brytare
-          - switch.tz3000_gjnozsaz_ts011f_switch_6
-    - conditions:
-      - condition: state
-        entity_id: switch.home_mqtt_morning_lights
-        state: 'off'
-      sequence:
-      - action: homeassistant.turn_off
-        target:
-          entity_id:
-          - switch.plug_q04_brytare
-          - switch.tz3000_gjnozsaz_ts011f_switch_6
-  mode: single
 - id: '1781637271521'
   alias: Handle incoming user message
   description: ''
   triggers:
-  - trigger: mqtt
-    options:
-      topic: quarry/message
-  - minutes: /1
-    trigger: time_pattern
+  - topic: quarry/message
+    trigger: mqtt
   actions:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{ trigger.payload_json.target == ''kjell'' }}'
+        value_template: '{{ data.target == ''kjell'' }}'
       sequence:
       - data:
-          message: '{{ trigger.payload_json.message }}'
+          message: '{{ data.message }}'
         action: notify.mobile_app_kjellmobil
-      - action: telegram_bot.send_message
-        metadata: {}
-        data:
-          entity_id:
-          - notify.telegram_bot_5417174722_981670876
-          message: Test
     - conditions:
       - condition: template
-        value_template: '{{ trigger.payload_json.target == ''bettan'' }}'
+        value_template: '{{ data.target == ''bettan'' }}'
       sequence:
       - data:
-          message: '{{ trigger.payload_json.message }}'
+          message: '{{ data.message }}'
         action: notify.mobile_app_bettan_phone
     - conditions:
       - condition: template
-        value_template: '{{ trigger.payload_json.target == ''both'' }}'
+        value_template: '{{ data.target == ''both'' }}'
       sequence:
       - data:
-          message: '{{ trigger.payload_json.message }}'
+          message: '{{ data.message }}'
         action: notify.mobile_app_kjellmobil
       - data:
-          message: '{{ trigger.payload_json.message }}'
+          message: '{{ data.message }}'
         action: notify.mobile_app_bettan_phone
-  - data:
-      topic: quarry/message
-      payload: ''
-      retain: true
-    action: mqtt.publish
+  - if:
+    - condition: template
+      value_template: '{{ data.telegram | default(false) | bool }}'
+    then:
+    - data:
+        message: '{{ data.message }}'
+      action: telegram_bot.send_message
+  - if:
+    - condition: template
+      value_template: '{{ trigger.payload is not none and trigger.payload != ''''
+        }}'
+    then:
+    - data:
+        topic: quarry/message
+        payload: ''
+        retain: true
+      action: mqtt.publish
+  mode: queued
+  max: 10
+  variables:
+    data: '{{ trigger.payload_json | default({}) }}'
+- id: '1781689112504'
+  alias: Standard Notify Block
+  description: ''
+  triggers: []
+  actions:
+  - action: automation.trigger
+    target:
+      entity_id: automation.send_user_message
+    data:
+      skip_condition: true
+      variables:
+        target: kjell
+        message: DIN TEXT HÄR
+        telegram: true
   mode: single
