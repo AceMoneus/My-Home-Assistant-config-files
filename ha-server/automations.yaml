@@ -1429,19 +1429,32 @@
     entity_id: 0869495be16500b7bb992448c47ede4c
     domain: binary_sensor
     trigger: device
+  conditions: []
   actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
-    data:
-      skip_condition: true
-      variables:
-        target: both
-        message: '{{ meddelande }}'
+  - variables:
+      detector_name: '{% set mapping = {
+
+        ''7fe07ddc8393c1de1a097f765a6b5a25'': ''3D‑printer'',
+
+        ''152e232011bbe9be8597b785f31d6ea4'': ''Serverskåp'',
+
+        ''4405a823e4dbdfe433dafadcef20bb02'': ''Källartrappa'',
+
+        ''168b90f422d73f51b485c0f95b6b0420'': ''Övervåning'',
+
+        ''5d41e438a1dcd2d648e133fea1848af8'': ''Garage''
+
+        } %}
+
+        {{ mapping.get(trigger.entity_id, ''Okänd rökdetektor'') }}
+
+        '
+  - data:
+      message: RÖKLARM – {{ detector_name }}
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: RÖKLARM – {{ detector_name }}
+      telegram: true
+    action: script.send_user_message
   mode: single
-  variables:
-    plats: "{% set mapping = {\n  'f7c744934958df61bb43936fe669f49c': '3D‑printer',\n
-      \ '31f1c32e143657dc4b656e4b218feea4': 'Serverskåp',\n  'd68c43bae8381400aab5fee7c24a4fa0':
-      'Källartrappa',\n  '9b69756594a9261b457d4ea345f33b91': 'Övervåning',\n  '0869495be16500b7bb992448c47ede4c':
-      'Garage'\n} %} {{ mapping[trigger.entity_id] }}\n"
-    meddelande: 'Röklarm: {{ plats }}'
