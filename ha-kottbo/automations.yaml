@@ -1,19 +1,3 @@
-- id: '1659996473008'
-  alias: Röklarm - Vind
-  description: ''
-  triggers:
-  - type: smoke
-    device_id: 7118210ce01423cad93110f420f73cda
-    entity_id: cc288f2a796882799b15430fb6ac40a9
-    domain: binary_sensor
-    trigger: device
-  conditions: []
-  actions:
-  - action: telegram_bot.send_message
-    data:
-      config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
-      message: '!! RÖK!! - Kottbo'
-  mode: single
 - id: '1662207023146'
   alias: Telegram - Reply with Status
   description: ''
@@ -615,26 +599,6 @@
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
     domain: switch
   mode: single
-- id: '1730722172820'
-  alias: MQTT Timestamp
-  description: ''
-  triggers:
-  - trigger: time_pattern
-    minutes: /1
-  conditions: []
-  actions:
-  - action: mqtt.publish
-    metadata: {}
-    data:
-      topic: kottbo/timestamp
-      retain: true
-  - action: mqtt.publish
-    metadata: {}
-    data:
-      topic: kottbo/timestamp
-      payload: '{{ (as_timestamp(now()) | timestamp_local) }}'
-      retain: true
-  mode: single
 - id: '1739818615342'
   alias: Ozone Basement
   description: ''
@@ -706,21 +670,6 @@
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
     domain: switch
   mode: single
-- id: '1746094619730'
-  alias: Röklarm - Sovrum
-  description: ''
-  triggers:
-  - type: smoke
-    device_id: 024e02e67b53ecc78f7c3285a4973bfe
-    entity_id: f0f30cd10f6696aad0457d8b9631573b
-    domain: binary_sensor
-    trigger: device
-  conditions: []
-  actions:
-  - action: telegram_bot.send_message
-    data:
-      message: '!!RÖK!! - sovrum'
-  mode: single
 - id: '1750769007053'
   alias: Alarm ON
   description: ''
@@ -731,6 +680,11 @@
     to: 'on'
   conditions: []
   actions:
+  - action: script.send_user_message
+    data:
+      target: both
+      telegram: false
+      message: Larm på
   - type: turn_on
     device_id: ba02bab09e7cbb79a9ecbf432fa1c130
     entity_id: 71cd9f685715a98c410872b317c8c3b2
@@ -765,6 +719,11 @@
     to: 'off'
   conditions: []
   actions:
+  - action: script.send_user_message
+    data:
+      target: both
+      telegram: false
+      message: Larm av
   - action: switch.turn_off
     metadata: {}
     data: {}
@@ -837,20 +796,49 @@
     action: homeassistant.turn_off
   mode: single
 - id: '1775549502532'
-  alias: Röklarm - Källartrapp
-  description: ''
+  alias: Röklarm
+  description: Röklarm
   triggers:
+  - type: smoke
+    device_id: b324cd1dd86add7dfa749fb96c154ba5
+    entity_id: 2cf008dd4d15ff07f3d3209384bea817
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 08b00c57cc0a56123f803346108792a9
+    entity_id: 4de89137020a20b4c08e47146a62a8c5
+    domain: binary_sensor
+    trigger: device
   - type: smoke
     device_id: 64fa55795a47cadabb88399cf5b37cc6
     entity_id: 681e7d9eab4751c88edbddef792114d7
     domain: binary_sensor
     trigger: device
+  - type: smoke
+    device_id: 7118210ce01423cad93110f420f73cda
+    entity_id: cc288f2a796882799b15430fb6ac40a9
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 024e02e67b53ecc78f7c3285a4973bfe
+    entity_id: f0f30cd10f6696aad0457d8b9631573b
+    domain: binary_sensor
+    trigger: device
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    data:
-      config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
-      message: '!! RÖK!! - källartrapp'
+  - variables:
+      detector_name: "{% set mapping = {\n  '4de89137020a20b4c08e47146a62a8c5': 'Vind
+        – inre',\n  'cc288f2a796882799b15430fb6ac40a9': 'Vind – yttre',\n  '2cf008dd4d15ff07f3d3209384bea817':
+        'Källartrappa',\n  'f0f30cd10f6696aad0457d8b9631573b': 'Vardagsrum',\n  '681e7d9eab4751c88edbddef792114d7':
+        'Sovrum'\n} %} {{ mapping.get(trigger.entity_id, 'Okänd rökdetektor') }}\n"
+  - data:
+      message: RÖKLARM – {{ detector_name }}
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: RÖKLARM – {{ detector_name }}
+      telegram: true
+    action: script.send_user_message
   mode: single
 - id: '1780480674940'
   alias: Mount ha_kottbo NFS vid HA-start
@@ -868,4 +856,61 @@
       seconds: 120
   - action: shell_command.mount_ha_kottbo
     data: {}
+  mode: single
+- id: '1781769288596'
+  alias: Rökdetektorer offline
+  description: Larmar om en rökdetektor varit offline i minst 30 minuter
+  triggers:
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 64fa55795a47cadabb88399cf5b37cc6
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: b324cd1dd86add7dfa749fb96c154ba5
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 08b00c57cc0a56123f803346108792a9
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 7118210ce01423cad93110f420f73cda
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 024e02e67b53ecc78f7c3285a4973bfe
+    trigger: device
+  conditions: []
+  actions:
+  - variables:
+      dev_id: '{{ trigger.device_id }}'
+  - delay:
+      hours: 0
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - condition: template
+    value_template: '{% set dev = dev_id %} {% set zha = state_attr(''zha.'' ~ dev,
+      ''available'') %} {{ zha is not true }}
+
+      '
+  - variables:
+      detector_name: "{% set mapping = {\n  '08b00c57cc0a56123f803346108792a9': 'Vind
+        – inre',\n  '7118210ce01423cad93110f420f73cda': 'Vind – yttre',\n  'b324cd1dd86add7dfa749fb96c154ba5':
+        'Källartrappa',\n  '024e02e67b53ecc78f7c3285a4973bfe': 'Vardagsrum',\n  '64fa55795a47cadabb88399cf5b37cc6':
+        'Sovrum'\n} %} {{ mapping.get(dev_id, 'Okänd rökdetektor') }}\n"
+  - data:
+      message: ⚠️ Rökdetektor offline – {{ detector_name }}
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: ⚠️ Rökdetektor offline – {{ detector_name }}
+      telegram: true
+    action: script.send_user_message
   mode: single
