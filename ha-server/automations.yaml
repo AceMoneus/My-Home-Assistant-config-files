@@ -1206,8 +1206,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_xbox
@@ -1217,8 +1216,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
       - delay:
           hours: 0
           minutes: 0
@@ -1227,8 +1225,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
   mode: restart
 - id: '1770659739460'
   alias: mqtt_outside_lighting
