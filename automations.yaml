@@ -1,51 +1,49 @@
 - id: '1738673008459'
-  alias: System - Telegram Startup
+  alias: HA Boot & Shutdown
   description: ''
   triggers:
   - trigger: homeassistant
     event: start
-  conditions: []
-  actions:
-  - action: telegram_bot.send_message
-    metadata: {}
-    data:
-      message: '- HA-Server Start -'
-  mode: single
-- id: '1738673046516'
-  alias: System - Telegram Shutdown
-  description: ''
-  triggers:
+    id: started
   - trigger: homeassistant
     event: shutdown
+    id: shutdown
   conditions: []
   actions:
-  - action: telegram_bot.send_message
-    metadata: {}
+  - action: script.send_user_message
     data:
-      message: '- HA-Server Shutdown -'
+      target: local
+      telegram: false
+      message: '{{ trigger.id }}'
   mode: single
 - id: '1738679737175'
   alias: Alarm Home - Turn ON
   description: ''
   triggers:
-  - trigger: mqtt
-    options:
-      topic: home/alarm/mqtt_alarm_state
-      payload: 'ON'
+  - topic: home/alarm/mqtt_alarm_state
+    payload: 'ON'
+    trigger: mqtt
   conditions: []
   actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.myggbett_door_window_sensor_dorr
+        state:
+        - 'on'
+      sequence:
+      - action: notify.mobile_app_pixel_10_pro_xl
+        data:
+          message: Fönster öppet!
+          title: Larm på
   - action: switch.turn_on
-    metadata: {}
     target:
       entity_id:
-      - switch.grillplats_plug_2
-      - switch.grillplats_plug_6
+      - switch.mt4
+      - switch.mt8
     data: {}
   - delay:
-      hours: 0
-      minutes: 0
       seconds: 45
-      milliseconds: 0
   - type: turn_on
     device_id: 9a673e483ab94b7f780cca69a23bb8eb
     entity_id: 0b0b134052d0b3bed0e32c73109cf6fd
@@ -82,8 +80,8 @@
     metadata: {}
     target:
       entity_id:
-      - switch.grillplats_plug_6
-      - switch.grillplats_plug_2
+      - switch.mt4
+      - switch.mt8
     data: {}
   mode: single
 - id: '1741249838102'
@@ -118,8 +116,15 @@
   - action: switch.turn_on
     metadata: {}
     target:
-      entity_id: switch.grillplats_plug_15
+      entity_id: switch.mt19
     data: {}
+  - action: light.turn_on
+    metadata: {}
+    target:
+      entity_id: light.mt51
+    data:
+      transition: 3
+      brightness_pct: 60
   mode: single
 - id: '1741454189677'
   alias: Office Light OFF
@@ -142,6 +147,12 @@
     target:
       device_id: 4eb538e60466eb8dba61d285a24ffb71
     data: {}
+  - action: light.turn_off
+    metadata: {}
+    target:
+      entity_id: light.mt51
+    data:
+      transition: 5
   mode: single
 - id: '1742762100304'
   alias: MQTT - temperatur sovrum
@@ -163,52 +174,6 @@
       topic: home/temp/bedroom
       payload: '{{ states(''sensor.temp_bedroom_temperatur'') }}'
   mode: single
-- id: '1742805240156'
-  alias: Button - Office Desk
-  description: ''
-  use_blueprint:
-    path: damru/ikea_E1743-E2201-E2213_ZHA-Z2M_control-anything.yaml
-    input:
-      remote_devices:
-      - f82d662e17c98ec3c980f2aded863636
-      on_press_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_desktop
-          payload: 'ON'
-      off_press_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_desktop
-          payload: 'OFF'
-      on_double_press_action: []
-      off_double_press_action: []
-      on_hold_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_xbox
-          payload: 'ON'
-      off_hold_action:
-      - action: mqtt.publish
-        metadata: {}
-        data:
-          evaluate_payload: false
-          qos: '2'
-          retain: true
-          topic: home/switch/mqtt_xbox
-          payload: 'OFF'
 - id: '1744054727367'
   alias: mqtt_desktop
   description: mqtt_desktop
@@ -225,7 +190,7 @@
       sequence:
       - action: homeassistant.turn_on
         target:
-          entity_id: switch.grillplats_plug_16
+          entity_id: switch.mt24
         data: {}
       - action: homeassistant.turn_off
         metadata: {}
@@ -239,8 +204,15 @@
           milliseconds: 0
       - action: homeassistant.turn_on
         target:
-          entity_id: switch.grillplats_plug_15
+          entity_id: switch.mt19
         data: {}
+      - action: light.turn_on
+        metadata: {}
+        target:
+          entity_id: light.mt51
+        data:
+          transition: 5
+          brightness_pct: 60
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_desktop
@@ -248,7 +220,7 @@
       sequence:
       - action: switch.turn_off
         target:
-          entity_id: switch.grillplats_plug_16
+          entity_id: switch.mt24
         data: {}
         enabled: true
       - delay:
@@ -260,8 +232,13 @@
         metadata: {}
         data: {}
         target:
-          entity_id:
-          - switch.grillplats_plug_15
+          entity_id: switch.mt19
+      - action: light.turn_off
+        metadata: {}
+        target:
+          entity_id: light.mt51
+        data:
+          transition: 5
       - action: homeassistant.turn_on
         metadata: {}
         data: {}
@@ -287,7 +264,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.grillplats_plug_4
+          entity_id: switch.mt6
       - delay:
           hours: 0
           minutes: 0
@@ -296,7 +273,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.grillplats_plug_4
+          entity_id: switch.mt6
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_kitchen_tv
@@ -306,7 +283,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id: switch.grillplats_plug_4
+          entity_id: switch.mt6
       - delay:
           hours: 0
           minutes: 0
@@ -315,7 +292,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id: switch.grillplats_plug_4
+          entity_id: switch.mt6
   mode: restart
 - id: '1745215029019'
   alias: Set Values at HA Start
@@ -457,8 +434,9 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: binary_sensor.motion_lyktstolpe
-        state: 'on'
+        entity_id: binary_sensor.mt29_belaggning
+        state:
+        - 'on'
       sequence:
       - target:
           entity_id:
@@ -468,26 +446,28 @@
         data: {}
     - conditions:
       - condition: state
-        entity_id: binary_sensor.motion_shed
-        state: 'on'
+        entity_id: binary_sensor.mt49_belaggning
+        state:
+        - 'on'
+      sequence:
+      - target:
+          entity_id:
+          - light.lamp_garage
+          - light.lamp_shed
+          - light.lamp_driveway
+        action: light.turn_on
+        data: {}
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.mt50_belaggning
+        state:
+        - 'on'
       sequence:
       - target:
           entity_id:
           - light.lamp_garage
           - light.lamp_woodshed
           - light.lamp_shed
-        action: light.turn_on
-        data: {}
-    - conditions:
-      - condition: state
-        entity_id: binary_sensor.motion_garage
-        state: 'on'
-      sequence:
-      - target:
-          entity_id:
-          - light.lamp_garage
-          - light.lamp_shed
-          - light.lamp_driveway
         action: light.turn_on
         data: {}
   - delay:
@@ -636,19 +616,22 @@
   mode: single
 - id: '1760364391930'
   alias: UPS status notifiering
-  description: Skickar aktuell UPS-status via Telegram
+  description: Skickar aktuell UPS-status via Send user message
   triggers:
   - entity_id: sensor.myups_status
     trigger: state
   conditions: []
   actions:
-  - data:
-      message: 'UPS-status ändrad till:
-
-        {{ states(''sensor.myups_status'') }}
-
-        '
-    action: telegram_bot.send_message
+  - action: script.send_user_message
+    data:
+      target: local
+      telegram: false
+      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
+  - action: script.send_user_message
+    data:
+      target: kjell
+      telegram: true
+      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
   mode: single
 - id: '1762203466396'
   alias: 'Strömövervakning: Faser över 20A i 2 minuter'
@@ -895,59 +878,15 @@
       - switch.home_mqtt_bedroom_light
     data: {}
   mode: restart
-- id: '1765895296033'
-  alias: Uppdatera home_away baserat på mobiler
-  description: Sätter home_away till ON om någon mobil är hemma, annars OFF
-  triggers:
-  - minutes: /1
-    trigger: time_pattern
-  - trigger: state
-    entity_id:
-    - device_tracker.bs_a23
-    - device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
-  actions:
-  - choose:
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: device_tracker.bs_a23
-          state:
-          - home
-        - condition: state
-          entity_id: device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
-          state:
-          - home
-      sequence:
-      - data:
-          topic: home/state/home_away
-          payload: 'ON'
-        action: mqtt.publish
-    - conditions:
-      - condition: and
-        conditions:
-        - condition: state
-          entity_id: device_tracker.bs_a23
-          state:
-          - not_home
-        - condition: state
-          entity_id: device_tracker.unifi_default_b0_d5_fb_d0_f7_c3
-          state:
-          - not_home
-      sequence:
-      - data:
-          topic: home/state/home_away
-          payload: 'OFF'
-        action: mqtt.publish
 - id: '1768673214791'
   alias: WAF Connected
   description: ''
   triggers:
-  - type: connected
-    device_id: 48ff0d2f8a8905d21f4b7d8758975c49
-    entity_id: 1bb3bddf60e3cec59aec86b53f857133
-    domain: binary_sensor
-    trigger: device
+  - trigger: state
+    entity_id:
+    - device_tracker.bs_a23
+    to:
+    - home
   conditions:
   - condition: state
     entity_id: switch.home_mqtt_mqtt_wf_arm
@@ -984,7 +923,8 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.plug_outside_driveway
+          entity_id:
+          - switch.mt31
       - delay:
           hours: 1
           minutes: 0
@@ -993,8 +933,8 @@
       - action: homeassistant.turn_off
         target:
           entity_id:
-          - switch.plug_outside_driveway
           - switch.home_mqtt_bettan_carheat2
+          - switch.mt31
         data: {}
       - delay:
           hours: 0
@@ -1004,8 +944,8 @@
       - action: homeassistant.turn_off
         target:
           entity_id:
-          - switch.plug_outside_driveway
           - switch.home_mqtt_bettan_carheat2
+          - switch.mt31
         data: {}
     - conditions:
       - condition: state
@@ -1016,8 +956,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_outside_driveway
+          entity_id: switch.mt31
       - delay:
           hours: 0
           minutes: 0
@@ -1026,8 +965,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_outside_driveway
+          entity_id: switch.mt31
   mode: restart
 - id: '1769854132894'
   alias: Home/Away
@@ -1268,8 +1206,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_xbox
@@ -1279,8 +1216,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
       - delay:
           hours: 0
           minutes: 0
@@ -1289,8 +1225,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.plug_q18_xbox_brytare
+          entity_id: switch.mt27
   mode: restart
 - id: '1770659739460'
   alias: mqtt_outside_lighting
@@ -1365,7 +1300,8 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.grillplats_plug_11
+          entity_id:
+          - switch.mt15
       - delay:
           hours: 0
           minutes: 0
@@ -1374,7 +1310,7 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id: switch.grillplats_plug_11
+          entity_id: switch.mt15
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_bedroom_light
@@ -1384,8 +1320,7 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.grillplats_plug_11
+          entity_id: switch.mt15
       - delay:
           hours: 0
           minutes: 0
@@ -1394,6 +1329,85 @@
       - action: switch.turn_off
         data: {}
         target:
-          entity_id:
-          - switch.grillplats_plug_11
+          entity_id: switch.mt15
   mode: restart
+- id: '1781348246968'
+  alias: Button - Desktop
+  description: ''
+  use_blueprint:
+    path: Skaronator/ikea-bilresa-dual-button.yaml
+    input:
+      button1_event:
+      - event.mt45_knapp_1
+      button2_event:
+      - event.mt45_knapp_2
+      button1_single:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_desktop
+        data: {}
+      button2_single:
+      - action: switch.turn_off
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_desktop
+        data: {}
+- id: '1781638175577'
+  alias: Röklarm notifiering
+  description: ''
+  triggers:
+  - type: smoke
+    device_id: 7fe07ddc8393c1de1a097f765a6b5a25
+    entity_id: f7c744934958df61bb43936fe669f49c
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 152e232011bbe9be8597b785f31d6ea4
+    entity_id: 31f1c32e143657dc4b656e4b218feea4
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 4405a823e4dbdfe433dafadcef20bb02
+    entity_id: d68c43bae8381400aab5fee7c24a4fa0
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 168b90f422d73f51b485c0f95b6b0420
+    entity_id: 9b69756594a9261b457d4ea345f33b91
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 5d41e438a1dcd2d648e133fea1848af8
+    entity_id: 0869495be16500b7bb992448c47ede4c
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - variables:
+      detector_name: '{% set mapping = {
+
+        ''7fe07ddc8393c1de1a097f765a6b5a25'': ''3D‑printer'',
+
+        ''152e232011bbe9be8597b785f31d6ea4'': ''Serverskåp'',
+
+        ''4405a823e4dbdfe433dafadcef20bb02'': ''Källartrappa'',
+
+        ''168b90f422d73f51b485c0f95b6b0420'': ''Övervåning'',
+
+        ''5d41e438a1dcd2d648e133fea1848af8'': ''Garage''
+
+        } %}
+
+        {{ mapping.get(trigger.entity_id, ''Okänd rökdetektor'') }}
+
+        '
+  - data:
+      message: RÖKLARM – {{ detector_name }}
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: RÖKLARM – {{ detector_name }}
+      telegram: true
+    action: script.send_user_message
+  mode: single

@@ -2,21 +2,21 @@ morning_lights:
   name: "Group Morgonlampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.grillplats_plug_5 #Telefonlampa
-    - switch.grillplats_plug #Burspråk
+    - switch.mt7 #Telefonlampa
+    - switch.mt3 #Burspråk
 
 evening_lights:
   name: "Group Kvällslampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.grillplats_plug_7 #Matplats
-    - switch.grillplats_plug_10 #Övre hall
-    - switch.grillplats_plug_3 #Köksfönster
-    - switch.grillplats_plug_9 #Vardagsrum uppfart
-    - switch.grillplats_plug_8 #Vardagsrum gård
-    - switch.grillplats_plug_3 #Köksfönster
-    - switch.grillplats_plug_13 #Pysselrum
-    - switch.grillplats_plug_12 #Gästrum
+    - switch.mt9 #Matplats
+    - switch.mt12 #Övre hall
+    - switch.mt5 #Köksfönster
+    - switch.mt11 #Vardagsrum uppfart
+    - switch.mt10 #Vardagsrum gård
+    - switch.mt5 #Köksfönster
+    - switch.mt17 #Pysselrum
+    - switch.mt16 #Gästrum
     - switch.home_mqtt_bedroom_light
     - switch.home_mqtt_morning_lights
 
@@ -24,17 +24,17 @@ outdoor_mood_lights:
   name: "Group UteMyslampor"
   icon: mdi:lightbulb-group
   entities:
-    - switch.tofsmygga_plug_outdoor #Altan
-    - switch.tofsmygga_plug_outdoor_2 #Köksutgång
-    - switch.s4 #LED Garage
-    - switch.s4_2 #LED Boden
-    - switch.s4_3 #LED Lekstuga
+    - switch.mt13 #Altan
+    - switch.mt14 #Köksutgång
+    - switch.mt20 #LED Garage
+    - switch.mt21 #LED Boden
+    - switch.mt22 #LED Lekstuga
 
 outdoor_lighting:
   name: "Group Utebelysning"
   icon: mdi:lightbulb-group
   entities:
-    - light.lamp_driveway
-    - light.lamp_garage
-    - light.lamp_woodshed
-    - light.lamp_shed
+    - light.mt54
+    - light.mt55
+    - light.mt56
+    

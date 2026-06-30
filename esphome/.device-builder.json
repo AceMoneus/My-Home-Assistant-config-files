@@ -1,0 +1,61 @@
+{
+  "_board_id_user_set_migrated": true,
+  "bt-proxy-1.yaml": {
+    "mac_address": "84:1F:E8:1B:D3:4C"
+  },
+  "_dashboard_identity": {
+    "dashboard_id": "rB1DhkaH2Occ25peuULD8Uype_8Xldod"
+  },
+  "_firmware_jobs": [
+    {
+      "job_id": "9264180d2a77",
+      "configuration": "bt-proxy-1.yaml",
+      "job_type": "upload",
+      "status": "completed",
+      "created_at": "2026-06-28T17:16:14.915352+00:00",
+      "started_at": "2026-06-28T17:23:55.868555+00:00",
+      "completed_at": "2026-06-28T17:24:11.835572+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "OTA",
+      "new_name": "",
+      "depends_on": "b268cf56b12d",
+      "dependency_released": true,
+      "progress": 100,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    },
+    {
+      "job_id": "b268cf56b12d",
+      "configuration": "bt-proxy-1.yaml",
+      "job_type": "compile",
+      "status": "completed",
+      "created_at": "2026-06-28T17:16:14.915286+00:00",
+      "started_at": "2026-06-28T17:16:14.927696+00:00",
+      "completed_at": "2026-06-28T17:23:55.862639+00:00",
+      "exit_code": 0,
+      "error": null,
+      "port": "",
+      "new_name": "",
+      "depends_on": "",
+      "dependency_released": false,
+      "progress": null,
+      "remote_peer": "",
+      "remote_job_id": "",
+      "remote_peer_label": "",
+      "device_name": "",
+      "device_friendly_name": "",
+      "source": "local",
+      "source_pin_sha256": "",
+      "source_label": "",
+      "source_esphome_version": ""
+    }
+  ]
+}

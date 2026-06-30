@@ -1,0 +1,61 @@
+send_user_message:
+  alias: Send user message
+  mode: single
+  variables:
+    machine_name: "ha-server"
+  fields:
+    target:
+      description: "Vem som ska få meddelandet"
+      example: "kjell"
+    message:
+      description: "Meddelandetext"
+      example: "Brandlarm"
+    telegram:
+      description: "Skicka telegram?"
+      example: true
+  sequence:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >
+                {{ target not in ['kjell','bettan','both','local']
+                   or (message | trim) == '' }}
+          sequence:
+            - service: persistent_notification.create
+              data:
+                title: "Fel i Send user message"
+                message: >
+                  Ogiltig payload:
+                  target={{ target }},
+                  message={{ message }},
+                  telegram={{ telegram }}
+            - stop: "Ogiltig input"
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ target == 'local' }}"
+          sequence:
+            - service: telegram_bot.send_message
+              data:
+                message: "{{ machine_name }}: {{ message }}"
+            - stop: "Local notification skickad"
+    - service: mqtt.publish
+      data:
+        topic: quarry/message
+        retain: true
+        qos: 1
+        payload: >
+          {
+            "target": "{{ target }}",
+            "message": "{{ machine_name }}: {{ message }}",
+            "telegram": {{ telegram | lower }}
+          }
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ target in ['kjell','both'] and telegram }}"
+          sequence:
+            - service: telegram_bot.send_message
+              data:
+                message: "{{ machine_name }}: {{ message }}"
+  description: ""

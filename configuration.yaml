@@ -1,15 +1,15 @@
-#####################################################
+######################################################
 # Loads default set of integrations.
 default_config:
 logger:
-  default: warning
+  default: info
 
-#####################################################
+######################################################
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
 
-#####################################################
+######################################################
 # Includes
 automation: !include automations.yaml
 group: !include .includes/group.yaml
@@ -20,6 +20,7 @@ mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
   binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor
+script: !include .includes/scripts.yaml
 sensor: !include_dir_merge_list .includes/sensors/
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
