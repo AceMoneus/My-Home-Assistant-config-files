@@ -614,25 +614,6 @@
         or 'okänd enhet' }}\n{% endif %}\n"
     action: telegram_bot.send_message
   mode: single
-- id: '1760364391930'
-  alias: UPS status notifiering
-  description: Skickar aktuell UPS-status via Send user message
-  triggers:
-  - entity_id: sensor.myups_status
-    trigger: state
-  conditions: []
-  actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      telegram: false
-      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
-  - action: script.send_user_message
-    data:
-      target: kjell
-      telegram: true
-      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
-  mode: single
 - id: '1762203466396'
   alias: 'Strömövervakning: Faser över 20A i 2 minuter'
   description: ''
@@ -1410,4 +1391,37 @@
       message: RÖKLARM – {{ detector_name }}
       telegram: true
     action: script.send_user_message
+  mode: single
+- id: '1782816810492'
+  alias: Stabilisera NFS-mount vid uppstart och före backup
+  description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
+  triggers:
+  - event: start
+    trigger: homeassistant
+  - at: 02:45:00
+    trigger: time
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''start'' }}'
+      sequence:
+      - delay: 00:01:00
+  - action: hassio.mount_reload
+    data:
+      device_id: 41c1e3b0a4177857a1ac7fc61cdf0264
+  mode: single
+- id: '1782819147287'
+  alias: UPS status notifiering
+  description: Skickar aktuell UPS-status via Send user message
+  triggers:
+  - entity_id: sensor.myups_status
+    trigger: state
+  conditions: []
+  actions:
+  - action: script.send_user_message
+    data:
+      target: local
+      telegram: true
+      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
   mode: single
