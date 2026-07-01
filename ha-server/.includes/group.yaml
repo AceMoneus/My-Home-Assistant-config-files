@@ -34,7 +34,7 @@ outdoor_lighting:
   name: "Group Utebelysning"
   icon: mdi:lightbulb-group
   entities:
-    - light.lamp_driveway
-    - light.lamp_garage
-    - light.lamp_woodshed
-    - light.lamp_shed
+    - light.mt54
+    - light.mt55
+    - light.mt56
+    
