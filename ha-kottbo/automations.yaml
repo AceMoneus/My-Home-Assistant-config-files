@@ -914,3 +914,22 @@
       telegram: true
     action: script.send_user_message
   mode: single
+- id: '1782920726652'
+  alias: Stabilisera NFS-mount vid uppstart och före backup
+  description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
+  triggers:
+  - event: start
+    trigger: homeassistant
+  - at: 02:45:00
+    trigger: time
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''start'' }}'
+      sequence:
+      - delay: 00:01:00
+  - action: hassio.mount_reload
+    data:
+      device_id: 9d21dfdd9b23ad12a4f4964c44391b7f
+  mode: single
