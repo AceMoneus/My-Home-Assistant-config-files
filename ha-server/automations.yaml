@@ -1443,3 +1443,38 @@
     data:
       device_id: 41c1e3b0a4177857a1ac7fc61cdf0264
   mode: single
+- id: '1783352991565'
+  alias: mqtt_top_bathroom_fan
+  description: mqtt_kitchen_tv
+  triggers:
+  - entity_id:
+    - switch.home_mqtt_top_bathroom_fan
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_top_bathroom_fan
+        state:
+        - 'on'
+      sequence:
+      - action: number.set_value
+        metadata: {}
+        target:
+          entity_id: number.fresh_ovre_badrum_constant_speed
+        data:
+          value: '2200'
+    - conditions:
+      - condition: state
+        entity_id: switch.home_mqtt_top_bathroom_fan
+        state:
+        - 'off'
+      sequence:
+      - action: number.set_value
+        metadata: {}
+        target:
+          entity_id: number.fresh_ovre_badrum_constant_speed
+        data:
+          value: '800'
+  mode: restart

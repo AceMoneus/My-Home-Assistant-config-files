@@ -16,8 +16,8 @@
   optimistic: false
   qos: 2
   retain: true
-- name: home_mqtt_mqtt_wf_arm
-  unique_id: home_mqtt_mqtt_wf_arm
+- name: home_mqtt_wf_arm
+  unique_id: home_mqtt_wf_arm
   command_topic: "home/switch/mqtt_wf_arm"
   state_topic: "home/switch/mqtt_wf_arm"
   payload_on: "ON"
