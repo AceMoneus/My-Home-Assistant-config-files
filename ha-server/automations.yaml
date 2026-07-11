@@ -35,7 +35,7 @@
       sequence:
       - action: script.send_user_message
         data:
-          target: local
+          target: kjell
           telegram: true
           message: Larm PÅ - Fönster öppet
     - conditions:
@@ -46,7 +46,7 @@
       sequence:
       - action: script.send_user_message
         data:
-          target: local
+          target: kjell
           telegram: true
           message: Larm PÅ
   - action: switch.turn_on
@@ -101,7 +101,7 @@
       - switch.mt4
       - switch.mt8
     data: {}
-  mode: single
+  mode: restart
 - id: '1741249838102'
   alias: MQTT - temperatur vardagsrum
   description: ''
@@ -883,7 +883,7 @@
   triggers:
   - trigger: state
     entity_id:
-    - device_tracker.bs_a23
+    - device_tracker.bs_a23_61_bettanmobil_61
     to:
     - home
   conditions:
@@ -966,87 +966,6 @@
         target:
           entity_id: switch.mt31
   mode: restart
-- id: '1769854132894'
-  alias: Home/Away
-  description: Home/Away
-  triggers:
-  - trigger: state
-    entity_id: binary_sensor.home_away
-    to: 'on'
-    id: home
-  - trigger: state
-    entity_id: binary_sensor.home_away
-    to: 'off'
-    for:
-      minutes: 2
-    id: away
-  conditions: []
-  actions:
-  - action: telegram_bot.send_message
-    metadata: {}
-    data:
-      config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
-      message: Larm Av
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: home
-      sequence:
-      - action: switch.turn_off
-        metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_off
-        metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
-    - conditions:
-      - condition: trigger
-        id: away
-      sequence:
-      - action: telegram_bot.send_message
-        metadata: {}
-        data:
-          config_entry_id: 01JZV7X8DKFD785V07C00A8AMQ
-          message: Larm På
-      - action: switch.turn_on
-        metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
-      - action: switch.turn_off
-        metadata: {}
-        target:
-          entity_id:
-          - switch.home_mqtt_desktop
-          - switch.home_mqtt_xbox
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_on
-        metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
-      - action: switch.turn_off
-        metadata: {}
-        target:
-          entity_id:
-          - switch.home_mqtt_desktop
-          - switch.home_mqtt_xbox
-        data: {}
-    default: []
-  mode: single
 - id: '1770125964946'
   alias: Kvällslampor
   description: Kvällslampor
@@ -1477,4 +1396,67 @@
           entity_id: number.fresh_ovre_badrum_constant_speed
         data:
           value: '800'
+  mode: restart
+- id: '1783629183654'
+  alias: Uppdatera HomeAway baserat på mobiler
+  triggers:
+  - trigger: state
+    entity_id:
+    - device_tracker.bs_a23_61_bettanmobil_61
+    - device_tracker.john117_60_john117_60
+    to: home
+  - trigger: state
+    entity_id:
+    - device_tracker.bs_a23_61_bettanmobil_61
+    - device_tracker.john117_60_john117_60
+    for:
+      hours: 0
+      minutes: 2
+      seconds: 0
+    to:
+    - not_home
+  actions:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: device_tracker.bs_a23_61_bettanmobil_61
+          state:
+          - home
+        - condition: state
+          entity_id: device_tracker.john117_60_john117_60
+          state:
+          - home
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.home_mqtt_alarm_state
+        data: {}
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: state
+          entity_id: device_tracker.bs_a23_61_bettanmobil_61
+          state:
+          - not_home
+          for:
+            hours: 0
+            minutes: 2
+            seconds: 0
+        - condition: state
+          entity_id: device_tracker.john117_60_john117_60
+          state:
+          - not_home
+          for:
+            hours: 0
+            minutes: 2
+            seconds: 0
+      sequence:
+      - action: switch.turn_on
+        metadata: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
+        data: {}
   mode: restart
