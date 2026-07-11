@@ -1429,11 +1429,14 @@
           state:
           - home
       sequence:
-      - action: switch.turn_off
-        target:
-          entity_id:
-          - switch.home_mqtt_alarm_state
-        data: {}
+      - action: mqtt.publish
+        metadata: {}
+        data:
+          evaluate_payload: false
+          qos: '2'
+          retain: false
+          topic: home/state/home_away
+          payload: home
     - conditions:
       - condition: and
         conditions:
@@ -1454,9 +1457,42 @@
             minutes: 2
             seconds: 0
       sequence:
-      - action: switch.turn_on
+      - action: mqtt.publish
         metadata: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
-        data: {}
+        data:
+          evaluate_payload: false
+          qos: '2'
+          retain: false
+          topic: home/state/home_away
+          payload: away
   mode: restart
+- id: '1783719932536'
+  alias: Synka home_away med alarm_state
+  description: Synka home_away med alarm_state
+  triggers:
+  - topic: home/state/home_away
+    trigger: mqtt
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.payload == ''home'' }}'
+      sequence:
+      - data:
+          topic: home/alarm/mqtt_alarm_state
+          payload: 'OFF'
+          qos: 0
+          retain: false
+        action: mqtt.publish
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.payload == ''away'' }}'
+      sequence:
+      - data:
+          topic: home/alarm/mqtt_alarm_state
+          payload: 'ON'
+          qos: 0
+          retain: false
+        action: mqtt.publish
+  mode: single
