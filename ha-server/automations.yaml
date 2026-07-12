@@ -18,43 +18,43 @@
   mode: single
 - id: '1738679737175'
   alias: Alarm Home - Turn ON
-  description: ''
+  description: Aktiverar larmet och skickar notis endast vid faktisk förändring
   triggers:
-  - trigger: mqtt
-    options:
-      topic: home/alarm/mqtt_alarm_state
-      payload: 'ON'
+  - topic: home/alarm/mqtt_alarm_state
+    payload: 'ON'
+    trigger: mqtt
   conditions: []
   actions:
   - choose:
     - conditions:
+      - condition: template
+        value_template: '{{ states(''binary_sensor.mqtt_alarm_state'') != ''on'' }}'
       - condition: state
         entity_id: binary_sensor.mt30_dorr
-        state:
-        - 'on'
+        state: 'on'
       sequence:
       - action: script.send_user_message
         data:
-          target: kjell
-          telegram: true
+          target: both
+          telegram: false
           message: Larm PÅ - Fönster öppet
     - conditions:
+      - condition: template
+        value_template: '{{ states(''binary_sensor.mqtt_alarm_state'') != ''on'' }}'
       - condition: state
         entity_id: binary_sensor.mt30_dorr
-        state:
-        - 'off'
+        state: 'off'
       sequence:
       - action: script.send_user_message
         data:
-          target: kjell
-          telegram: true
+          target: both
+          telegram: false
           message: Larm PÅ
   - action: switch.turn_on
     target:
       entity_id:
       - switch.mt4
       - switch.mt8
-    data: {}
   - delay:
       seconds: 45
   - type: turn_on
@@ -65,22 +65,27 @@
     device_id: b5785dd07d7000c871b4d91722709a08
     entity_id: 7f210914ac67a7670525bd3842dc10fb
     domain: switch
-  mode: single
+  mode: restart
 - id: '1738679758106'
   alias: Alarm Home - Turn OFF
-  description: ''
+  description: Avaktiverar larmet och skickar notis endast vid faktisk förändring
   triggers:
-  - trigger: mqtt
-    options:
-      topic: home/alarm/mqtt_alarm_state
-      payload: 'OFF'
+  - topic: home/alarm/mqtt_alarm_state
+    payload: 'OFF'
+    trigger: mqtt
   conditions: []
   actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      telegram: true
-      message: Larm AV
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ states(''binary_sensor.mqtt_alarm_state'') != ''off''
+          }}'
+      sequence:
+      - action: script.send_user_message
+        data:
+          target: both
+          telegram: false
+          message: Larm AV
   - type: turn_off
     device_id: 8a4d5530cbe13492bdb27f27ca09c44f
     entity_id: d66e99f17986a63a29719c7dba6402e2
@@ -90,17 +95,12 @@
     entity_id: 7f210914ac67a7670525bd3842dc10fb
     domain: switch
   - delay:
-      hours: 0
-      minutes: 0
       seconds: 10
-      milliseconds: 0
   - action: switch.turn_off
-    metadata: {}
     target:
       entity_id:
       - switch.mt4
       - switch.mt8
-    data: {}
   mode: restart
 - id: '1741249838102'
   alias: MQTT - temperatur vardagsrum
@@ -1398,7 +1398,8 @@
           value: '800'
   mode: restart
 - id: '1783629183654'
-  alias: Uppdatera HomeAway baserat på mobiler
+  alias: Uppdatera Home Away och Alarm State baserat på mobiler
+  description: ''
   triggers:
   - trigger: state
     entity_id:
@@ -1466,33 +1467,3 @@
           topic: home/state/home_away
           payload: away
   mode: restart
-- id: '1783719932536'
-  alias: Synka home_away med alarm_state
-  description: Synka home_away med alarm_state
-  triggers:
-  - topic: home/state/home_away
-    trigger: mqtt
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.payload == ''home'' }}'
-      sequence:
-      - data:
-          topic: home/alarm/mqtt_alarm_state
-          payload: 'OFF'
-          qos: 0
-          retain: false
-        action: mqtt.publish
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.payload == ''away'' }}'
-      sequence:
-      - data:
-          topic: home/alarm/mqtt_alarm_state
-          payload: 'ON'
-          qos: 0
-          retain: false
-        action: mqtt.publish
-  mode: single
