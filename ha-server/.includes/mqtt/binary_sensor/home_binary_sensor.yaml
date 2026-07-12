@@ -15,7 +15,7 @@
     qos: 2
   - name: "home_away"
     state_topic: "home/state/home_away"
-    payload_on: "ON"
-    payload_off: "OFF"
+    payload_on: "home"
+    payload_off: "away"
     device_class: presence
     qos: 2
