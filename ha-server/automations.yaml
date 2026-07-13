@@ -1438,6 +1438,11 @@
           retain: false
           topic: home/state/home_away
           payload: home
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
     - conditions:
       - condition: and
         conditions:
@@ -1466,4 +1471,9 @@
           retain: false
           topic: home/state/home_away
           payload: away
+      - action: switch.turn_on
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.home_mqtt_alarm_state
   mode: restart
