@@ -57,14 +57,17 @@
       - switch.mt8
   - delay:
       seconds: 45
-  - type: turn_on
-    device_id: 8a4d5530cbe13492bdb27f27ca09c44f
-    entity_id: d66e99f17986a63a29719c7dba6402e2
-    domain: switch
-  - type: turn_on
-    device_id: b5785dd07d7000c871b4d91722709a08
-    entity_id: 7f210914ac67a7670525bd3842dc10fb
-    domain: switch
+  - action: switch.turn_on
+    metadata: {}
+    target:
+      entity_id:
+      - switch.security_hall_detektioner_person
+      - switch.g5_flex_detektioner_person_2
+      - switch.kok_detections_person
+      - switch.uppfart_detektioner_person
+      - switch.security_ytterdorr_detektioner_person
+      - switch.koksdorr_detektioner_person
+    data: {}
   mode: restart
 - id: '1738679758106'
   alias: Alarm Home - Turn OFF
@@ -97,10 +100,16 @@
   - delay:
       seconds: 10
   - action: switch.turn_off
+    metadata: {}
     target:
       entity_id:
-      - switch.mt4
-      - switch.mt8
+      - switch.security_hall_detektioner_person
+      - switch.g5_flex_detektioner_person_2
+      - switch.kok_detections_person
+      - switch.uppfart_detektioner_person
+      - switch.security_ytterdorr_detektioner_person
+      - switch.koksdorr_detektioner_person
+    data: {}
   mode: restart
 - id: '1741249838102'
   alias: MQTT - temperatur vardagsrum
