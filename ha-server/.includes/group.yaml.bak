@@ -14,8 +14,11 @@ evening_lights:
     - switch.mt5 #Köksfönster
     - switch.mt11 #Vardagsrum uppfart
     - switch.mt10 #Vardagsrum gård
+    - switch.mt5 #Köksfönster
     - switch.mt17 #Pysselrum
     - switch.mt16 #Gästrum
+    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_morning_lights
 
 outdoor_mood_lights:
   name: "Group UteMyslampor"
@@ -34,3 +37,4 @@ outdoor_lighting:
     - light.mt54
     - light.mt55
     - light.mt56
+    
