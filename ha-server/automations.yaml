@@ -298,27 +298,6 @@
               target:
                 entity_id: switch.mt6
   mode: restart
-- id: "1745215029019"
-  alias: Set Values at HA Start
-  description: ""
-  triggers:
-    - trigger: homeassistant
-      event: start
-  conditions: []
-  actions:
-    - action: input_number.set_value
-      metadata: {}
-      data:
-        value: 20
-      target:
-        entity_id: input_number.kona_maltemperatur
-    - action: input_text.set_value
-      metadata: {}
-      data:
-        value: "-"
-      target:
-        entity_id: input_text.shaun_state
-  mode: single
 - id: "1749557595493"
   alias: Update Binary Sensor "dark" every minute
   description: ""
