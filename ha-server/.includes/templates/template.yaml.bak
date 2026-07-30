@@ -1,0 +1,12 @@
+  - sensor:
+      - name: "Sun angle"
+        unique_id: sun_angle
+        unit_of_measurement: "°"
+        state: "{{ state_attr('sun.sun', 'elevation') | round(0) | int }}"
+        attributes:
+          azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(0) | int }}"
+
+  - binary_sensor:
+    - name: "Sun Down"
+      unique_id: "sun_down"
+      state: "{{ state_attr('sun.sun', 'elevation') < 4 }}"
