@@ -10,6 +10,10 @@ frontend:
   themes: !include_dir_merge_named themes
 
 ######################################################
+# Wake on LAN service (used by switch.victus)
+wake_on_lan:
+
+######################################################
 # Includes
 automation: !include automations.yaml
 group: !include .includes/group.yaml
