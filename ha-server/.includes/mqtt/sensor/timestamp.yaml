@@ -1,0 +1,24 @@
+- name: "MQTT Timestamp ha-kottbo"
+  state_topic: "timestamp/ha-kottbo"
+  device_class: "timestamp"
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_kottbo"
+  qos: 2
+- name: "MQTT Timestamp ha-front"
+  state_topic: "timestamp/ha-front"
+  device_class: "timestamp"
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_front"
+  qos: 2
+- name: "MQTT Timestamp ha-core"
+  state_topic: "timestamp/ha-core"
+  device_class: "timestamp"
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_core"
+  qos: 2
+- name: "MQTT Timestamp ha-server"
+  state_topic: "timestamp/ha-server"
+  device_class: "timestamp"
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_server"
+  qos: 2
