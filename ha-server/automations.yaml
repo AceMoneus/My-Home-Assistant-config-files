@@ -1456,3 +1456,51 @@
               target:
                 entity_id: switch.home_mqtt_alarm_state
   mode: restart
+- id: "1783822800000"
+  alias: Heartbeat & watchdog
+  description: >-
+    Publicerar timestamp varje minut och varnar om övriga HA är tysta i mer
+    än 10 minuter (max ca 1 gång/timme)
+  triggers:
+    - trigger: time_pattern
+      minutes: /1
+  conditions: []
+  actions:
+    - action: mqtt.publish
+      data:
+        topic: timestamp/ha-server
+        payload: "{{ as_timestamp(now()) | timestamp_local }}"
+        retain: true
+        qos: 2
+    - variables:
+        hosts:
+          - entity: sensor.mqtt_timestamp_ha_kottbo
+            name: ha-kottbo
+          - entity: sensor.mqtt_timestamp_ha_front
+            name: ha-front
+          - entity: sensor.mqtt_timestamp_ha_core
+            name: ha-core
+          - entity: sensor.mqtt_timestamp_ha_server
+            name: ha-server
+    - repeat:
+        for_each: "{{ hosts }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: >-
+                  {% set s = states(repeat.item.entity) %}
+                  {% if s in ["unknown", "unavailable", "none", ""] %}
+                    {{ now().minute == 0 }}
+                  {% else %}
+                    {% set age = as_timestamp(now()) - as_timestamp(s) %}
+                    {{ age >= 600 and (age // 60) % 60 == 10 }}
+                  {% endif %}
+            then:
+              - action: script.send_user_message
+                data:
+                  target: local
+                  telegram: true
+                  message: >-
+                    Varning! {{ repeat.item.name }} senaste heartbeat:
+                    {{ states(repeat.item.entity) }}
+  mode: single
