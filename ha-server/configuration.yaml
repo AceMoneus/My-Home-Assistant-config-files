@@ -20,11 +20,13 @@ group: !include .includes/group.yaml
 homeassistant: !include .includes/homeassistant.yaml
 http: !include .includes/http.yaml
 influxdb: !include .includes/influxdb.yaml
+
 mqtt:
-  switch: !include_dir_merge_list .includes/mqtt/switch
-  sensor: !include_dir_merge_list .includes/mqtt/sensor
-  binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor
-script: !include .includes/scripts.yaml
-sensor: !include_dir_merge_list .includes/sensors/
+  switch: !include_dir_merge_list .includes/mqtt/switch/
+  sensor: !include_dir_merge_list .includes/mqtt/sensor/
+  binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor/
+
+script: !include_dir_merge_named .includes/script/
+sensor: !include_dir_merge_list .includes/sensor/
 shell_command: !include .includes/shell_command.yaml
-template: !include_dir_merge_list .includes/templates/
+template: !include_dir_merge_list .includes/template/
