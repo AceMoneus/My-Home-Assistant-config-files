@@ -15,7 +15,6 @@ remote_homeassistant:
 automation: !include automations.yaml
 group: !include .includes/group.yaml
 homeassistant: !include .includes/homeassistant.yaml
-http: !include .includes/http.yaml
 influxdb: !include .includes/influxdb.yaml
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
@@ -25,3 +24,4 @@ script: !include .includes/scripts.yaml
 sensor: !include_dir_merge_list .includes/sensors/
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
+utility_meter: !include .includes/utility_meter.yaml
