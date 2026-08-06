@@ -1,0 +1,13 @@
+- sensor:
+    - name: "MyUPS Last Watt"
+      unique_id: myups_last_watt
+      unit_of_measurement: W
+      device_class: power
+      state_class: measurement
+      icon: mdi:flash
+      state: >-
+        {% if has_value("sensor.myups_last") %}
+          {{ (states("sensor.myups_last") | float(0) / 100 * 1200) | round(0) }}
+        {% else %}
+          unknown
+        {% endif %}

@@ -415,14 +415,17 @@
   mode: single
 - id: "1754568986656"
   alias: Tänd lampor vid rörelse om det är mörkt
-  description: ""
+  description: >-
+    mt29 lyktstolpe → mt57+mt54; mt50 garagehörn → mt57+mt54+mt56;
+    mt52 förråd → mt56; mt49 vedbod → mt55+mt56. Släcks efter 2 min.
   triggers:
-    - entity_id:
-        - binary_sensor.motion_shed
-        - binary_sensor.motion_lyktstolpe
-        - binary_sensor.motion_garage
+    - trigger: state
+      entity_id:
+        - binary_sensor.mt29_belaggning
+        - binary_sensor.mt49_belaggning
+        - binary_sensor.mt50_belaggning
+        - binary_sensor.mt52_belaggning
       to: "on"
-      trigger: state
   conditions:
     - condition: state
       entity_id: binary_sensor.dark
@@ -430,73 +433,49 @@
   actions:
     - choose:
         - conditions:
-            - condition: state
-              entity_id: binary_sensor.mt29_belaggning
-              state:
-                - "on"
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'binary_sensor.mt29_belaggning' }}"
           sequence:
-            - target:
+            - action: light.turn_on
+              target:
                 entity_id:
-                  - light.lamp_driveway
-                  - light.lamp_garage
-              action: light.turn_on
-              data: {}
+                  - light.mt57
+                  - light.mt54
         - conditions:
-            - condition: state
-              entity_id: binary_sensor.mt49_belaggning
-              state:
-                - "on"
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'binary_sensor.mt50_belaggning' }}"
           sequence:
-            - target:
+            - action: light.turn_on
+              target:
                 entity_id:
-                  - light.lamp_garage
-                  - light.lamp_shed
-                  - light.lamp_driveway
-              action: light.turn_on
-              data: {}
+                  - light.mt57
+                  - light.mt54
+                  - light.mt56
         - conditions:
-            - condition: state
-              entity_id: binary_sensor.mt50_belaggning
-              state:
-                - "on"
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'binary_sensor.mt52_belaggning' }}"
           sequence:
-            - target:
+            - action: light.turn_on
+              target:
+                entity_id: light.mt56
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.entity_id == 'binary_sensor.mt49_belaggning' }}"
+          sequence:
+            - action: light.turn_on
+              target:
                 entity_id:
-                  - light.lamp_garage
-                  - light.lamp_woodshed
-                  - light.lamp_shed
-              action: light.turn_on
-              data: {}
+                  - light.mt55
+                  - light.mt56
     - delay:
-        hours: 0
         minutes: 2
-        seconds: 0
-        milliseconds: 0
-    - action: homeassistant.turn_off
-      metadata: {}
+    - action: light.turn_off
       target:
-        entity_id: group.outdoor_lighting
-      data: {}
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 5
-        milliseconds: 0
-    - action: homeassistant.turn_off
-      metadata: {}
-      target:
-        entity_id: group.outdoor_lighting
-      data: {}
-    - delay:
-        hours: 0
-        minutes: 0
-        seconds: 5
-        milliseconds: 0
-    - action: homeassistant.turn_off
-      metadata: {}
-      target:
-        entity_id: group.outdoor_lighting
-      data: {}
+        entity_id:
+          - light.mt54
+          - light.mt55
+          - light.mt56
+          - light.mt57
   mode: restart
 - id: "1754981360756"
   alias: Släck alla lampor när det blir ljust
@@ -1501,6 +1480,17 @@
                   target: local
                   telegram: true
                   message: >-
-                    Varning! {{ repeat.item.name }} senaste heartbeat:
-                    {{ states(repeat.item.entity) }}
+                    {% set s = states(repeat.item.entity) %}
+                    {% if s in ["unknown", "unavailable", "none", ""] %}
+                      Varning! {{ repeat.item.name }} har ingen heartbeat-timestamp.
+                    {% else %}
+                      {% set age = (as_timestamp(now()) - as_timestamp(s)) | int %}
+                      {% set d = age // 86400 %}
+                      {% set h = (age % 86400) // 3600 %}
+                      {% set m = (age % 3600) // 60 %}
+                      Varning! {{ repeat.item.name }} har inte skickat heartbeat på
+                      {%- if d > 0 %} {{ d }}d{% endif -%}
+                      {%- if h > 0 or d > 0 %} {{ h }}h{% endif -%}
+                      {{ " " ~ m }}m.
+                    {% endif %}
   mode: single

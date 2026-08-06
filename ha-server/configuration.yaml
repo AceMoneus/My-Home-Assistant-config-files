@@ -17,8 +17,6 @@ wake_on_lan:
 # Includes
 automation: !include automations.yaml
 group: !include .includes/group.yaml
-homeassistant: !include .includes/homeassistant.yaml
-http: !include .includes/http.yaml
 influxdb: !include .includes/influxdb.yaml
 
 mqtt:
