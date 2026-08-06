@@ -1,9 +1,8 @@
 - trigger:
     - platform: time_pattern
-      minutes: "5"
+      minutes: "/5"
 
   sensor:
-
     #############################
     # Indoor climate
     #############################
