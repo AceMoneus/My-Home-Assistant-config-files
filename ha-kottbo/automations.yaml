@@ -827,10 +827,12 @@
   conditions: []
   actions:
   - variables:
-      detector_name: "{% set mapping = {\n  '4de89137020a20b4c08e47146a62a8c5': 'Vind
-        – inre',\n  'cc288f2a796882799b15430fb6ac40a9': 'Vind – yttre',\n  '2cf008dd4d15ff07f3d3209384bea817':
-        'Källartrappa',\n  'f0f30cd10f6696aad0457d8b9631573b': 'Vardagsrum',\n  '681e7d9eab4751c88edbddef792114d7':
-        'Sovrum'\n} %} {{ mapping.get(trigger.entity_id, 'Okänd rökdetektor') }}\n"
+      detector_name: "{% set mapping = {\n  \"binary_sensor.kottzig_smoke_attic_inner\":
+        \"Vind – inre\",\n  \"binary_sensor.kottzig_smoke_attic_outer\": \"Vind –
+        yttre\",\n  \"binary_sensor.kottzig_smoke_basement_stairs\": \"Källartrappa\",\n
+        \ \"binary_sensor.kottzig_smoke_livingroom\": \"Vardagsrum\",\n  \"binary_sensor.kottzig_smoke_bedroom\":
+        \"Sovrum\"\n} %} {{ mapping.get(trigger.entity_id, \"Okänd rökdetektor\")
+        }}"
   - data:
       message: RÖKLARM – {{ detector_name }}
     action: telegram_bot.send_message
@@ -890,30 +892,33 @@
   actions:
   - variables:
       dev_id: '{{ trigger.device_id }}'
+      entity_map:
+        7118210ce01423cad93110f420f73cda: binary_sensor.kottzig_smoke_livingroom
+        024e02e67b53ecc78f7c3285a4973bfe: binary_sensor.kottzig_smoke_bedroom
+        64fa55795a47cadabb88399cf5b37cc6: binary_sensor.kottzig_smoke_basement_stairs
+        08b00c57cc0a56123f803346108792a9: binary_sensor.kottzig_smoke_attic_outer
+        b324cd1dd86add7dfa749fb96c154ba5: binary_sensor.kottzig_smoke_attic_inner
+      name_map:
+        7118210ce01423cad93110f420f73cda: Vardagsrum
+        024e02e67b53ecc78f7c3285a4973bfe: Sovrum
+        64fa55795a47cadabb88399cf5b37cc6: Källartrappa
+        08b00c57cc0a56123f803346108792a9: Vind – yttre
+        b324cd1dd86add7dfa749fb96c154ba5: Vind – inre
+      smoke_entity: '{{ entity_map.get(dev_id) }}'
+      detector_name: '{{ name_map.get(dev_id, "Okänd rökdetektor") }}'
   - delay:
-      hours: 0
       minutes: 30
-      seconds: 0
-      milliseconds: 0
   - condition: template
-    value_template: '{% set dev = dev_id %} {% set zha = state_attr(''zha.'' ~ dev,
-      ''available'') %} {{ zha is not true }}
-
-      '
-  - variables:
-      detector_name: "{% set mapping = {\n  '08b00c57cc0a56123f803346108792a9': 'Vind
-        – inre',\n  '7118210ce01423cad93110f420f73cda': 'Vind – yttre',\n  'b324cd1dd86add7dfa749fb96c154ba5':
-        'Källartrappa',\n  '024e02e67b53ecc78f7c3285a4973bfe': 'Vardagsrum',\n  '64fa55795a47cadabb88399cf5b37cc6':
-        'Sovrum'\n} %} {{ mapping.get(dev_id, 'Okänd rökdetektor') }}\n"
+    value_template: '{{ is_state(smoke_entity, "unavailable") }}'
   - data:
       message: ⚠️ Rökdetektor offline – {{ detector_name }}
     action: telegram_bot.send_message
   - data:
-      target: both
+      target: kjell
       message: ⚠️ Rökdetektor offline – {{ detector_name }}
       telegram: true
     action: script.send_user_message
-  mode: single
+  mode: parallel
 - id: '1782920726652'
   alias: Stabilisera NFS-mount vid uppstart och före backup
   description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
