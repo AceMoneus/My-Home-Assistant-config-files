@@ -17,7 +17,6 @@ wake_on_lan:
 # Includes
 automation: !include automations.yaml
 group: !include .includes/group.yaml
-influxdb: !include .includes/influxdb.yaml
 
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch/
