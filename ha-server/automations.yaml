@@ -278,15 +278,7 @@
         data: {}
         target:
           entity_id: switch.mt6
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        data: {}
-        target:
-          entity_id: switch.mt6
+        continue_on_error: true
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_kitchen_tv
@@ -297,15 +289,7 @@
         data: {}
         target:
           entity_id: switch.mt6
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.mt6
+        continue_on_error: true
   mode: restart
 - id: '1749557595493'
   alias: Update Binary Sensor "dark" every minute
@@ -322,7 +306,9 @@
       payload: '{{ ''ON'' if sun_elevation <= 1.5 else ''OFF'' }}'
       retain: false
     action: mqtt.publish
+    continue_on_error: true
   mode: single
+  max_exceeded: silent
 - id: '1749557994825'
   alias: Update Binary Sensor "evening" every minute
   description: ''
@@ -338,7 +324,9 @@
       payload: '{{ ''ON'' if ''14:00'' <= current_time <= ''23:30'' else ''OFF'' }}'
       retain: false
     action: mqtt.publish
+    continue_on_error: true
   mode: single
+  max_exceeded: silent
 - id: '1749558091344'
   alias: Update Binary Sensor "morning" every minute
   description: ''
@@ -354,7 +342,9 @@
       payload: '{{ ''ON'' if ''06:00'' <= current_time <= ''08:30'' else ''OFF'' }}'
       retain: false
     action: mqtt.publish
+    continue_on_error: true
   mode: single
+  max_exceeded: silent
 - id: '1749653638949'
   alias: Telegram Shaun Connection
   description: Skickar varning vid frånkoppling och notifierar vid återanslutning
@@ -498,6 +488,7 @@
       - switch.home_mqtt_evening_lights
       - switch.home_mqtt_bedroom_light
     data: {}
+    continue_on_error: true
   - action: homeassistant.turn_off
     metadata: {}
     data: {}
@@ -505,26 +496,7 @@
       entity_id:
       - switch.home_mqtt_outside_mood_lights
       - switch.home_mqtt_outside_lighting
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: switch.turn_off
-    metadata: {}
-    target:
-      entity_id:
-      - switch.home_mqtt_morning_lights
-      - switch.home_mqtt_evening_lights
-      - switch.home_mqtt_bedroom_light
-    data: {}
-  - action: homeassistant.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.home_mqtt_outside_mood_lights
-      - switch.home_mqtt_outside_lighting
+    continue_on_error: true
   mode: restart
 - id: '1759147194593'
   alias: GitHub commits
@@ -558,7 +530,7 @@
         {{ trigger.event.data.service_data.message }}'
     action: telegram_bot.send_message
 - id: '1760009530526'
-  alias: 'Strömövervakning: Faser över 16A i 2 minuter'
+  alias: Strömövervakning 16A 2 min
   description: ''
   triggers:
   - entity_id: sensor.slimmelezer_current_phase_1
@@ -589,7 +561,7 @@
     action: telegram_bot.send_message
   mode: single
 - id: '1762203466396'
-  alias: 'Strömövervakning: Faser över 20A i 2 minuter'
+  alias: Strömövervakning 20A 2 min
   description: ''
   triggers:
   - entity_id:
@@ -630,7 +602,7 @@
     action: telegram_bot.send_message
   mode: single
 - id: '1762551687523'
-  alias: 'Strömövervakning: Faser över 16A i 5 minuter'
+  alias: Strömövervakning 16A 5 min
   description: ''
   triggers:
   - entity_id:
@@ -671,7 +643,7 @@
     action: telegram_bot.send_message
   mode: single
 - id: '1762551963876'
-  alias: 'Strömövervakning: Faser över 20A i 1 minut'
+  alias: Strömövervakning 20A 1 min
   description: ''
   triggers:
   - entity_id:
@@ -713,7 +685,7 @@
   mode: single
 - id: '1762602864883'
   alias: mqtt_outside_mood_lights
-  description: mqtt_outside_mood_lights
+  description: Utemyslampor via group.outdoor_mood_lights — hoppar unavailable, continue_on_error
   triggers:
   - entity_id:
     - switch.home_mqtt_outside_mood_lights
@@ -727,42 +699,32 @@
         state:
         - 'on'
       sequence:
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.outdoor_mood_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.outdoor_mood_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.outdoor_mood_lights'') | rejectattr(''state'',
+            ''eq'', ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_on
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
     - conditions:
       - condition: state
         state:
         - 'off'
         entity_id: switch.home_mqtt_outside_mood_lights
       sequence:
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.outdoor_mood_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.outdoor_mood_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.outdoor_mood_lights'') | rejectattr(''state'',
+            ''eq'', ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_off
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
   mode: restart
 - id: '1762609393709'
   alias: Tänd lampor när det blir mörkt
@@ -785,20 +747,7 @@
       - switch.home_mqtt_bedroom_light
       - switch.home_mqtt_morning_lights
       - switch.home_mqtt_outside_mood_lights
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: homeassistant.turn_on
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
-      - switch.home_mqtt_evening_lights
-      - switch.home_mqtt_bedroom_light
-      - switch.home_mqtt_morning_lights
-      - switch.home_mqtt_outside_mood_lights
+    continue_on_error: true
   mode: restart
 - id: '1764586567605'
   alias: Släck innelampor när Evening = off
@@ -819,34 +768,19 @@
       - switch.home_mqtt_morning_lights
       - switch.home_mqtt_bedroom_light
     data: {}
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: switch.turn_off
-    metadata: {}
-    target:
-      entity_id:
-      - switch.home_mqtt_evening_lights
-      - switch.home_mqtt_morning_lights
-      - switch.home_mqtt_bedroom_light
-    data: {}
+    continue_on_error: true
   mode: restart
 - id: '1768673214791'
   alias: WAF Connected
   description: ''
   triggers:
   - trigger: state
-    entity_id:
-    - device_tracker.bs_a23_61_bettanmobil_61
-    to:
-    - home
+    entity_id: person.bettan
+    to: home
   conditions:
   - condition: state
     entity_id: switch.home_mqtt_wf_arm
-    state:
-    - 'on'
+    state: 'on'
   actions:
   - action: telegram_bot.send_message
     metadata: {}
@@ -924,7 +858,7 @@
   mode: restart
 - id: '1770125964946'
   alias: Kvällslampor
-  description: Kvällslampor
+  description: Kvällslampor via group.evening_lights — hoppar unavailable, continue_on_error
   triggers:
   - trigger: state
     entity_id: switch.home_mqtt_evening_lights
@@ -940,45 +874,35 @@
         entity_id: switch.home_mqtt_evening_lights
         state: 'on'
       sequence:
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.evening_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.evening_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.evening_lights'') | rejectattr(''state'', ''eq'',
+            ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_on
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_evening_lights
         state: 'off'
       sequence:
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.evening_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.evening_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.evening_lights'') | rejectattr(''state'', ''eq'',
+            ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_off
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
   mode: restart
 - id: '1770126253740'
   alias: Morgonlampor
-  description: Morgonlampor
+  description: Morgonlampor via group.morning_lights — hoppar unavailable, continue_on_error
   triggers:
   - trigger: state
     entity_id: switch.home_mqtt_morning_lights
@@ -994,41 +918,31 @@
         entity_id: switch.home_mqtt_morning_lights
         state: 'on'
       sequence:
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.morning_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id: group.morning_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.morning_lights'') | rejectattr(''state'', ''eq'',
+            ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_on
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_morning_lights
         state: 'off'
       sequence:
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.morning_lights
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        metadata: {}
-        target:
-          entity_id: group.morning_lights
-        data: {}
+      - variables:
+          targets: '{{ expand(''group.morning_lights'') | rejectattr(''state'', ''eq'',
+            ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_off
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
   mode: restart
 - id: '1770127009432'
   alias: Turn on Morning lights
@@ -1052,14 +966,7 @@
   - action: switch.turn_on
     target:
       entity_id: switch.home_mqtt_morning_lights
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 5
-      milliseconds: 0
-  - action: switch.turn_on
-    target:
-      entity_id: switch.home_mqtt_morning_lights
+    continue_on_error: true
   mode: restart
 - id: '1770194512079'
   alias: mqtt_xbox
@@ -1081,6 +988,7 @@
         data: {}
         target:
           entity_id: switch.mt27
+        continue_on_error: true
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_xbox
@@ -1091,19 +999,11 @@
         data: {}
         target:
           entity_id: switch.mt27
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.mt27
+        continue_on_error: true
   mode: restart
 - id: '1770659739460'
   alias: mqtt_outside_lighting
-  description: mqtt_outside_lighting
+  description: Utebelysning via group.outdoor_lighting — hoppar unavailable, continue_on_error
   triggers:
   - entity_id:
     - switch.home_mqtt_outside_lighting
@@ -1117,43 +1017,32 @@
         state:
         - 'on'
       sequence:
-      - action: homeassistant.turn_on
-        metadata: {}
-        target:
-          entity_id:
-          - group.outdoor_lighting
-        data: {}
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: group.outdoor_lighting
+      - variables:
+          targets: '{{ expand(''group.outdoor_lighting'') | rejectattr(''state'',
+            ''eq'', ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_on
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
     - conditions:
       - condition: state
         state:
         - 'off'
         entity_id: switch.home_mqtt_outside_lighting
       sequence:
-      - action: homeassistant.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: group.outdoor_lighting
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: group.outdoor_lighting
+      - variables:
+          targets: '{{ expand(''group.outdoor_lighting'') | rejectattr(''state'',
+            ''eq'', ''unavailable'') | map(attribute=''entity_id'') | list }}'
+      - if:
+        - '{{ targets | count > 0 }}'
+        then:
+        - action: homeassistant.turn_off
+          target:
+            entity_id: '{{ targets }}'
+          continue_on_error: true
   mode: restart
 - id: '1772919196591'
   alias: mqtt_bedroom_light
@@ -1174,17 +1063,8 @@
       - action: homeassistant.turn_on
         data: {}
         target:
-          entity_id:
-          - switch.mt15
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: homeassistant.turn_on
-        data: {}
-        target:
           entity_id: switch.mt15
+        continue_on_error: true
     - conditions:
       - condition: state
         entity_id: switch.home_mqtt_bedroom_light
@@ -1195,15 +1075,7 @@
         data: {}
         target:
           entity_id: switch.mt15
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 5
-          milliseconds: 0
-      - action: switch.turn_off
-        data: {}
-        target:
-          entity_id: switch.mt15
+        continue_on_error: true
   mode: restart
 - id: '1781348246968'
   alias: Button - Desktop
@@ -1294,20 +1166,6 @@
       message: '{{ message }}'
       telegram: true
   mode: single
-- id: '1782819147287'
-  alias: UPS status notifiering
-  description: Skickar aktuell UPS-status via Send user message
-  triggers:
-  - entity_id: sensor.myups_status
-    trigger: state
-  conditions: []
-  actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      telegram: true
-      message: 'UPS-status ändrad till: {{ states(''sensor.myups_status'') }}'
-  mode: single
 - id: '1782920684280'
   alias: Stabilisera NFS-mount vid uppstart och före backup
   description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
@@ -1364,88 +1222,106 @@
   mode: restart
 - id: '1783629183654'
   alias: Uppdatera Home Away och Alarm State baserat på mobiler
-  description: ''
+  description: 'Styrs via person.kjell/person.bettan (UniFi-trackers under Personer).
+    Publicerar home/state/home_away med retain. Bootstrap vid start och var 5:e minut.
+    Larm styrs bara vid närvarobyte.
+
+    '
   triggers:
   - trigger: state
+    id: presence
     entity_id:
-    - device_tracker.bs_a23_61_bettanmobil_61
-    - device_tracker.john117_60_john117_60
+    - person.kjell
+    - person.bettan
     to: home
   - trigger: state
+    id: presence
     entity_id:
-    - device_tracker.bs_a23_61_bettanmobil_61
-    - device_tracker.john117_60_john117_60
+    - person.kjell
+    - person.bettan
     for:
-      hours: 0
       minutes: 2
-      seconds: 0
-    to:
-    - not_home
+    to: not_home
+  - trigger: homeassistant
+    id: bootstrap
+    event: start
+  - trigger: time_pattern
+    id: bootstrap
+    minutes: /5
   actions:
   - choose:
     - conditions:
       - condition: or
         conditions:
         - condition: state
-          entity_id: device_tracker.bs_a23_61_bettanmobil_61
-          state:
-          - home
+          entity_id: person.kjell
+          state: home
         - condition: state
-          entity_id: device_tracker.john117_60_john117_60
-          state:
-          - home
+          entity_id: person.bettan
+          state: home
       sequence:
       - action: mqtt.publish
-        metadata: {}
         data:
-          evaluate_payload: false
-          qos: '2'
-          retain: false
           topic: home/state/home_away
           payload: home
-      - action: switch.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
+          retain: true
+          qos: 2
+        continue_on_error: true
+      - if:
+        - condition: trigger
+          id: presence
+        then:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.home_mqtt_alarm_state
+          continue_on_error: true
     - conditions:
       - condition: and
         conditions:
         - condition: state
-          entity_id: device_tracker.bs_a23_61_bettanmobil_61
-          state:
-          - not_home
-          for:
-            hours: 0
-            minutes: 2
-            seconds: 0
+          entity_id: person.kjell
+          state: not_home
         - condition: state
-          entity_id: device_tracker.john117_60_john117_60
-          state:
-          - not_home
-          for:
-            hours: 0
-            minutes: 2
-            seconds: 0
+          entity_id: person.bettan
+          state: not_home
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: bootstrap
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: person.kjell
+            state: not_home
+            for:
+              minutes: 2
+          - condition: state
+            entity_id: person.bettan
+            state: not_home
+            for:
+              minutes: 2
       sequence:
       - action: mqtt.publish
-        metadata: {}
         data:
-          evaluate_payload: false
-          qos: '2'
-          retain: false
           topic: home/state/home_away
           payload: away
-      - action: switch.turn_on
-        metadata: {}
-        data: {}
-        target:
-          entity_id: switch.home_mqtt_alarm_state
+          retain: true
+          qos: 2
+        continue_on_error: true
+      - if:
+        - condition: trigger
+          id: presence
+        then:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.home_mqtt_alarm_state
+          continue_on_error: true
   mode: restart
 - id: '1783822800000'
   alias: Heartbeat & watchdog
   description: Publicerar timestamp varje minut och varnar om övriga HA är tysta i
-    mer än 10 minuter (max ca 1 gång/timme)
+    mer än 10 minuter, endast under de första 4 timmarna (ca 1 gång/timme). MQTT-fel
+    stoppar inte watchdog-kontrollen.
   triggers:
   - trigger: time_pattern
     minutes: /1
@@ -1457,6 +1333,7 @@
       payload: '{{ as_timestamp(now()) | timestamp_local }}'
       retain: true
       qos: 2
+    continue_on_error: true
   - variables:
       hosts:
       - entity: sensor.mqtt_timestamp_ha_kottbo
@@ -1473,9 +1350,11 @@
       - if:
         - condition: template
           value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
-            \"unavailable\", \"none\", \"\"] %}\n  {{ now().minute == 0 }}\n{% else
-            %}\n  {% set age = as_timestamp(now()) - as_timestamp(s) %}\n  {{ age
-            >= 600 and (age // 60) % 60 == 10 }}\n{% endif %}"
+            \"unavailable\", \"none\", \"\"] %}\n  {% set age = as_timestamp(now())\n
+            \   - as_timestamp(states[repeat.item.entity].last_changed) %}\n  {{ age
+            < 14400 and now().minute == 0 }}\n{% else %}\n  {% set age = as_timestamp(now())
+            - as_timestamp(s) %}\n  {{ age >= 600 and age < 14400 and (age // 60)
+            % 60 == 10 }}\n{% endif %}"
         then:
         - action: script.send_user_message
           data:
@@ -1484,9 +1363,10 @@
             message: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
               \"unavailable\", \"none\", \"\"] %}\n  Varning! {{ repeat.item.name
               }} har ingen heartbeat-timestamp.\n{% else %}\n  {% set age = (as_timestamp(now())
-              - as_timestamp(s)) | int %}\n  {% set d = age // 86400 %}\n  {% set
-              h = (age % 86400) // 3600 %}\n  {% set m = (age % 3600) // 60 %}\n  Varning!
-              {{ repeat.item.name }} har inte skickat heartbeat på\n  {%- if d > 0
-              %} {{ d }}d{% endif -%}\n  {%- if h > 0 or d > 0 %} {{ h }}h{% endif
-              -%}\n  {{ \" \" ~ m }}m.\n{% endif %}"
+              - as_timestamp(s)) | int %}\n  {% set h = age // 3600 %}\n  {% set m
+              = (age % 3600) // 60 %}\n  Varning! {{ repeat.item.name }} har inte
+              skickat heartbeat på\n  {%- if h > 0 %} {{ h }}h{% endif %} {{ m }}m.\n{%
+              endif %}"
+          continue_on_error: true
   mode: single
+  max_exceeded: silent
