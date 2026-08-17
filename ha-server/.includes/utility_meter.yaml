@@ -1,7 +1,5 @@
-daily_energy:
-  source: sensor.frient_electricity_summering_av_leverans
-  cycle: daily
-
-monthly_energy:
-  source: sensor.frient_electricity_summering_av_leverans
-  cycle: monthly
+influx_energy_imported_hourly:
+  source: sensor.slimmelezer_cumulative_active_import
+  name: Influx energy imported hourly
+  cycle: hourly
+  periodically_resetting: false

@@ -1,0 +1,9 @@
+influx_write_batch:
+  url: "http://influxdb.moneus.lan:8086/write?db=homeassistant&precision=s"
+  method: POST
+  headers:
+    Authorization: !secret influx_authorization
+  payload: "{{ payload }}"
+  content_type: "text/plain; charset=utf-8"
+  verify_ssl: false
+  timeout: 30
