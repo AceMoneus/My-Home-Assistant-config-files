@@ -1,4 +1,3 @@
-
 #####################################################
 # HA config
 default_config:
@@ -15,13 +14,13 @@ remote_homeassistant:
 automation: !include automations.yaml
 group: !include .includes/group.yaml
 homeassistant: !include .includes/homeassistant.yaml
-influxdb: !include .includes/influxdb.yaml
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch
   sensor: !include_dir_merge_list .includes/mqtt/sensor
   binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor
 script: !include .includes/scripts.yaml
 sensor: !include_dir_merge_list .includes/sensors/
+rest_command: !include .includes/rest_command.yaml
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
 utility_meter: !include .includes/utility_meter.yaml

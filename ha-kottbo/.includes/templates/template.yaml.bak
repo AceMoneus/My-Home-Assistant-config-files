@@ -1,0 +1,6 @@
+- trigger:
+    - platform: time_pattern
+      minutes: "/5"
+  sensor:
+    - name: "heartbeat"
+      state: "{{ now().strftime('%Y-%m-%d %H:%M') }}"

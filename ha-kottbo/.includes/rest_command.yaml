@@ -1,0 +1,9 @@
+influx_write_batch:
+  url: !secret influx_server_write_url
+  method: POST
+  headers:
+    Authorization: !secret influx_server_authorization
+  payload: "{{ payload }}"
+  content_type: "text/plain; charset=utf-8"
+  verify_ssl: false
+  timeout: 30
