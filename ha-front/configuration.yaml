@@ -1,0 +1,19 @@
+####################################################
+# Common misc
+default_config:
+
+logger:
+  default: info
+
+####################################################
+# Includes
+automation: !include automations.yaml
+group: !include .includes/group.yaml
+input_boolean: !include .includes/input_boolean.yaml
+template: !include .includes/template.yaml
+mqtt:
+  switch: !include_dir_merge_list .includes/mqtt/switch
+  sensor: !include_dir_merge_list .includes/mqtt/sensor
+script: !include .includes/scripts.yaml
+sensor: !include .includes/sensor.yaml
+shell_command: !include .includes/shell_command.yaml

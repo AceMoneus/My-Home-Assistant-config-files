@@ -1,0 +1,18 @@
+- name: "MQTT Temperatur Vardagsrum"
+  unique_id: mqtt_temperatur_vardagsrum
+  state_topic: "home/temp/livingroom"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+- name: "MQTT Temperatur Sovrum"
+  unique_id: mqtt_temperatur_sovrum
+  state_topic: "home/temp/bedroom"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+- name: "MQTT Temperatur Ute"
+  unique_id: mqtt_temperatur_ute
+  state_topic: "home/temp/outside"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
