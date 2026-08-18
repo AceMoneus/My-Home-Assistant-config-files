@@ -2,7 +2,7 @@ send_user_message:
   alias: Send user message
   mode: single
   variables:
-    machine_name: "ha-quarry"
+    machine_name: "ha-front"
   fields:
     target:
       description: "Vem som ska få meddelandet"

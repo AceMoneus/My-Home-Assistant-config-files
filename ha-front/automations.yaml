@@ -6,15 +6,11 @@
     trigger: homeassistant
   conditions: []
   actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
+  - action: script.send_user_message
     data:
-      skip_condition: true
-      variables:
-        target: local
-        message: Quarry started
-        telegram: false
+      target: local
+      message: Quarry started
+      telegram: false
   mode: single
 - id: '1662207023146'
   alias: Telegram Reply with Status
@@ -26,17 +22,14 @@
       command: /start
   condition: []
   action:
-  - service: notify.telegram
+  - action: telegram_bot.send_message
     data:
       message: -- HA Quarry (HAQ) --Up and running :)
       title: HAQ - Status
-  - service: notify.telegram
+  - action: telegram_bot.send_photo
     data:
-      message: Front
-      title: Front
-      data:
-        photo:
-        - url: https://pm3.se/wp-content/uploads/2019/05/startheropic.jpg
+      url: https://pm3.se/wp-content/uploads/2019/05/startheropic.jpg
+      caption: Front
   mode: single
 - id: '1670625054247'
   alias: Telegram - Reboot
@@ -59,35 +52,62 @@
     trigger: homeassistant
   conditions: []
   actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
+  - action: script.send_user_message
     data:
-      skip_condition: true
-      variables:
-        target: local
-        message: Quarry shut down
-        telegram: false
+      target: local
+      message: Quarry shut down
+      telegram: false
   mode: single
-- id: '1730722395853'
-  alias: MQTT Timestamp
-  description: ''
+- id: '1783822800000'
+  alias: Heartbeat & watchdog
+  description: 'Publicerar timestamp varje minut och varnar om övriga HA är tysta
+    i mer än 10 minuter, endast under de första 4 timmarna (ca 1 gång/timme)
+
+    '
   triggers:
   - trigger: time_pattern
     minutes: /1
   conditions: []
   actions:
   - action: mqtt.publish
-    metadata: {}
     data:
-      topic: quarry/timestamp
+      topic: timestamp/ha-front
+      payload: '{{ as_timestamp(now()) | timestamp_local }}'
       retain: true
-  - action: mqtt.publish
-    metadata: {}
-    data:
-      topic: quarry/timestamp
-      payload: '{{ (as_timestamp(now()) | timestamp_local) }}'
-      retain: true
+      qos: 2
+  - variables:
+      hosts:
+      - entity: sensor.mqtt_timestamp_ha_kottbo
+        name: ha-kottbo
+      - entity: sensor.mqtt_timestamp_ha_front
+        name: ha-front
+      - entity: sensor.mqtt_timestamp_ha_core
+        name: ha-core
+      - entity: sensor.mqtt_timestamp_ha_server
+        name: ha-server
+  - repeat:
+      for_each: '{{ hosts }}'
+      sequence:
+      - if:
+        - condition: template
+          value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
+            \"unavailable\", \"none\", \"\"] %}\n  {% set age = as_timestamp(now())\n
+            \   - as_timestamp(states[repeat.item.entity].last_changed) %}\n  {{ age
+            < 14400 and now().minute == 0 }}\n{% else %}\n  {% set age = as_timestamp(now())
+            - as_timestamp(s) %}\n  {{ age >= 600 and age < 14400 and (age // 60)
+            % 60 == 10 }}\n{% endif %}"
+        then:
+        - action: script.send_user_message
+          data:
+            target: local
+            telegram: true
+            message: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
+              \"unavailable\", \"none\", \"\"] %}\n  Varning! {{ repeat.item.name
+              }} har ingen heartbeat-timestamp.\n{% else %}\n  {% set age = (as_timestamp(now())
+              - as_timestamp(s)) | int %}\n  {% set h = age // 3600 %}\n  {% set m
+              = (age % 3600) // 60 %}\n  Varning! {{ repeat.item.name }} har inte
+              skickat heartbeat på\n  {%- if h > 0 %} {{ h }}h{% endif %} {{ m }}m.\n{%
+              endif %}"
   mode: single
 - id: '1761301123800'
   alias: Quarry Github Commit
@@ -105,8 +125,9 @@
   alias: Handle incoming user message
   description: ''
   triggers:
-  - topic: quarry/message
-    trigger: mqtt
+  - trigger: mqtt
+    options:
+      topic: quarry/message
   actions:
   - choose:
     - conditions:
@@ -120,9 +141,9 @@
       - condition: template
         value_template: '{{ data.target == ''bettan'' }}'
       sequence:
-      - data:
+      - action: notify.mobile_app_sm_a236b
+        data:
           message: '{{ data.message }}'
-        action: notify.mobile_app_bettan_phone
     - conditions:
       - condition: template
         value_template: '{{ data.target == ''both'' }}'
@@ -130,9 +151,9 @@
       - data:
           message: '{{ data.message }}'
         action: notify.mobile_app_kjellmobil
-      - data:
+      - action: notify.mobile_app_sm_a236b
+        data:
           message: '{{ data.message }}'
-        action: notify.mobile_app_bettan_phone
   - if:
     - condition: template
       value_template: '{{ data.telegram | default(false) | bool }}'
@@ -154,37 +175,3 @@
   max: 10
   variables:
     data: '{{ trigger.payload_json | default({}) }}'
-- id: '1781689112504'
-  alias: Standard Notify Block
-  description: ''
-  triggers: []
-  actions:
-  - action: automation.trigger
-    target:
-      entity_id: automation.send_user_message
-    data:
-      skip_condition: true
-      variables:
-        target: kjell
-        message: DIN TEXT HÄR
-        telegram: true
-  mode: single
-- id: '1782816866006'
-  alias: Stabilisera NFS-mount vid uppstart och före backup
-  description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
-  triggers:
-  - event: start
-    trigger: homeassistant
-  - at: 02:45:00
-    trigger: time
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event == ''start'' }}'
-      sequence:
-      - delay: 00:01:00
-  - action: hassio.mount_reload
-    data:
-      device_id: 7580e3390749f45f673e9dbffe2e3e88
-  mode: single

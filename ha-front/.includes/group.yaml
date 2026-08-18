@@ -1,0 +1,10 @@
+garmin:
+  name: Garmin
+  entities:
+    - switch.home_mqtt_bettan_carheat
+    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_evening_lights
+    - switch.home_mqtt_morning_lights
+    - switch.home_mqtt_alarm_state
+    - input_boolean.batroom_heater_onoff
+    - switch.kottbo_mqtt_alarm_state
