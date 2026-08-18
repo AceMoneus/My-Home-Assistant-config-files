@@ -25,36 +25,33 @@
         skip_condition: true
   mode: single
 - id: "1663097375867"
-  alias: Telegram - Moist Sink
-  description: ""
-  trigger:
+  alias: Fuktlarm
+  description: Fuktlarm
+  triggers:
     - type: moist
-      platform: device
       device_id: d9f9dcc362d444aa30004053e14ff3bf
-      entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_iaszone
+      entity_id: 32b65fa1b706d3c672af904192e7f168
       domain: binary_sensor
-  condition: []
-  action:
-    - service: notify.telegram
-      data:
-        title: "!! Fuktsensor!!"
-        message: Fukt under diskbänk
-  mode: single
-- id: "1663097514926"
-  alias: Telegram - Moist Basement
-  description: ""
-  trigger:
+      trigger: device
     - type: moist
-      platform: device
       device_id: 91d38d0dd83aeafad111257ea72aee0e
-      entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_iaszone_2
+      entity_id: 659f6c0f6d0dc31920fe0dda85da1699
       domain: binary_sensor
-  condition: []
-  action:
-    - service: notify.telegram
-      data:
-        title: "!! Fuktsensor!!"
-        message: Fukt i källare
+      trigger: device
+  conditions: []
+  actions:
+    - variables:
+        detector_name: "{% set mapping = {\n  \"binary_sensor.leak_sink_moisture\":
+          \"Diskbänk\",\n  \"binary_sensor.leak_basement_moisture\": \"Källare\"\n}
+          %} {{ mapping.get(trigger.entity_id, \"Okänd fuktsensor\") }}"
+    - data:
+        message: "KOTTBO VATTENLÄCKA: {{ detector_name }}"
+      action: telegram_bot.send_message
+    - data:
+        target: both
+        message: "KOTTBO VATTENLÄCKA: {{ detector_name }}"
+        telegram: true
+      action: script.send_user_message
   mode: single
 - id: "1663329099899"
   alias: Telegram - Ytterdörr
@@ -834,11 +831,11 @@
           \"Sovrum\"\n} %} {{ mapping.get(trigger.entity_id, \"Okänd rökdetektor\")
           }}"
     - data:
-        message: RÖKLARM – {{ detector_name }}
+        message: "RÖKLARM KOTTBO: {{ detector_name }}"
       action: telegram_bot.send_message
     - data:
         target: both
-        message: RÖKLARM – {{ detector_name }}
+        message: "RÖKLARM KOTTBO: {{ detector_name }}"
         telegram: true
       action: script.send_user_message
   mode: single
