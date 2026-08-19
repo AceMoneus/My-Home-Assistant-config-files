@@ -1,0 +1,17 @@
+garmin:
+  name: Garmin
+  entities:
+    # Larm
+    - switch.kottbo_mqtt_alarm_state
+    - switch.home_mqtt_alarm_state
+
+    # Hemma – lampor
+    - switch.home_mqtt_bedroom_light
+    - switch.home_mqtt_evening_lights
+    - switch.home_mqtt_morning_lights
+
+    # Motorvärmare
+    - switch.home_mqtt_bettan_carheat_2
+
+    # Kottbo – bathroom heater
+    - input_boolean.batroom_heater_onoff

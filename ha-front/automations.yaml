@@ -110,16 +110,16 @@
               endif %}"
   mode: single
 - id: '1761301123800'
-  alias: Quarry Github Commit
+  alias: Front Github Commit
   description: ''
   triggers:
-  - trigger: time
-    at: 05:00:00
+  - at: 05:00:00
+    trigger: time
   conditions: []
   actions:
   - action: shell_command.git_sync
-    metadata: {}
     data: {}
+    metadata: {}
   mode: single
 - id: '1781637271521'
   alias: Handle incoming user message
