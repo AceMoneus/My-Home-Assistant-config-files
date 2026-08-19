@@ -1,1273 +1,1275 @@
-- id: "1662207023146"
+- id: '1662207023146'
   alias: Telegram - Reply with Status
-  description: ""
+  description: ''
   trigger:
-    - platform: event
-      event_type: telegram_command
-      event_data:
-        command: /status
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /status
   condition: []
   action:
-    - data:
-        message: 'HA Kottbo - Up and running :)
+  - data:
+      message: 'HA Kottbo - Up and running :)
 
-          HA system time {{ as_local(now()).strftime("%Y-%m-%d %H:%M:%S")}}
+        HA system time {{ as_local(now()).strftime("%Y-%m-%d %H:%M:%S")}}
 
-          Temp ute: {{ states.sensor.temp_outside_temperature_temperatur.state }}
+        Temp ute: {{ states.sensor.temp_outside_temperature_temperatur.state }}
 
-          Temp inne: {{ states.sensor.temp_kitchen_temperature.state }}'
-      action: notify.telegram
-    - action: automation.trigger
-      target:
-        entity_id:
-          - automation.telegram_keyboard
-      data:
-        skip_condition: true
+        Temp inne: {{ states.sensor.temp_kitchen_temperature.state }}'
+    action: notify.telegram
+  - action: automation.trigger
+    target:
+      entity_id:
+      - automation.telegram_keyboard
+    data:
+      skip_condition: true
   mode: single
-- id: "1663097375867"
+- id: '1663097375867'
   alias: Fuktlarm
   description: Fuktlarm
   triggers:
-    - type: moist
-      device_id: d9f9dcc362d444aa30004053e14ff3bf
-      entity_id: 32b65fa1b706d3c672af904192e7f168
-      domain: binary_sensor
-      trigger: device
-    - type: moist
-      device_id: 91d38d0dd83aeafad111257ea72aee0e
-      entity_id: 659f6c0f6d0dc31920fe0dda85da1699
-      domain: binary_sensor
-      trigger: device
+  - type: moist
+    device_id: d9f9dcc362d444aa30004053e14ff3bf
+    entity_id: 32b65fa1b706d3c672af904192e7f168
+    domain: binary_sensor
+    trigger: device
+  - type: moist
+    device_id: 91d38d0dd83aeafad111257ea72aee0e
+    entity_id: 659f6c0f6d0dc31920fe0dda85da1699
+    domain: binary_sensor
+    trigger: device
   conditions: []
   actions:
-    - variables:
-        detector_name: "{% set mapping = {\n  \"binary_sensor.leak_sink_moisture\":
-          \"Diskbänk\",\n  \"binary_sensor.leak_basement_moisture\": \"Källare\"\n}
-          %} {{ mapping.get(trigger.entity_id, \"Okänd fuktsensor\") }}"
-    - data:
-        message: "KOTTBO VATTENLÄCKA: {{ detector_name }}"
-      action: telegram_bot.send_message
-    - data:
-        target: both
-        message: "KOTTBO VATTENLÄCKA: {{ detector_name }}"
-        telegram: true
-      action: script.send_user_message
+  - variables:
+      detector_name: "{% set mapping = {\n  \"binary_sensor.leak_sink_moisture\":
+        \"Diskbänk\",\n  \"binary_sensor.leak_basement_moisture\": \"Källare\"\n}
+        %} {{ mapping.get(trigger.entity_id, \"Okänd fuktsensor\") }}"
+  - data:
+      message: 'KOTTBO VATTENLÄCKA: {{ detector_name }}'
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: 'KOTTBO VATTENLÄCKA: {{ detector_name }}'
+      telegram: true
+    action: script.send_user_message
   mode: single
-- id: "1663329099899"
-  alias: Telegram - Ytterdörr
-  description: ""
+- id: '1663329099899'
+  alias: Inbrottslarm
+  description: Larmar när sensorer utlöses medan larmet är på. Lägg till fler entity_id
+    i triggers och mapping.
   triggers:
-    - type: opened
-      device_id: 575589282f4e38780e5e55616bd62ce4
-      entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_opening
-      domain: binary_sensor
-      trigger: device
-  conditions: []
+  - trigger: state
+    entity_id:
+    - binary_sensor.lumi_lumi_sensor_magnet_aq2_opening
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: switch.kottbo_mqtt_alarm_state
+    state: 'on'
   actions:
-    - action: telegram_bot.send_message
-      data:
-        config_entry_id: 01JZ7FSR0M0CQYJN8X5201GE7V
-        message: Kottbo - Ytterdörr
-- id: "1667817132698"
+  - variables:
+      detector_name: "{% set mapping = {\n  \"binary_sensor.lumi_lumi_sensor_magnet_aq2_opening\":
+        \"Ytterdörr\"\n} %} {{ mapping.get(trigger.entity_id, \"Okänd sensor\") }}"
+  - data:
+      message: 'KOTTBO LARM: {{ detector_name }}'
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: 'KOTTBO LARM: {{ detector_name }}'
+      telegram: true
+    action: script.send_user_message
+  mode: single
+- id: '1667817132698'
   alias: Temp under 5 - Element ON
-  description: ""
+  description: ''
   trigger:
-    - platform: numeric_state
-      entity_id: sensor.ewelink_th01_1_temperature
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 0
-      below: 5
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    below: 5
   condition: []
   action:
-    - service: homeassistant.turn_on
-      data: {}
-      target:
-        entity_id:
-          - switch.silver_element_switch
-          - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-          - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
   mode: single
-- id: "1667817190613"
+- id: '1667817190613'
   alias: Temp över 5 - Element OFF
-  description: ""
+  description: ''
   trigger:
-    - platform: numeric_state
-      entity_id: sensor.ewelink_th01_1_temperature
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 0
-      above: 5
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    above: 5
   condition: []
   action:
-    - service: homeassistant.turn_off
-      data: {}
-      target:
-        entity_id:
-          - switch.silver_element_switch
-          - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-          - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  - service: homeassistant.turn_off
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
   mode: single
-- id: "1667817682853"
+- id: '1667817682853'
   alias: Telegram - Kök temp under 3
-  description: ""
+  description: ''
   trigger:
-    - type: temperature
-      platform: device
-      device_id: 522ec5c96b4ed7b8223ebf2215704612
-      entity_id: sensor.ewelink_th01_1_temperature
-      domain: sensor
-      below: 3
+  - type: temperature
+    platform: device
+    device_id: 522ec5c96b4ed7b8223ebf2215704612
+    entity_id: sensor.ewelink_th01_1_temperature
+    domain: sensor
+    below: 3
   condition: []
   action:
-    - service: notify.telegram
-      data:
-        title: "!! Temperaturvarning !!"
-        message: Temperatur Kök under 3 grader
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Kök under 3 grader
   mode: single
-- id: "1670409339675"
+- id: '1670409339675'
   alias: Remote Reboot
-  description: ""
+  description: ''
   triggers:
-    - event_type: telegram_command
-      event_data:
-        command: /reboot
-      trigger: event
+  - event_type: telegram_command
+    event_data:
+      command: /reboot
+    trigger: event
   conditions: []
   actions:
-    - data: {}
-      action: hassio.host_reboot
+  - data: {}
+    action: hassio.host_reboot
   mode: single
-- id: "1670409459063"
+- id: '1670409459063'
   alias: HA Boot & Shutdown
-  description: ""
+  description: ''
   triggers:
-    - trigger: homeassistant
-      event: start
-      id: started
-    - trigger: homeassistant
-      event: shutdown
-      id: shutdown
+  - trigger: homeassistant
+    event: start
+    id: started
+  - trigger: homeassistant
+    event: shutdown
+    id: shutdown
   conditions: []
   actions:
-    - action: script.send_user_message
-      data:
-        target: local
-        telegram: false
-        message: "{{ trigger.id }}"
+  - action: script.send_user_message
+    data:
+      target: local
+      telegram: false
+      message: '{{ trigger.id }}'
   mode: single
-- id: "1670480699279"
+- id: '1670480699279'
   alias: Temp under 16 - Element ON
-  description: ""
+  description: ''
   trigger:
-    - platform: numeric_state
-      entity_id: sensor.ewelink_th01_1_temperature
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 0
-      below: 15.9
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    below: 15.9
   condition: []
   action:
-    - service: homeassistant.turn_on
-      data: {}
-      target:
-        entity_id:
-          - switch.silver_element_switch
-          - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-          - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
   mode: single
-- id: "1670480832383"
+- id: '1670480832383'
   alias: Temp över 16 - Element Off
-  description: ""
+  description: ''
   trigger:
-    - platform: numeric_state
-      entity_id: sensor.ewelink_th01_1_temperature
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 0
-      above: 16.1
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_1_temperature
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
+    above: 16.1
   condition: []
   action:
-    - service: homeassistant.turn_off
-      data: {}
-      target:
-        entity_id:
-          - switch.silver_element_switch
-          - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-          - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+  - service: homeassistant.turn_off
+    data: {}
+    target:
+      entity_id:
+      - switch.silver_element_switch
+      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
   mode: single
-- id: "1671351353316"
+- id: '1671351353316'
   alias: Telegram - V-rum temp under 3
-  description: ""
+  description: ''
   trigger:
-    - type: temperature
-      platform: device
-      device_id: add81a6a571f6dc7fb334189f30f7db4
-      entity_id: sensor.ewelink_th01_2_temperature_2
-      domain: sensor
-      below: 3
+  - type: temperature
+    platform: device
+    device_id: add81a6a571f6dc7fb334189f30f7db4
+    entity_id: sensor.ewelink_th01_2_temperature_2
+    domain: sensor
+    below: 3
   condition: []
   action:
-    - service: notify.telegram
-      data:
-        title: "!! Temperaturvarning !!"
-        message: Temperatur V-rum under 3 grader
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur V-rum under 3 grader
   mode: single
-- id: "1671351449325"
+- id: '1671351449325'
   alias: Telegram - S-rum temp under 5
-  description: ""
+  description: ''
   triggers:
-    - type: temperature
-      device_id: 2cab8cf24a7ccaa6dd8687a6a84a1c3b
-      entity_id: 22061e2eac87d4a58b1301e4254eb314
-      domain: sensor
-      trigger: device
-      below: 5
+  - type: temperature
+    device_id: 2cab8cf24a7ccaa6dd8687a6a84a1c3b
+    entity_id: 22061e2eac87d4a58b1301e4254eb314
+    domain: sensor
+    trigger: device
+    below: 5
   conditions: []
   actions:
-    - data:
-        title: "!! Temperaturvarning !!"
-        message: Temperatur Sovrum under 5 grader
-      action: notify.telegram
+  - data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Sovrum under 5 grader
+    action: notify.telegram
   mode: single
-- id: "1671352910843"
+- id: '1671352910843'
   alias: Telegram - V-rum temp över 10 grader
-  description: ""
+  description: ''
   trigger:
-    - type: temperature
-      platform: device
-      device_id: add81a6a571f6dc7fb334189f30f7db4
-      entity_id: sensor.ewelink_th01_2_temperature_2
-      domain: sensor
-      above: 10
+  - type: temperature
+    platform: device
+    device_id: add81a6a571f6dc7fb334189f30f7db4
+    entity_id: sensor.ewelink_th01_2_temperature_2
+    domain: sensor
+    above: 10
   condition:
-    - condition: state
-      entity_id: switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-      state: "on"
+  - condition: state
+    entity_id: switch.ikea_of_sweden_tradfri_control_outlet_4_switch
+    state: 'on'
   action:
-    - service: notify.telegram
-      data:
-        title: "!! Temperaturvarning !!"
-        message: "Temperatur V-rum över 8 grader samtidigt som el-element är på. "
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: 'Temperatur V-rum över 8 grader samtidigt som el-element är på. '
   mode: single
-- id: "1679756929851"
+- id: '1679756929851'
   alias: Auto - Bathroom Heat Fan - OFF 15 min
-  description: ""
+  description: ''
   triggers:
-    - trigger: state
-      entity_id:
-        - switch.plug_bathroom_heat
-      to:
-        - "on"
+  - trigger: state
+    entity_id:
+    - switch.plug_bathroom_heat
+    to:
+    - 'on'
   conditions: []
   actions:
-    - delay:
-        hours: 0
-        minutes: 15
-        seconds: 0
-        milliseconds: 0
-    - action: switch.turn_off
-      metadata: {}
-      target:
-        entity_id: switch.plug_bathroom_heat
-      data: {}
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
-- id: "1682782508740"
+- id: '1682782508740'
   alias: Telegram - kök över -5
-  description: ""
+  description: ''
   trigger:
-    - type: temperature
-      platform: device
-      device_id: 522ec5c96b4ed7b8223ebf2215704612
-      entity_id: sensor.ewelink_th01_1_temperature
-      domain: sensor
-      above: -5
+  - type: temperature
+    platform: device
+    device_id: 522ec5c96b4ed7b8223ebf2215704612
+    entity_id: sensor.ewelink_th01_1_temperature
+    domain: sensor
+    above: -5
   condition: []
   action:
-    - service: notify.telegram
-      data:
-        title: "!! Temperaturvarning !!"
-        message: Temperatur Kök över - 5 grader
+  - service: notify.telegram
+    data:
+      title: '!! Temperaturvarning !!'
+      message: Temperatur Kök över - 5 grader
   mode: single
-- id: "1697571704298"
+- id: '1697571704298'
   alias: MoodOnSunset
-  description: ""
+  description: ''
   triggers:
-    - entity_id: sun.sun
-      value_template: "{{ state_attr('sun.sun', 'elevation') }} "
-      below: 2.5
-      trigger: numeric_state
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    below: 2.5
+    trigger: numeric_state
   conditions: []
   actions:
-    - data: {}
-      target:
-        device_id:
-          - 581f1029f083c2080c0473d9474f765c
-          - 3c603425ec80b6c20b9305731f00c441
-          - 5b19d1ce1b19a015b80485d12cb2f3b7
-        entity_id: switch.plug13
-      action: homeassistant.turn_on
+  - data: {}
+    target:
+      device_id:
+      - 581f1029f083c2080c0473d9474f765c
+      - 3c603425ec80b6c20b9305731f00c441
+      - 5b19d1ce1b19a015b80485d12cb2f3b7
+      entity_id: switch.plug13
+    action: homeassistant.turn_on
   mode: single
-- id: "1697571878770"
+- id: '1697571878770'
   alias: MoodOffMidnight
-  description: ""
+  description: ''
   triggers:
-    - at: "23:30:00"
-      trigger: time
+  - at: '23:30:00'
+    trigger: time
   conditions: []
   actions:
-    - data: {}
-      target:
-        device_id:
-          - 581f1029f083c2080c0473d9474f765c
-          - 5b19d1ce1b19a015b80485d12cb2f3b7
-        entity_id: switch.plug13
-      action: homeassistant.turn_off
+  - data: {}
+    target:
+      device_id:
+      - 581f1029f083c2080c0473d9474f765c
+      - 5b19d1ce1b19a015b80485d12cb2f3b7
+      entity_id: switch.plug13
+    action: homeassistant.turn_off
   mode: single
-- id: "1698688508680"
+- id: '1698688508680'
   alias: MoodOffMorning
-  description: ""
+  description: ''
   triggers:
-    - entity_id: sun.sun
-      value_template: "{{ state_attr('sun.sun', 'elevation') }} "
-      above: 2.5
-      trigger: numeric_state
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    above: 2.5
+    trigger: numeric_state
   conditions: []
   actions:
-    - data: {}
-      target:
-        entity_id:
-          - switch.plug_outside_1_switch
-          - switch.silver_1_hall_switch
-          - switch.plug13
-        device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
-      action: homeassistant.turn_off
+  - data: {}
+    target:
+      entity_id:
+      - switch.plug_outside_1_switch
+      - switch.silver_1_hall_switch
+      - switch.plug13
+      device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
+    action: homeassistant.turn_off
   mode: single
-- id: "1701855339155"
+- id: '1701855339155'
   alias: Telegram - Cloudflare Start
-  description: ""
+  description: ''
   triggers:
-    - event_type: telegram_command
-      event_data:
-        command: /cfstart
-      trigger: event
+  - event_type: telegram_command
+    event_data:
+      command: /cfstart
+    trigger: event
   conditions: []
   actions:
-    - data:
-        message: Start Cloudflare
-      action: notify.telegram
-    - data:
-        addon: 9074a9fa_cloudflared
-      action: hassio.addon_start
+  - data:
+      message: Start Cloudflare
+    action: notify.telegram
+  - data:
+      addon: 9074a9fa_cloudflared
+    action: hassio.addon_start
   mode: single
-- id: "1701855916383"
+- id: '1701855916383'
   alias: Telegram - Cloudflare Stop
-  description: ""
+  description: ''
   trigger:
-    - platform: event
-      event_type: telegram_command
-      event_data:
-        command: /cfstop
+  - platform: event
+    event_type: telegram_command
+    event_data:
+      command: /cfstop
   condition: []
   action:
-    - data:
-        message: Stop Cloudflare
-      action: notify.telegram
-    - data:
-        addon: 9074a9fa_cloudflared
-      action: hassio.addon_stop
-    - action: automation.trigger
-      target:
-        entity_id:
-          - automation.telegram_keyboard
-      data:
-        skip_condition: true
+  - data:
+      message: Stop Cloudflare
+    action: notify.telegram
+  - data:
+      addon: 9074a9fa_cloudflared
+    action: hassio.addon_stop
+  - action: automation.trigger
+    target:
+      entity_id:
+      - automation.telegram_keyboard
+    data:
+      skip_condition: true
   mode: single
-- id: "1706195245715"
+- id: '1706195245715'
   alias: Auto - Shower Fan - OFF 30 min
-  description: ""
+  description: ''
   triggers:
-    - type: turned_on
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-      trigger: device
+  - type: turned_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+    trigger: device
   conditions: []
   actions:
-    - delay:
-        hours: 0
-        minutes: 30
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
+  - delay:
+      hours: 0
+      minutes: 30
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
   mode: single
-- id: "1707382797030"
+- id: '1707382797030'
   alias: Auto - Bathroom Heat Fan - OFF 20 min
-  description: ""
+  description: ''
   triggers:
-    - trigger: state
-      entity_id:
-        - switch.plug_bathroom_heat
-      to:
-        - "on"
-      for:
-        hours: 0
-        minutes: 20
-        seconds: 0
+  - trigger: state
+    entity_id:
+    - switch.plug_bathroom_heat
+    to:
+    - 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   conditions: []
   actions:
-    - action: switch.turn_off
-      metadata: {}
-      target:
-        entity_id: switch.plug_bathroom_heat
-      data: {}
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
-- id: "1711699263720"
+- id: '1711699263720'
   alias: Fläkt badrum 60%
-  description: ""
+  description: ''
   trigger:
-    - platform: numeric_state
-      entity_id:
-        - sensor.temp_bathroom_luftfuktighet
-      above: 60
+  - platform: numeric_state
+    entity_id:
+    - sensor.temp_bathroom_luftfuktighet
+    above: 60
   condition: []
   action:
-    - type: turn_on
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 20
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
   mode: single
-- id: "1723803632613"
+- id: '1723803632613'
   alias: Camera - snapshot /30
-  description: ""
+  description: ''
   triggers:
-    - minutes: /30
-      trigger: time_pattern
+  - minutes: /30
+    trigger: time_pattern
   conditions: []
   actions:
-    - action: camera.snapshot
-      metadata: {}
-      data:
-        filename: /config/www/snapshots/front.jpg
-      target:
-        entity_id: camera.framsida_medium_resolution_channel
-    - action: camera.snapshot
-      metadata: {}
-      data:
-        filename: /config/www/snapshots/back.jpg
-      target:
-        entity_id: camera.baksida_medium_resolution_channel
-    - action: camera.snapshot
-      metadata: {}
-      data:
-        filename: /config/www/snapshots/hall.jpg
-      enabled: true
-      target:
-        entity_id: camera.hall_medium_resolution_channel
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/front.jpg
+    target:
+      entity_id: camera.framsida_medium_resolution_channel
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/back.jpg
+    target:
+      entity_id: camera.baksida_medium_resolution_channel
+  - action: camera.snapshot
+    metadata: {}
+    data:
+      filename: /config/www/snapshots/hall.jpg
+    enabled: true
+    target:
+      entity_id: camera.hall_medium_resolution_channel
   mode: single
-- id: "1727098712935"
+- id: '1727098712935'
   alias: Button - Bathroom Heat ON
-  description: ""
+  description: ''
   triggers:
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_short_press
-      subtype: button_1
-      trigger: device
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_double_press
-      subtype: button_1
-      trigger: device
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_long_press
-      subtype: button_1
-      trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_short_press
+    subtype: button_1
+    trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_double_press
+    subtype: button_1
+    trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_long_press
+    subtype: button_1
+    trigger: device
   conditions: []
   actions:
-    - action: switch.toggle
-      metadata: {}
-      target:
-        entity_id: switch.plug_bathroom_heat
-      data: {}
+  - action: switch.toggle
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
-- id: "1727098782425"
+- id: '1727098782425'
   alias: Button - Shower Fan ON
-  description: ""
+  description: ''
   trigger:
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      platform: device
-      type: remote_button_short_press
-      subtype: button_2
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      platform: device
-      type: remote_button_double_press
-      subtype: button_2
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      platform: device
-      type: remote_button_long_press
-      subtype: both_buttons
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: button_2
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: button_2
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: both_buttons
   condition: []
   action:
-    - type: toggle
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
+  - type: toggle
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
   mode: single
-- id: "1727098850376"
+- id: '1727098850376'
   alias: Button - Bathroom Fans OFF
-  description: ""
+  description: ''
   triggers:
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_short_press
-      subtype: both_buttons
-      trigger: device
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_double_press
-      subtype: both_buttons
-      trigger: device
-    - device_id: 007697a642cf1ede749051acf25b8174
-      domain: zha
-      type: remote_button_long_press
-      subtype: both_buttons
-      trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_short_press
+    subtype: both_buttons
+    trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_double_press
+    subtype: both_buttons
+    trigger: device
+  - device_id: 007697a642cf1ede749051acf25b8174
+    domain: zha
+    type: remote_button_long_press
+    subtype: both_buttons
+    trigger: device
   conditions: []
   actions:
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - action: switch.turn_off
-      metadata: {}
-      target:
-        entity_id: switch.plug_bathroom_heat
-      data: {}
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - action: switch.turn_off
+    metadata: {}
+    target:
+      entity_id: switch.plug_bathroom_heat
+    data: {}
   mode: single
-- id: "1727255982082"
+- id: '1727255982082'
   alias: Shower Fan at 05:00
-  description: ""
+  description: ''
   trigger:
-    - platform: time
-      at: 05:00:00
+  - platform: time
+    at: 05:00:00
   condition: []
   action:
-    - type: turn_on
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 15
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
   mode: single
-- id: "1739818615342"
+- id: '1739818615342'
   alias: Ozone Basement
-  description: ""
+  description: ''
   triggers:
-    - trigger: time_pattern
-      minutes: /30
+  - trigger: time_pattern
+    minutes: /30
   conditions: []
   actions:
-    - type: turn_on
-      device_id: 2074897e3cd1217661028edf07230297
-      entity_id: 5b797ae9b575c10140f3051499cce3e7
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 15
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: 2074897e3cd1217661028edf07230297
-      entity_id: 5b797ae9b575c10140f3051499cce3e7
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: 2074897e3cd1217661028edf07230297
-      entity_id: 5b797ae9b575c10140f3051499cce3e7
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: 2074897e3cd1217661028edf07230297
-      entity_id: 5b797ae9b575c10140f3051499cce3e7
-      domain: switch
+  - type: turn_on
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 2074897e3cd1217661028edf07230297
+    entity_id: 5b797ae9b575c10140f3051499cce3e7
+    domain: switch
   mode: single
-- id: "1742421369675"
+- id: '1742421369675'
   alias: Shower Fan at 17:00
-  description: ""
+  description: ''
   triggers:
-    - at: "17:00:00"
-      trigger: time
+  - at: '17:00:00'
+    trigger: time
   conditions: []
   actions:
-    - type: turn_on
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 15
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: fb56394856ae26ac1579b07640e92d16
-      entity_id: b3ed81cbd678b0cbb5c55715b63f5539
-      domain: switch
+  - type: turn_on
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: fb56394856ae26ac1579b07640e92d16
+    entity_id: b3ed81cbd678b0cbb5c55715b63f5539
+    domain: switch
   mode: single
-- id: "1750769007053"
+- id: '1750769007053'
   alias: Alarm ON
-  description: ""
+  description: ''
   triggers:
-    - trigger: state
-      entity_id:
-        - switch.kottbo_mqtt_alarm_state
-      to: "on"
+  - trigger: state
+    entity_id:
+    - switch.kottbo_mqtt_alarm_state
+    to: 'on'
   conditions: []
   actions:
-    - action: script.send_user_message
-      data:
-        target: both
-        telegram: false
-        message: Larm på
-    - type: turn_on
-      device_id: ba02bab09e7cbb79a9ecbf432fa1c130
-      entity_id: 71cd9f685715a98c410872b317c8c3b2
-      domain: switch
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - action: switch.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-          - switch.baksida_detections_person
-          - switch.framsida_detections_person
-          - switch.framsida_detections_vehicle
-          - switch.baksida_detections_vehicle
-    - action: homeassistant.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: automation.telegram_ytterdorr
+  - action: script.send_user_message
+    data:
+      target: both
+      telegram: false
+      message: Larm på
+  - type: turn_on
+    device_id: ba02bab09e7cbb79a9ecbf432fa1c130
+    entity_id: 71cd9f685715a98c410872b317c8c3b2
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.baksida_detections_person
+      - switch.framsida_detections_person
+      - switch.framsida_detections_vehicle
+      - switch.baksida_detections_vehicle
   mode: single
-- id: "1750769125651"
+- id: '1750769125651'
   alias: Alarm OFF
-  description: ""
+  description: ''
   triggers:
-    - trigger: state
-      entity_id:
-        - switch.kottbo_mqtt_alarm_state
-      to: "off"
+  - trigger: state
+    entity_id:
+    - switch.kottbo_mqtt_alarm_state
+    to: 'off'
   conditions: []
   actions:
-    - action: script.send_user_message
-      data:
-        target: both
-        telegram: false
-        message: Larm av
-    - action: switch.turn_off
-      metadata: {}
-      data: {}
-      target:
-        entity_id:
-          - switch.baksida_detections_person
-          - switch.framsida_detections_person
-          - switch.hall_detections_person
-          - switch.baksida_detections_vehicle
-          - switch.framsida_detections_vehicle
-    - action: homeassistant.turn_off
-      metadata: {}
-      data: {}
-      target:
-        entity_id: automation.telegram_ytterdorr
-    - delay:
-        hours: 0
-        minutes: 1
-        seconds: 0
-        milliseconds: 0
-    - type: turn_off
-      device_id: ba02bab09e7cbb79a9ecbf432fa1c130
-      entity_id: 71cd9f685715a98c410872b317c8c3b2
-      domain: switch
+  - action: script.send_user_message
+    data:
+      target: both
+      telegram: false
+      message: Larm av
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.baksida_detections_person
+      - switch.framsida_detections_person
+      - switch.hall_detections_person
+      - switch.baksida_detections_vehicle
+      - switch.framsida_detections_vehicle
+  - delay:
+      hours: 0
+      minutes: 1
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: ba02bab09e7cbb79a9ecbf432fa1c130
+    entity_id: 71cd9f685715a98c410872b317c8c3b2
+    domain: switch
   mode: single
-- id: "1759152112915"
+- id: '1759152112915'
   alias: Kottbo GitHub commits
   description: GitHub commits
   triggers:
-    - at: 03:00:00
-      trigger: time
+  - at: 03:00:00
+    trigger: time
   actions:
-    - action: shell_command.git_sync
-      data: {}
+  - action: shell_command.git_sync
+    data: {}
   mode: single
-- id: "1764667796585"
+- id: '1764667796585'
   alias: Jul - tänd kväll
-  description: ""
+  description: ''
   triggers:
-    - entity_id: sun.sun
-      value_template: "{{ state_attr('sun.sun', 'elevation') }} "
-      below: 2.5
-      trigger: numeric_state
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    below: 2.5
+    trigger: numeric_state
   conditions: []
   actions:
-    - data: {}
-      action: homeassistant.turn_on
-      target:
-        entity_id:
-          - switch.plug_jul_2
-          - switch.plug_jul_3
-          - switch.plug_jul_5
+  - data: {}
+    action: homeassistant.turn_on
+    target:
+      entity_id:
+      - switch.plug_jul_2
+      - switch.plug_jul_3
+      - switch.plug_jul_5
   mode: single
-- id: "1764667867112"
+- id: '1764667867112'
   alias: Jul - av morgon
-  description: ""
+  description: ''
   triggers:
-    - entity_id: sun.sun
-      value_template: "{{ state_attr('sun.sun', 'elevation') }} "
-      above: 2.5
-      trigger: numeric_state
+  - entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }} '
+    above: 2.5
+    trigger: numeric_state
   conditions: []
   actions:
-    - data: {}
-      target:
-        entity_id:
-          - switch.plug_jul_2
-          - switch.plug_jul_3
-          - switch.plug_jul_5
-      action: homeassistant.turn_off
+  - data: {}
+    target:
+      entity_id:
+      - switch.plug_jul_2
+      - switch.plug_jul_3
+      - switch.plug_jul_5
+    action: homeassistant.turn_off
   mode: single
-- id: "1775549502532"
+- id: '1775549502532'
   alias: Röklarm
   description: Röklarm
   triggers:
-    - type: smoke
-      device_id: b324cd1dd86add7dfa749fb96c154ba5
-      entity_id: 2cf008dd4d15ff07f3d3209384bea817
-      domain: binary_sensor
-      trigger: device
-    - type: smoke
-      device_id: 08b00c57cc0a56123f803346108792a9
-      entity_id: 4de89137020a20b4c08e47146a62a8c5
-      domain: binary_sensor
-      trigger: device
-    - type: smoke
-      device_id: 64fa55795a47cadabb88399cf5b37cc6
-      entity_id: 681e7d9eab4751c88edbddef792114d7
-      domain: binary_sensor
-      trigger: device
-    - type: smoke
-      device_id: 7118210ce01423cad93110f420f73cda
-      entity_id: cc288f2a796882799b15430fb6ac40a9
-      domain: binary_sensor
-      trigger: device
-    - type: smoke
-      device_id: 024e02e67b53ecc78f7c3285a4973bfe
-      entity_id: f0f30cd10f6696aad0457d8b9631573b
-      domain: binary_sensor
-      trigger: device
+  - type: smoke
+    device_id: b324cd1dd86add7dfa749fb96c154ba5
+    entity_id: 2cf008dd4d15ff07f3d3209384bea817
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 08b00c57cc0a56123f803346108792a9
+    entity_id: 4de89137020a20b4c08e47146a62a8c5
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 64fa55795a47cadabb88399cf5b37cc6
+    entity_id: 681e7d9eab4751c88edbddef792114d7
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 7118210ce01423cad93110f420f73cda
+    entity_id: cc288f2a796882799b15430fb6ac40a9
+    domain: binary_sensor
+    trigger: device
+  - type: smoke
+    device_id: 024e02e67b53ecc78f7c3285a4973bfe
+    entity_id: f0f30cd10f6696aad0457d8b9631573b
+    domain: binary_sensor
+    trigger: device
   conditions: []
   actions:
-    - variables:
-        detector_name: "{% set mapping = {\n  \"binary_sensor.kottzig_smoke_attic_inner\":
-          \"Vind – inre\",\n  \"binary_sensor.kottzig_smoke_attic_outer\": \"Vind –
-          yttre\",\n  \"binary_sensor.kottzig_smoke_basement_stairs\": \"Källartrappa\",\n
-          \ \"binary_sensor.kottzig_smoke_livingroom\": \"Vardagsrum\",\n  \"binary_sensor.kottzig_smoke_bedroom\":
-          \"Sovrum\"\n} %} {{ mapping.get(trigger.entity_id, \"Okänd rökdetektor\")
-          }}"
-    - data:
-        message: "RÖKLARM KOTTBO: {{ detector_name }}"
-      action: telegram_bot.send_message
-    - data:
-        target: both
-        message: "RÖKLARM KOTTBO: {{ detector_name }}"
-        telegram: true
-      action: script.send_user_message
+  - variables:
+      detector_name: "{% set mapping = {\n  \"binary_sensor.kottzig_smoke_attic_inner\":
+        \"Vind – inre\",\n  \"binary_sensor.kottzig_smoke_attic_outer\": \"Vind –
+        yttre\",\n  \"binary_sensor.kottzig_smoke_basement_stairs\": \"Källartrappa\",\n
+        \ \"binary_sensor.kottzig_smoke_livingroom\": \"Vardagsrum\",\n  \"binary_sensor.kottzig_smoke_bedroom\":
+        \"Sovrum\"\n} %} {{ mapping.get(trigger.entity_id, \"Okänd rökdetektor\")
+        }}"
+  - data:
+      message: 'RÖKLARM KOTTBO: {{ detector_name }}'
+    action: telegram_bot.send_message
+  - data:
+      target: both
+      message: 'RÖKLARM KOTTBO: {{ detector_name }}'
+      telegram: true
+    action: script.send_user_message
   mode: single
-- id: "1780480674940"
+- id: '1780480674940'
   alias: Mount ha_kottbo NFS vid HA-start
-  description: ""
+  description: ''
   triggers:
-    - trigger: homeassistant
-      event: start
+  - trigger: homeassistant
+    event: start
   conditions: []
   actions:
-    - delay:
-        seconds: 120
-    - action: shell_command.mount_ha_kottbo
-      data: {}
-    - delay:
-        seconds: 120
-    - action: shell_command.mount_ha_kottbo
-      data: {}
+  - delay:
+      seconds: 120
+  - action: shell_command.mount_ha_kottbo
+    data: {}
+  - delay:
+      seconds: 120
+  - action: shell_command.mount_ha_kottbo
+    data: {}
   mode: single
-- id: "1781769288596"
+- id: '1781769288596'
   alias: Rökdetektorer offline
   description: Larmar om en rökdetektor varit offline i minst 30 minuter
   triggers:
-    - domain: zha
-      type: device_offline
-      subtype: device_offline
-      device_id: 64fa55795a47cadabb88399cf5b37cc6
-      trigger: device
-    - domain: zha
-      type: device_offline
-      subtype: device_offline
-      device_id: b324cd1dd86add7dfa749fb96c154ba5
-      trigger: device
-    - domain: zha
-      type: device_offline
-      subtype: device_offline
-      device_id: 08b00c57cc0a56123f803346108792a9
-      trigger: device
-    - domain: zha
-      type: device_offline
-      subtype: device_offline
-      device_id: 7118210ce01423cad93110f420f73cda
-      trigger: device
-    - domain: zha
-      type: device_offline
-      subtype: device_offline
-      device_id: 024e02e67b53ecc78f7c3285a4973bfe
-      trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 64fa55795a47cadabb88399cf5b37cc6
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: b324cd1dd86add7dfa749fb96c154ba5
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 08b00c57cc0a56123f803346108792a9
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 7118210ce01423cad93110f420f73cda
+    trigger: device
+  - domain: zha
+    type: device_offline
+    subtype: device_offline
+    device_id: 024e02e67b53ecc78f7c3285a4973bfe
+    trigger: device
   conditions: []
   actions:
-    - variables:
-        dev_id: "{{ trigger.device_id }}"
-        entity_map:
-          7118210ce01423cad93110f420f73cda: binary_sensor.kottzig_smoke_livingroom
-          024e02e67b53ecc78f7c3285a4973bfe: binary_sensor.kottzig_smoke_bedroom
-          64fa55795a47cadabb88399cf5b37cc6: binary_sensor.kottzig_smoke_basement_stairs
-          08b00c57cc0a56123f803346108792a9: binary_sensor.kottzig_smoke_attic_outer
-          b324cd1dd86add7dfa749fb96c154ba5: binary_sensor.kottzig_smoke_attic_inner
-        name_map:
-          7118210ce01423cad93110f420f73cda: Vardagsrum
-          024e02e67b53ecc78f7c3285a4973bfe: Sovrum
-          64fa55795a47cadabb88399cf5b37cc6: Källartrappa
-          08b00c57cc0a56123f803346108792a9: Vind – yttre
-          b324cd1dd86add7dfa749fb96c154ba5: Vind – inre
-        smoke_entity: "{{ entity_map.get(dev_id) }}"
-        detector_name: '{{ name_map.get(dev_id, "Okänd rökdetektor") }}'
-    - delay:
-        minutes: 30
-    - condition: template
-      value_template: '{{ is_state(smoke_entity, "unavailable") }}'
-    - data:
-        message: ⚠️ Rökdetektor offline – {{ detector_name }}
-      action: telegram_bot.send_message
-    - data:
-        target: kjell
-        message: ⚠️ Rökdetektor offline – {{ detector_name }}
-        telegram: true
-      action: script.send_user_message
+  - variables:
+      dev_id: '{{ trigger.device_id }}'
+      entity_map:
+        7118210ce01423cad93110f420f73cda: binary_sensor.kottzig_smoke_livingroom
+        024e02e67b53ecc78f7c3285a4973bfe: binary_sensor.kottzig_smoke_bedroom
+        64fa55795a47cadabb88399cf5b37cc6: binary_sensor.kottzig_smoke_basement_stairs
+        08b00c57cc0a56123f803346108792a9: binary_sensor.kottzig_smoke_attic_outer
+        b324cd1dd86add7dfa749fb96c154ba5: binary_sensor.kottzig_smoke_attic_inner
+      name_map:
+        7118210ce01423cad93110f420f73cda: Vardagsrum
+        024e02e67b53ecc78f7c3285a4973bfe: Sovrum
+        64fa55795a47cadabb88399cf5b37cc6: Källartrappa
+        08b00c57cc0a56123f803346108792a9: Vind – yttre
+        b324cd1dd86add7dfa749fb96c154ba5: Vind – inre
+      smoke_entity: '{{ entity_map.get(dev_id) }}'
+      detector_name: '{{ name_map.get(dev_id, "Okänd rökdetektor") }}'
+  - delay:
+      minutes: 30
+  - condition: template
+    value_template: '{{ is_state(smoke_entity, "unavailable") }}'
+  - data:
+      message: ⚠️ Rökdetektor offline – {{ detector_name }}
+    action: telegram_bot.send_message
+  - data:
+      target: kjell
+      message: ⚠️ Rökdetektor offline – {{ detector_name }}
+      telegram: true
+    action: script.send_user_message
   mode: parallel
-- id: "1782920726652"
+- id: '1782920726652'
   alias: Stabilisera NFS-mount vid uppstart och före backup
   description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
   triggers:
-    - event: start
-      trigger: homeassistant
-    - at: 02:45:00
-      trigger: time
+  - event: start
+    trigger: homeassistant
+  - at: 02:45:00
+    trigger: time
   actions:
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: "{{ trigger.event == 'start' }}"
-          sequence:
-            - delay: 00:01:00
-    - action: hassio.mount_reload
-      data:
-        device_id: 9d21dfdd9b23ad12a4f4964c44391b7f
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger.event == ''start'' }}'
+      sequence:
+      - delay: 00:01:00
+  - action: hassio.mount_reload
+    data:
+      device_id: 9d21dfdd9b23ad12a4f4964c44391b7f
   mode: single
 - &id001
-  id: "1783822800000"
+  id: '1783822800000'
   alias: Heartbeat & watchdog
   description: Publicerar timestamp varje minut och varnar om övriga HA är tysta i
     mer än 10 minuter (max ca 1 gång/timme)
   triggers:
-    - trigger: time_pattern
-      minutes: /1
+  - trigger: time_pattern
+    minutes: /1
   conditions: []
   actions:
-    - action: mqtt.publish
-      data:
-        topic: timestamp/ha-kottbo
-        payload: "{{ as_timestamp(now()) | timestamp_local }}"
-        retain: true
-        qos: 2
-    - variables:
-        hosts:
-          - entity: sensor.mqtt_timestamp_ha_kottbo
-            name: ha-kottbo
-          - entity: sensor.mqtt_timestamp_ha_front
-            name: ha-front
-          - entity: sensor.mqtt_timestamp_ha_core
-            name: ha-core
-          - entity: sensor.mqtt_timestamp_ha_server
-            name: ha-server
-    - repeat:
-        for_each: "{{ hosts }}"
-        sequence:
-          - if:
-              - condition: template
-                value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
-                  \"unavailable\", \"none\", \"\"] %}\n  {{ now().minute == 0 }}\n{% else
-                  %}\n  {% set age = as_timestamp(now()) - as_timestamp(s) %}\n  {{ age
-                  >= 600 and (age // 60) % 60 == 10 }}\n{% endif %}"
-            then:
-              - action: script.send_user_message
-                data:
-                  target: local
-                  telegram: true
-                  message: "Varning! {{ repeat.item.name }} senaste heartbeat: {{ states(repeat.item.entity)
-                    }}"
+  - action: mqtt.publish
+    data:
+      topic: timestamp/ha-kottbo
+      payload: '{{ as_timestamp(now()) | timestamp_local }}'
+      retain: true
+      qos: 2
+  - variables:
+      hosts:
+      - entity: sensor.mqtt_timestamp_ha_kottbo
+        name: ha-kottbo
+      - entity: sensor.mqtt_timestamp_ha_front
+        name: ha-front
+      - entity: sensor.mqtt_timestamp_ha_core
+        name: ha-core
+      - entity: sensor.mqtt_timestamp_ha_server
+        name: ha-server
+  - repeat:
+      for_each: '{{ hosts }}'
+      sequence:
+      - if:
+        - condition: template
+          value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
+            \"unavailable\", \"none\", \"\"] %}\n  {{ now().minute == 0 }}\n{% else
+            %}\n  {% set age = as_timestamp(now()) - as_timestamp(s) %}\n  {{ age
+            >= 600 and (age // 60) % 60 == 10 }}\n{% endif %}"
+        then:
+        - action: script.send_user_message
+          data:
+            target: local
+            telegram: true
+            message: 'Varning! {{ repeat.item.name }} senaste heartbeat: {{ states(repeat.item.entity)
+              }}'
   mode: single
 - *id001
-- id: "1786962000000"
+- id: '1786962000000'
   alias: Influx – timvis export
   description: Skriver timmedel till Influx om källan är färsk. Tyst källa ger lucka
     (null). Samma värde skrivs om igen. Kör XX:01 så utility_meter.last_period hunnit
     sätta sig.
   mode: single
   triggers:
-    - trigger: time_pattern
-      minutes: "1"
+  - trigger: time_pattern
+    minutes: '1'
   actions:
-    - variables:
-        ts: "{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
-          | int }}"
-        metrics:
-          - tag: influx_telemetry_temperature_inhouse
-            source: sensor.temp_kitchen_temperature
-            stats: sensor.influx_stats_temperature_inhouse
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_humidity_inhouse
-            source: sensor.temp_kitchen_humidity
-            stats: sensor.influx_stats_humidity_inhouse
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_temperature_outside
-            source: sensor.temp_outside_temperatur
-            stats: sensor.influx_stats_temperature_outside
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_humidity_outside
-            source: sensor.temp_outside_luftfuktighet
-            stats: sensor.influx_stats_humidity_outside
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_basement_temperature
-            source: sensor.temp_basement_temperatur
-            stats: sensor.influx_stats_basement_temperature
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_basement_humidity
-            source: sensor.temp_basement_luftfuktighet
-            stats: sensor.influx_stats_basement_humidity
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_bedroom_temperature
-            source: sensor.temp_bedroom_temperatur
-            stats: sensor.influx_stats_bedroom_temperature
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_bedroom_humidity
-            source: sensor.temp_bedroom_luftfuktighet
-            stats: sensor.influx_stats_bedroom_humidity
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_attic_temperature
-            source: sensor.temp_attic_temperatur
-            stats: sensor.influx_stats_attic_temperature
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_attic_humidity
-            source: sensor.temp_attic_luftfuktighet
-            stats: sensor.influx_stats_attic_humidity
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_ground_dry_side_temperature
-            source: sensor.ground_dry_side_temperature
-            stats: sensor.influx_stats_ground_dry_side_temperature
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_ground_dry_side_humidity
-            source: sensor.ground_dry_side_humidity
-            stats: sensor.influx_stats_ground_dry_side_humidity
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_ground_wet_side_temperature
-            source: sensor.ground_wet_side_temperature
-            stats: sensor.influx_stats_ground_wet_side_temperature
-            meas: °C
-            round: 1
-            max_age_min: 180
-            device_class: temperature
-            state_class: measurement
-          - tag: influx_telemetry_ground_wet_side_humidity
-            source: sensor.ground_wet_side_humidity
-            stats: sensor.influx_stats_ground_wet_side_humidity
-            meas: "%"
-            round: 0
-            max_age_min: 180
-            device_class: humidity
-            state_class: measurement
-          - tag: influx_telemetry_total_power_mean
-            source: sensor.frient_energy_total_effekt
-            stats: sensor.influx_stats_total_power
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_total_power_min
-            source: sensor.frient_energy_total_effekt
-            stats: sensor.influx_stats_total_power_min
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_total_power_max
-            source: sensor.frient_energy_total_effekt
-            stats: sensor.influx_stats_total_power_max
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l1_mean
-            source: sensor.frient_energy_effekt_fas_a
-            stats: sensor.influx_stats_power_l1
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l1_min
-            source: sensor.frient_energy_effekt_fas_a
-            stats: sensor.influx_stats_power_l1_min
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l1_max
-            source: sensor.frient_energy_effekt_fas_a
-            stats: sensor.influx_stats_power_l1_max
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l2_mean
-            source: sensor.frient_energy_effekt_fas_b
-            stats: sensor.influx_stats_power_l2
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l2_min
-            source: sensor.frient_energy_effekt_fas_b
-            stats: sensor.influx_stats_power_l2_min
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l2_max
-            source: sensor.frient_energy_effekt_fas_b
-            stats: sensor.influx_stats_power_l2_max
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l3_mean
-            source: sensor.frient_energy_effekt_fas_c
-            stats: sensor.influx_stats_power_l3
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l3_min
-            source: sensor.frient_energy_effekt_fas_c
-            stats: sensor.influx_stats_power_l3_min
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_power_l3_max
-            source: sensor.frient_energy_effekt_fas_c
-            stats: sensor.influx_stats_power_l3_max
-            meas: W
-            round: 0
-            max_age_min: 30
-            device_class: power
-            state_class: measurement
-          - tag: influx_telemetry_energy_imported
-            source: sensor.frient_energy_summering_av_leverans
-            stats: sensor.influx_energy_imported_hourly
-            meas: kWh
-            round: 3
-            max_age_min: 60
-            device_class: energy
-            state_class: total
-            energy_last_period: true
-          - tag: influx_telemetry_energy_imported_total
-            source: sensor.frient_energy_summering_av_leverans
-            stats: sensor.frient_energy_summering_av_leverans
-            meas: kWh
-            round: 3
-            max_age_min: 60
-            device_class: energy
-            state_class: total
-    - variables:
-        payload: "{% set ns = namespace(lines=[]) -%} {% for m in metrics -%}\n  {%
-          set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set fresh = st
-          not in ['unknown', 'unavailable', 'none', '']\n     and (as_timestamp(now())
-          - as_timestamp(states[src].last_updated)) / 60 <= m.max_age_min -%}\n  {%
-          if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
-          set val = state_attr('sensor.influx_energy_imported_hourly', 'last_period')
-          -%}\n    {% else -%}\n      {% set val = states(m.stats) -%}\n    {% endif
-          -%}\n    {% if val not in ['unknown', 'unavailable', 'none', '', none] -%}\n
-          \     {% set num = val | float | round(m.round) -%}\n      {% set line = m.meas\n
-          \        ~ ',domain=sensor,entity_id=' ~ m.tag\n         ~ ',site=ha-kottbo'\n
-          \        ~ ' value=' ~ num\n         ~ ',device_class_str=\"' ~ m.device_class
-          ~ '\"'\n         ~ ',friendly_name_str=\"' ~ m.tag ~ '\"'\n         ~ ',state_class_str=\"'
-          ~ m.state_class ~ '\"'\n         ~ ' ' ~ ts -%}\n      {% set ns.lines = ns.lines
-          + [line] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%} {{ ns.lines
-          | join('\\n') }}"
+  - variables:
+      ts: '{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
+        | int }}'
+      metrics:
+      - tag: influx_telemetry_temperature_inhouse
+        source: sensor.temp_kitchen_temperature
+        stats: sensor.influx_stats_temperature_inhouse
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_humidity_inhouse
+        source: sensor.temp_kitchen_humidity
+        stats: sensor.influx_stats_humidity_inhouse
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_temperature_outside
+        source: sensor.temp_outside_temperatur
+        stats: sensor.influx_stats_temperature_outside
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_humidity_outside
+        source: sensor.temp_outside_luftfuktighet
+        stats: sensor.influx_stats_humidity_outside
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_basement_temperature
+        source: sensor.temp_basement_temperatur
+        stats: sensor.influx_stats_basement_temperature
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_basement_humidity
+        source: sensor.temp_basement_luftfuktighet
+        stats: sensor.influx_stats_basement_humidity
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_bedroom_temperature
+        source: sensor.temp_bedroom_temperatur
+        stats: sensor.influx_stats_bedroom_temperature
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_bedroom_humidity
+        source: sensor.temp_bedroom_luftfuktighet
+        stats: sensor.influx_stats_bedroom_humidity
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_attic_temperature
+        source: sensor.temp_attic_temperatur
+        stats: sensor.influx_stats_attic_temperature
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_attic_humidity
+        source: sensor.temp_attic_luftfuktighet
+        stats: sensor.influx_stats_attic_humidity
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_ground_dry_side_temperature
+        source: sensor.ground_dry_side_temperature
+        stats: sensor.influx_stats_ground_dry_side_temperature
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_ground_dry_side_humidity
+        source: sensor.ground_dry_side_humidity
+        stats: sensor.influx_stats_ground_dry_side_humidity
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_ground_wet_side_temperature
+        source: sensor.ground_wet_side_temperature
+        stats: sensor.influx_stats_ground_wet_side_temperature
+        meas: °C
+        round: 1
+        max_age_min: 180
+        device_class: temperature
+        state_class: measurement
+      - tag: influx_telemetry_ground_wet_side_humidity
+        source: sensor.ground_wet_side_humidity
+        stats: sensor.influx_stats_ground_wet_side_humidity
+        meas: '%'
+        round: 0
+        max_age_min: 180
+        device_class: humidity
+        state_class: measurement
+      - tag: influx_telemetry_total_power_mean
+        source: sensor.frient_energy_total_effekt
+        stats: sensor.influx_stats_total_power
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_total_power_min
+        source: sensor.frient_energy_total_effekt
+        stats: sensor.influx_stats_total_power_min
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_total_power_max
+        source: sensor.frient_energy_total_effekt
+        stats: sensor.influx_stats_total_power_max
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l1_mean
+        source: sensor.frient_energy_effekt_fas_a
+        stats: sensor.influx_stats_power_l1
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l1_min
+        source: sensor.frient_energy_effekt_fas_a
+        stats: sensor.influx_stats_power_l1_min
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l1_max
+        source: sensor.frient_energy_effekt_fas_a
+        stats: sensor.influx_stats_power_l1_max
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l2_mean
+        source: sensor.frient_energy_effekt_fas_b
+        stats: sensor.influx_stats_power_l2
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l2_min
+        source: sensor.frient_energy_effekt_fas_b
+        stats: sensor.influx_stats_power_l2_min
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l2_max
+        source: sensor.frient_energy_effekt_fas_b
+        stats: sensor.influx_stats_power_l2_max
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l3_mean
+        source: sensor.frient_energy_effekt_fas_c
+        stats: sensor.influx_stats_power_l3
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l3_min
+        source: sensor.frient_energy_effekt_fas_c
+        stats: sensor.influx_stats_power_l3_min
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_power_l3_max
+        source: sensor.frient_energy_effekt_fas_c
+        stats: sensor.influx_stats_power_l3_max
+        meas: W
+        round: 0
+        max_age_min: 30
+        device_class: power
+        state_class: measurement
+      - tag: influx_telemetry_energy_imported
+        source: sensor.frient_energy_summering_av_leverans
+        stats: sensor.influx_energy_imported_hourly
+        meas: kWh
+        round: 3
+        max_age_min: 60
+        device_class: energy
+        state_class: total
+        energy_last_period: true
+      - tag: influx_telemetry_energy_imported_total
+        source: sensor.frient_energy_summering_av_leverans
+        stats: sensor.frient_energy_summering_av_leverans
+        meas: kWh
+        round: 3
+        max_age_min: 60
+        device_class: energy
+        state_class: total
+  - variables:
+      payload: "{% set ns = namespace(lines=[]) -%} {% for m in metrics -%}\n  {%
+        set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set fresh = st
+        not in ['unknown', 'unavailable', 'none', '']\n     and (as_timestamp(now())
+        - as_timestamp(states[src].last_updated)) / 60 <= m.max_age_min -%}\n  {%
+        if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
+        set val = state_attr('sensor.influx_energy_imported_hourly', 'last_period')
+        -%}\n    {% else -%}\n      {% set val = states(m.stats) -%}\n    {% endif
+        -%}\n    {% if val not in ['unknown', 'unavailable', 'none', '', none] -%}\n
+        \     {% set num = val | float | round(m.round) -%}\n      {% set line = m.meas\n
+        \        ~ ',domain=sensor,entity_id=' ~ m.tag\n         ~ ',site=ha-kottbo'\n
+        \        ~ ' value=' ~ num\n         ~ ',device_class_str=\"' ~ m.device_class
+        ~ '\"'\n         ~ ',friendly_name_str=\"' ~ m.tag ~ '\"'\n         ~ ',state_class_str=\"'
+        ~ m.state_class ~ '\"'\n         ~ ' ' ~ ts -%}\n      {% set ns.lines = ns.lines
+        + [line] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%} {{ ns.lines
+        | join('\\n') }}"
+  - if:
+    - condition: template
+      value_template: '{{ payload | length > 0 }}'
+    then:
+    - action: rest_command.influx_write_batch
+      data:
+        payload: '{{ payload }}'
+      response_variable: influx_resp
     - if:
-        - condition: template
-          value_template: "{{ payload | length > 0 }}"
+      - condition: template
+        value_template: '{{ influx_resp is defined and influx_resp.status | int(0)
+          != 204 }}'
       then:
-        - action: rest_command.influx_write_batch
-          data:
-            payload: "{{ payload }}"
-          response_variable: influx_resp
-        - if:
-            - condition: template
-              value_template: "{{ influx_resp is defined and influx_resp.status | int(0)
-                != 204 }}"
-          then:
-            - action: script.send_user_message
-              data:
-                target: kjell
-                telegram: true
-                message: "Influx timexport misslyckades: HTTP {{ influx_resp.status }}"
-- id: "1786962000001"
+      - action: script.send_user_message
+        data:
+          target: kjell
+          telegram: true
+          message: 'Influx timexport misslyckades: HTTP {{ influx_resp.status }}'
+- id: '1786962000001'
   alias: Influx – källor stale
   description: Telegram om minst en Influx-källa är stale i 2 timmar (samma färskhetsregel
     som timexporten).
   triggers:
-    - above: 0
-      entity_id: sensor.influx_export_health
-      for:
-        hours: 2
-      trigger: numeric_state
+  - above: 0
+    entity_id: sensor.influx_export_health
+    for:
+      hours: 2
+    trigger: numeric_state
   conditions: []
   actions:
-    - action: script.send_user_message
-      data:
-        message: "Influx-källor stale ({{ states('sensor.influx_export_health') }}):
-          {{ state_attr('sensor.influx_export_health', 'stale') | join(', ') }}"
-        target: kjell
-        telegram: true
+  - action: script.send_user_message
+    data:
+      message: 'KOTTBO Influx-källor stale ({{ states(''sensor.influx_export_health'')
+        }}): {{ state_attr(''sensor.influx_export_health'', ''stale'') | join('',
+        '') }}'
+      target: kjell
+      telegram: true
   mode: single
