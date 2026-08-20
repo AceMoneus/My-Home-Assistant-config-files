@@ -984,8 +984,7 @@
   alias: Influx – timvis export
   description: Skriver timmedel till Influx om källan är färsk. Tyst källa ger lucka
     (null). Samma värde skrivs om igen. Kör XX:01 så utility_meter.last_period hunnit
-    sätta sig.
-  mode: single
+    sätta sig. Stale/färskhet för elmätare via spänning (inte effekt).
   triggers:
   - trigger: time_pattern
     minutes: '1'
@@ -1107,7 +1106,7 @@
         device_class: humidity
         state_class: measurement
       - tag: influx_telemetry_total_power_mean
-        source: sensor.frient_energy_total_effekt
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_total_power
         meas: W
         round: 0
@@ -1115,7 +1114,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_total_power_min
-        source: sensor.frient_energy_total_effekt
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_total_power_min
         meas: W
         round: 0
@@ -1123,7 +1122,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_total_power_max
-        source: sensor.frient_energy_total_effekt
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_total_power_max
         meas: W
         round: 0
@@ -1131,7 +1130,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l1_mean
-        source: sensor.frient_energy_effekt_fas_a
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_power_l1
         meas: W
         round: 0
@@ -1139,7 +1138,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l1_min
-        source: sensor.frient_energy_effekt_fas_a
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_power_l1_min
         meas: W
         round: 0
@@ -1147,7 +1146,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l1_max
-        source: sensor.frient_energy_effekt_fas_a
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_stats_power_l1_max
         meas: W
         round: 0
@@ -1155,7 +1154,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l2_mean
-        source: sensor.frient_energy_effekt_fas_b
+        source: sensor.frient_energy_spanning_fas_b
         stats: sensor.influx_stats_power_l2
         meas: W
         round: 0
@@ -1163,7 +1162,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l2_min
-        source: sensor.frient_energy_effekt_fas_b
+        source: sensor.frient_energy_spanning_fas_b
         stats: sensor.influx_stats_power_l2_min
         meas: W
         round: 0
@@ -1171,7 +1170,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l2_max
-        source: sensor.frient_energy_effekt_fas_b
+        source: sensor.frient_energy_spanning_fas_b
         stats: sensor.influx_stats_power_l2_max
         meas: W
         round: 0
@@ -1179,7 +1178,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l3_mean
-        source: sensor.frient_energy_effekt_fas_c
+        source: sensor.frient_energy_spanning_fas_c
         stats: sensor.influx_stats_power_l3
         meas: W
         round: 0
@@ -1187,7 +1186,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l3_min
-        source: sensor.frient_energy_effekt_fas_c
+        source: sensor.frient_energy_spanning_fas_c
         stats: sensor.influx_stats_power_l3_min
         meas: W
         round: 0
@@ -1195,7 +1194,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_power_l3_max
-        source: sensor.frient_energy_effekt_fas_c
+        source: sensor.frient_energy_spanning_fas_c
         stats: sensor.influx_stats_power_l3_max
         meas: W
         round: 0
@@ -1203,7 +1202,7 @@
         device_class: power
         state_class: measurement
       - tag: influx_telemetry_energy_imported
-        source: sensor.frient_energy_summering_av_leverans
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.influx_energy_imported_hourly
         meas: kWh
         round: 3
@@ -1212,7 +1211,7 @@
         state_class: total
         energy_last_period: true
       - tag: influx_telemetry_energy_imported_total
-        source: sensor.frient_energy_summering_av_leverans
+        source: sensor.frient_energy_spanning_fas_a
         stats: sensor.frient_energy_summering_av_leverans
         meas: kWh
         round: 3
@@ -1253,6 +1252,7 @@
           target: kjell
           telegram: true
           message: 'Influx timexport misslyckades: HTTP {{ influx_resp.status }}'
+  mode: single
 - id: '1786962000001'
   alias: Influx – källor stale
   description: Telegram om minst en Influx-källa är stale i 2 timmar (samma färskhetsregel
