@@ -345,39 +345,6 @@
     continue_on_error: true
   mode: single
   max_exceeded: silent
-- id: '1749653638949'
-  alias: Telegram Shaun Connection
-  description: Skickar varning vid frånkoppling och notifierar vid återanslutning
-  triggers:
-  - entity_id: binary_sensor.192_168_2_4
-    to: 'off'
-    id: disconnected
-    trigger: state
-  - entity_id: binary_sensor.192_168_2_4
-    to: 'on'
-    id: connected
-    trigger: state
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: disconnected
-      sequence:
-      - data:
-          message: '⚠️ Shaun har kopplats från!
-
-            Status: {{ states(''input_text.shaun_state'') }}
-
-            '
-        action: telegram_bot.send_message
-    - conditions:
-      - condition: trigger
-        id: connected
-      sequence:
-      - data:
-          message: ✅ Shaun connected
-        action: telegram_bot.send_message
-  mode: restart
 - id: '1750875289498'
   alias: MQTT - Temperatur Lyktstolpe
   description: ''
@@ -1373,11 +1340,48 @@
 - id: '1786963000000'
   alias: Influx – timvis export
   description: Batch line protocol till Influx varje XX:01 (timstatistik + last_period
-    energi).
-  mode: single
+    energi). Stale/färskhet för elmätare via spänning (inte effekt).
   triggers:
   - trigger: time_pattern
     minutes: '1'
+  actions:
+  - variables:
+      payload: "{% set ns = namespace(lines=[]) -%} {% for m in metrics -%}\n  {%
+        set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set lu = states[src].last_updated
+        if states[src] is defined else none -%}\n  {% set age = (as_timestamp(now())
+        - as_timestamp(lu)) / 60 if lu else 99999 -%}\n  {% set fresh = st not in
+        ['unknown', 'unavailable', 'none', ''] and age <= m.max_age_min -%}\n  {%
+        if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
+        set val = state_attr('sensor.influx_energy_imported_hourly', 'last_period')
+        -%}\n    {% else -%}\n      {% set val = states(m.stats) -%}\n    {% endif
+        -%}\n    {% if val not in ['unknown', 'unavailable', 'none', '', none] -%}\n
+        \     {% set raw = val | float -%}\n      {% set num = ((raw * 1000) if m.scale_kw
+        | default(false) else raw) | round(m.round) -%}\n      {% set line = m.meas\n
+        \        ~ ',domain=sensor,entity_id=' ~ m.tag\n         ~ ',site=ha-server'\n
+        \        ~ ' value=' ~ num\n         ~ ',device_class_str=\"' ~ m.device_class
+        ~ '\"'\n         ~ ',friendly_name_str=\"' ~ m.tag ~ '\"'\n         ~ ',state_class_str=\"'
+        ~ m.state_class ~ '\"'\n         ~ ' ' ~ ts -%}\n      {% set ns.lines = ns.lines
+        + [line] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%} {{ ns.lines
+        | join('\\n') }}"
+  - if:
+    - condition: template
+      value_template: '{{ payload | length > 0 }}'
+    then:
+    - action: rest_command.influx_write_batch
+      data:
+        payload: '{{ payload }}'
+      response_variable: influx_response
+    - if:
+      - condition: template
+        value_template: '{{ influx_response[''status''] | default(0) != 204 }}'
+      then:
+      - action: script.send_user_message
+        data:
+          target: kjell
+          telegram: true
+          message: 'Influx export misslyckades: HTTP {{ influx_response[''status'']
+            | default(''?'') }}'
+  mode: single
   variables:
     ts: '{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
       | int }}'
@@ -1447,7 +1451,7 @@
       device_class: humidity
       state_class: measurement
     - tag: influx_telemetry_total_power_mean
-      source: sensor.slimmelezer_momentary_active_import
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_total_power
       meas: W
       round: 0
@@ -1456,7 +1460,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_total_power_min
-      source: sensor.slimmelezer_momentary_active_import
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_total_power_min
       meas: W
       round: 0
@@ -1465,7 +1469,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_total_power_max
-      source: sensor.slimmelezer_momentary_active_import
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_total_power_max
       meas: W
       round: 0
@@ -1474,7 +1478,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l1_mean
-      source: sensor.slimmelezer_momentary_active_import_phase_1
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_power_l1
       meas: W
       round: 0
@@ -1483,7 +1487,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l1_min
-      source: sensor.slimmelezer_momentary_active_import_phase_1
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_power_l1_min
       meas: W
       round: 0
@@ -1492,7 +1496,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l1_max
-      source: sensor.slimmelezer_momentary_active_import_phase_1
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_stats_power_l1_max
       meas: W
       round: 0
@@ -1501,7 +1505,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l2_mean
-      source: sensor.slimmelezer_momentary_active_import_phase_2
+      source: sensor.slimmelezer_voltage_phase_2
       stats: sensor.influx_stats_power_l2
       meas: W
       round: 0
@@ -1510,7 +1514,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l2_min
-      source: sensor.slimmelezer_momentary_active_import_phase_2
+      source: sensor.slimmelezer_voltage_phase_2
       stats: sensor.influx_stats_power_l2_min
       meas: W
       round: 0
@@ -1519,7 +1523,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l2_max
-      source: sensor.slimmelezer_momentary_active_import_phase_2
+      source: sensor.slimmelezer_voltage_phase_2
       stats: sensor.influx_stats_power_l2_max
       meas: W
       round: 0
@@ -1528,7 +1532,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l3_mean
-      source: sensor.slimmelezer_momentary_active_import_phase_3
+      source: sensor.slimmelezer_voltage_phase_3
       stats: sensor.influx_stats_power_l3
       meas: W
       round: 0
@@ -1537,7 +1541,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l3_min
-      source: sensor.slimmelezer_momentary_active_import_phase_3
+      source: sensor.slimmelezer_voltage_phase_3
       stats: sensor.influx_stats_power_l3_min
       meas: W
       round: 0
@@ -1546,7 +1550,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_power_l3_max
-      source: sensor.slimmelezer_momentary_active_import_phase_3
+      source: sensor.slimmelezer_voltage_phase_3
       stats: sensor.influx_stats_power_l3_max
       meas: W
       round: 0
@@ -1555,7 +1559,7 @@
       state_class: measurement
       scale_kw: true
     - tag: influx_telemetry_energy_imported
-      source: sensor.slimmelezer_cumulative_active_import
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.influx_energy_imported_hourly
       meas: kWh
       round: 3
@@ -1564,50 +1568,13 @@
       state_class: total
       energy_last_period: true
     - tag: influx_telemetry_energy_imported_total
-      source: sensor.slimmelezer_cumulative_active_import
+      source: sensor.slimmelezer_voltage_phase_1
       stats: sensor.slimmelezer_cumulative_active_import
       meas: kWh
       round: 3
       max_age_min: 60
       device_class: energy
       state_class: total_increasing
-  actions:
-  - variables:
-      payload: "{% set ns = namespace(lines=[]) -%} {% for m in metrics -%}\n  {%
-        set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set lu = states[src].last_updated
-        if states[src] is defined else none -%}\n  {% set age = (as_timestamp(now())
-        - as_timestamp(lu)) / 60 if lu else 99999 -%}\n  {% set fresh = st not in
-        ['unknown', 'unavailable', 'none', ''] and age <= m.max_age_min -%}\n  {%
-        if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
-        set val = state_attr('sensor.influx_energy_imported_hourly', 'last_period')
-        -%}\n    {% else -%}\n      {% set val = states(m.stats) -%}\n    {% endif
-        -%}\n    {% if val not in ['unknown', 'unavailable', 'none', '', none] -%}\n
-        \     {% set raw = val | float -%}\n      {% set num = ((raw * 1000) if m.scale_kw
-        | default(false) else raw) | round(m.round) -%}\n      {% set line = m.meas\n
-        \        ~ ',domain=sensor,entity_id=' ~ m.tag\n         ~ ',site=ha-server'\n
-        \        ~ ' value=' ~ num\n         ~ ',device_class_str=\"' ~ m.device_class
-        ~ '\"'\n         ~ ',friendly_name_str=\"' ~ m.tag ~ '\"'\n         ~ ',state_class_str=\"'
-        ~ m.state_class ~ '\"'\n         ~ ' ' ~ ts -%}\n      {% set ns.lines = ns.lines
-        + [line] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%} {{ ns.lines
-        | join('\\n') }}"
-  - if:
-    - condition: template
-      value_template: '{{ payload | length > 0 }}'
-    then:
-    - action: rest_command.influx_write_batch
-      data:
-        payload: '{{ payload }}'
-      response_variable: influx_response
-    - if:
-      - condition: template
-        value_template: '{{ influx_response[''status''] | default(0) != 204 }}'
-      then:
-      - action: script.send_user_message
-        data:
-          target: kjell
-          telegram: true
-          message: 'Influx export misslyckades: HTTP {{ influx_response[''status'']
-            | default(''?'') }}'
 - id: '1786963000001'
   alias: Influx – källor stale
   description: Telegram om minst en Influx-källa är stale i 2 timmar. Disabled tills
@@ -1628,4 +1595,35 @@
         }}): {{ state_attr(''sensor.influx_export_health'', ''stale'') | join('',
         '') }}'
   initial_state: false
+  mode: single
+- id: '1787129093268'
+  alias: Inbrottslarm
+  description: Larmar när dörrsensorer öppnas medan hemmalarmet är på.
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.mt30_dorr
+    - binary_sensor.mt32_dorr
+    - binary_sensor.mt68_dorr
+    - binary_sensor.mt69_dorr
+    to: 'on'
+  conditions:
+  - condition: state
+    entity_id: switch.home_mqtt_alarm_state
+    state:
+    - 'on'
+  actions:
+  - variables:
+      detector_name: "{% set mapping = {\n  \"binary_sensor.mt30_dorr\": \"Sovrum
+        källare\",\n  \"binary_sensor.mt32_dorr\": \"Ytterdörr\",\n  \"binary_sensor.mt68_dorr\":
+        \"Altandörr\",\n  \"binary_sensor.mt69_dorr\": \"Köksdörr\"\n} %} {{ mapping.get(trigger.entity_id,
+        state_attr(trigger.entity_id, \"friendly_name\") or \"Okänd sensor\") }}"
+  - action: telegram_bot.send_message
+    data:
+      message: 'HEMMA LARM: {{ detector_name }}'
+  - action: script.send_user_message
+    data:
+      target: both
+      message: 'HEMMA LARM: {{ detector_name }}'
+      telegram: true
   mode: single
