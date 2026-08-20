@@ -154,6 +154,7 @@
       - action: notify.mobile_app_sm_a236b
         data:
           message: '{{ data.message }}'
+        enabled: true
   - if:
     - condition: template
       value_template: '{{ data.telegram | default(false) | bool }}'
