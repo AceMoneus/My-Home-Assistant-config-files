@@ -1,0 +1,108 @@
+# Influx hourly export — rolling 1 h statistics (power only; climate via UI helpers mt71–mt74)
+- platform: statistics
+  name: influx_stats_total_power
+  unique_id: influx_stats_total_power
+  entity_id: sensor.slimmelezer_momentary_active_import
+  state_characteristic: mean
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_total_power_min
+  unique_id: influx_stats_total_power_min
+  entity_id: sensor.slimmelezer_momentary_active_import
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_total_power_max
+  unique_id: influx_stats_total_power_max
+  entity_id: sensor.slimmelezer_momentary_active_import
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l1
+  unique_id: influx_stats_power_l1
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_1
+  state_characteristic: mean
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l1_min
+  unique_id: influx_stats_power_l1_min
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_1
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l1_max
+  unique_id: influx_stats_power_l1_max
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_1
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l2
+  unique_id: influx_stats_power_l2
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_2
+  state_characteristic: mean
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l2_min
+  unique_id: influx_stats_power_l2_min
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_2
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l2_max
+  unique_id: influx_stats_power_l2_max
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_2
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l3
+  unique_id: influx_stats_power_l3
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_3
+  state_characteristic: mean
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l3_min
+  unique_id: influx_stats_power_l3_min
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_3
+  state_characteristic: value_min
+  max_age:
+    hours: 1
+  precision: 3
+
+- platform: statistics
+  name: influx_stats_power_l3_max
+  unique_id: influx_stats_power_l3_max
+  entity_id: sensor.slimmelezer_momentary_active_import_phase_3
+  state_characteristic: value_max
+  max_age:
+    hours: 1
+  precision: 3
