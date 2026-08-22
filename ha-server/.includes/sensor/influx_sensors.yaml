@@ -1,8 +1,8 @@
-# Influx hourly export — rolling 1 h statistics (sources may be placeholders)
+# Influx hourly export — rolling 1 h statistics (standalone helpers, not on devices)
 - platform: statistics
   name: influx_stats_temperature_inhouse
   unique_id: influx_stats_temperature_inhouse
-  entity_id: sensor.mt200_inhouse_sensor_temperatur
+  entity_id: sensor.mt71_temperatur
   state_characteristic: mean
   max_age:
     hours: 1
@@ -11,7 +11,7 @@
 - platform: statistics
   name: influx_stats_humidity_inhouse
   unique_id: influx_stats_humidity_inhouse
-  entity_id: sensor.mt200_inhouse_sensor_luftfuktighet
+  entity_id: sensor.mt71_luftfuktighet
   state_characteristic: mean
   max_age:
     hours: 1
@@ -20,7 +20,7 @@
 - platform: statistics
   name: influx_stats_temperature_outside
   unique_id: influx_stats_temperature_outside
-  entity_id: sensor.mt200_outside_sensor_temperatur
+  entity_id: sensor.mt72_temperatur
   state_characteristic: mean
   max_age:
     hours: 1
@@ -29,7 +29,7 @@
 - platform: statistics
   name: influx_stats_humidity_outside
   unique_id: influx_stats_humidity_outside
-  entity_id: sensor.mt200_outside_sensor_luftfuktighet
+  entity_id: sensor.mt72_luftfuktighet
   state_characteristic: mean
   max_age:
     hours: 1
@@ -38,7 +38,7 @@
 - platform: statistics
   name: influx_stats_basement_temperature
   unique_id: influx_stats_basement_temperature
-  entity_id: sensor.mt200_basement_sensor_temperatur
+  entity_id: sensor.mt73_temperatur
   state_characteristic: mean
   max_age:
     hours: 1
@@ -47,7 +47,7 @@
 - platform: statistics
   name: influx_stats_basement_humidity
   unique_id: influx_stats_basement_humidity
-  entity_id: sensor.mt200_basement_sensor_luftfuktighet
+  entity_id: sensor.mt73_luftfuktighet
   state_characteristic: mean
   max_age:
     hours: 1
@@ -56,7 +56,7 @@
 - platform: statistics
   name: influx_stats_bedroom_temperature
   unique_id: influx_stats_bedroom_temperature
-  entity_id: sensor.mt200_bedroom_sensor_temperatur
+  entity_id: sensor.mt74_temperatur
   state_characteristic: mean
   max_age:
     hours: 1
@@ -65,7 +65,7 @@
 - platform: statistics
   name: influx_stats_bedroom_humidity
   unique_id: influx_stats_bedroom_humidity
-  entity_id: sensor.mt200_bedroom_sensor_luftfuktighet
+  entity_id: sensor.mt74_luftfuktighet
   state_characteristic: mean
   max_age:
     hours: 1

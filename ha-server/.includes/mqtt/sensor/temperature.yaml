@@ -1,12 +1,57 @@
-  - name: "MQTT Temperatur Vardagsrum"
-    state_topic: "home/temp/livingroom"
-    unit_of_measurement: '°C'
-    value_template: "{{ value }}"
-  - name: "MQTT Temperatur Sovrum"
-    state_topic: "home/temp/bedroom"
-    unit_of_measurement: '°C'
-    value_template: "{{ value }}"
-  - name: "MQTT Temperatur Ute"
-    state_topic: "home/temp/outside"
-    unit_of_measurement: '°C'
-    value_template: "{{ value }}"
+# Matter climate bridge — HA subscribes; publish automations feed these topics
+- name: "MQTT Temperatur Inne"
+  unique_id: mqtt_temperatur_inne
+  state_topic: home/temp/inhouse
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Luftfuktighet Inne"
+  unique_id: mqtt_luftfuktighet_inne
+  state_topic: home/humid/inhouse
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Temperatur Ute"
+  unique_id: mqtt_temperatur_ute
+  state_topic: home/temp/outside
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Luftfuktighet Ute"
+  unique_id: mqtt_luftfuktighet_ute
+  state_topic: home/humid/outside
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Temperatur Källare"
+  unique_id: mqtt_temperatur_kallare
+  state_topic: home/temp/basement
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Luftfuktighet Källare"
+  unique_id: mqtt_luftfuktighet_kallare
+  state_topic: home/humid/basement
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Temperatur Sovrum"
+  unique_id: mqtt_temperatur_sovrum
+  state_topic: home/temp/bedroom
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "MQTT Luftfuktighet Sovrum"
+  unique_id: mqtt_luftfuktighet_sovrum
+  state_topic: home/humid/bedroom
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
