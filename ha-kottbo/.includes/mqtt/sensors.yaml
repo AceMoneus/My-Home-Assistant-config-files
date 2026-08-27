@@ -1,0 +1,101 @@
+# home — climate (Matter bridge; publish automations feed these topics)
+- name: "Temperatur inne"
+  unique_id: mqtt_temperatur_inne
+  default_entity_id: sensor.mqtt_home_temp_inhouse
+  state_topic: "home/temp/inhouse"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Luftfuktighet inne"
+  unique_id: mqtt_luftfuktighet_inne
+  default_entity_id: sensor.mqtt_home_humid_inhouse
+  state_topic: "home/humid/inhouse"
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temperatur ute"
+  unique_id: mqtt_temperatur_ute
+  default_entity_id: sensor.mqtt_home_temp_outside
+  state_topic: "home/temp/outside"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Luftfuktighet ute"
+  unique_id: mqtt_luftfuktighet_ute
+  default_entity_id: sensor.mqtt_home_humid_outside
+  state_topic: "home/humid/outside"
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temperatur källare"
+  unique_id: mqtt_temperatur_kallare
+  default_entity_id: sensor.mqtt_home_temp_basement
+  state_topic: "home/temp/basement"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Luftfuktighet källare"
+  unique_id: mqtt_luftfuktighet_kallare
+  default_entity_id: sensor.mqtt_home_humid_basement
+  state_topic: "home/humid/basement"
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temperatur sovrum"
+  unique_id: mqtt_temperatur_sovrum
+  default_entity_id: sensor.mqtt_home_temp_bedroom
+  state_topic: "home/temp/bedroom"
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Luftfuktighet sovrum"
+  unique_id: mqtt_luftfuktighet_sovrum
+  default_entity_id: sensor.mqtt_home_humid_bedroom
+  state_topic: "home/humid/bedroom"
+  unit_of_measurement: "%"
+  device_class: humidity
+  state_class: measurement
+  value_template: "{{ value }}"
+
+# kottbo
+- name: "Timestamp kottbo"
+  state_topic: "timestamp/ha-kottbo"
+  device_class: timestamp
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_kottbo"
+  default_entity_id: sensor.mqtt_kottbo_timestamp
+  qos: 2
+
+# front
+- name: "Timestamp front"
+  state_topic: "timestamp/ha-front"
+  device_class: timestamp
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_front"
+  default_entity_id: sensor.mqtt_front_timestamp
+  qos: 2
+
+# core
+- name: "Timestamp core"
+  state_topic: "timestamp/ha-core"
+  device_class: timestamp
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_core"
+  default_entity_id: sensor.mqtt_core_timestamp
+  qos: 2
+
+# server
+- name: "Timestamp server"
+  state_topic: "timestamp/ha-server"
+  device_class: timestamp
+  value_template: "{{ as_datetime(value) }}"
+  unique_id: "mqtt_timestamp_ha_server"
+  default_entity_id: sensor.mqtt_server_timestamp
+  qos: 2
