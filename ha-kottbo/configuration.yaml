@@ -15,9 +15,9 @@ automation: !include automations.yaml
 group: !include .includes/group.yaml
 homeassistant: !include .includes/homeassistant.yaml
 mqtt:
-  switch: !include_dir_merge_list .includes/mqtt/switch/
-  sensor: !include_dir_merge_list .includes/mqtt/sensor/
-  binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor/
+  switch: !include .includes/mqtt/switches.yaml
+  sensor: !include .includes/mqtt/sensors.yaml
+  binary_sensor: !include .includes/mqtt/binary_sensors.yaml
 rest_command: !include .includes/rest_command.yaml
 script: !include .includes/scripts.yaml
 sensor: !include_dir_merge_list .includes/sensors/
