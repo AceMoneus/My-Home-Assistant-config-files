@@ -268,7 +268,7 @@ touchscreen:
             - homeassistant.service:
                 service: switch.toggle
                 data:
-                  entity_id: switch.home_mqtt_light_button
+                  entity_id: switch.mqtt_home_light_button
       - if:
           condition:
             lambda: 'return (id(touch_xr) >= 116 && id(touch_xr) <= 212 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
@@ -277,7 +277,7 @@ touchscreen:
             - homeassistant.service:
                 service: switch.toggle
                 data:
-                  entity_id: switch.home_mqtt_bettan_carheat
+                  entity_id: switch.mqtt_home_bettan_carheat
       - if:
           condition:
             lambda: 'return (id(touch_xr) >= 222 && id(touch_xr) <= 318 && id(touch_yr) >= 120 && id(touch_yr) <= 170);'
@@ -286,7 +286,7 @@ touchscreen:
             - homeassistant.service:
                 service: switch.toggle
                 data:
-                  entity_id: switch.home_mqtt_kjell_carheat
+                  entity_id: switch.mqtt_home_kjell_carheat
 
 #######################################################
 # INTERVAL

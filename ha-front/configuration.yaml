@@ -12,8 +12,9 @@ group: !include .includes/group.yaml
 input_boolean: !include .includes/input_boolean.yaml
 template: !include .includes/template.yaml
 mqtt:
-  switch: !include_dir_merge_list .includes/mqtt/switch
-  sensor: !include_dir_merge_list .includes/mqtt/sensor
+  binary_sensor: !include .includes/mqtt/binary_sensors.yaml
+  sensor: !include .includes/mqtt/sensors.yaml
+  switch: !include .includes/mqtt/switches.yaml
 script: !include .includes/scripts.yaml
 sensor: !include .includes/sensor.yaml
 shell_command: !include .includes/shell_command.yaml

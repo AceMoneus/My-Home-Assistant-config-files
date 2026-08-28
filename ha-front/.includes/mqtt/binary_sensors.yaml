@@ -1,0 +1,40 @@
+# home
+- name: "Mörker"
+  default_entity_id: binary_sensor.mqtt_home_dark
+  unique_id: mqtt_home_dark
+  state_topic: "home/state/dark"
+  payload_on: "ON"
+  payload_off: "OFF"
+  qos: 2
+- name: "Kväll"
+  default_entity_id: binary_sensor.mqtt_home_evening
+  unique_id: mqtt_home_evening
+  state_topic: "home/state/evening"
+  payload_on: "ON"
+  payload_off: "OFF"
+  qos: 2
+- name: "Morgon"
+  default_entity_id: binary_sensor.mqtt_home_morning
+  unique_id: mqtt_home_morning
+  state_topic: "home/state/morning"
+  payload_on: "ON"
+  payload_off: "OFF"
+  qos: 2
+- name: "Hemma/borta"
+  default_entity_id: binary_sensor.mqtt_home_home_away
+  unique_id: mqtt_home_home_away
+  state_topic: "home/state/home_away"
+  payload_on: "home"
+  payload_off: "away"
+  device_class: presence
+  qos: 2
+
+# kottbo
+- name: "Kottbo hemma/borta"
+  default_entity_id: binary_sensor.mqtt_kottbo_home_away
+  unique_id: mqtt_kottbo_home_away
+  state_topic: "kottbo/state/home_away"
+  payload_on: "home"
+  payload_off: "away"
+  device_class: presence
+  qos: 2
