@@ -1,178 +1,178 @@
-- id: '1662194898234'
+- id: "1662194898234"
   alias: Telegram - HA Boot
-  description: ''
+  description: ""
   triggers:
-  - event: start
-    trigger: homeassistant
+    - event: start
+      trigger: homeassistant
   conditions: []
   actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      message: Quarry started
-      telegram: false
+    - action: script.send_user_message
+      data:
+        target: local
+        message: Quarry started
+        telegram: false
   mode: single
-- id: '1662207023146'
+- id: "1662207023146"
   alias: Telegram Reply with Status
-  description: ''
+  description: ""
   trigger:
-  - platform: event
-    event_type: telegram_command
-    event_data:
-      command: /start
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: /start
   condition: []
   action:
-  - action: telegram_bot.send_message
-    data:
-      message: -- HA Quarry (HAQ) --Up and running :)
-      title: HAQ - Status
-  - action: telegram_bot.send_photo
-    data:
-      url: https://pm3.se/wp-content/uploads/2019/05/startheropic.jpg
-      caption: Front
+    - action: telegram_bot.send_message
+      data:
+        message: -- HA Quarry (HAQ) --Up and running :)
+        title: HAQ - Status
+    - action: telegram_bot.send_photo
+      data:
+        url: https://pm3.se/wp-content/uploads/2019/05/startheropic.jpg
+        caption: Front
   mode: single
-- id: '1670625054247'
+- id: "1670625054247"
   alias: Telegram - Reboot
-  description: ''
+  description: ""
   trigger:
-  - platform: event
-    event_type: telegram_command
-    event_data:
-      command: /reboot
+    - platform: event
+      event_type: telegram_command
+      event_data:
+        command: /reboot
   condition: []
   action:
-  - service: hassio.host_reboot
-    data: {}
+    - service: hassio.host_reboot
+      data: {}
   mode: single
-- id: '1675081741277'
+- id: "1675081741277"
   alias: Telegram - HA shut down
-  description: ''
+  description: ""
   triggers:
-  - event: shutdown
-    trigger: homeassistant
+    - event: shutdown
+      trigger: homeassistant
   conditions: []
   actions:
-  - action: script.send_user_message
-    data:
-      target: local
-      message: Quarry shut down
-      telegram: false
+    - action: script.send_user_message
+      data:
+        target: local
+        message: Quarry shut down
+        telegram: false
   mode: single
-- id: '1783822800000'
+- id: "1783822800000"
   alias: Heartbeat & watchdog
-  description: 'Publicerar timestamp varje minut och varnar om övriga HA är tysta
+  description: "Publicerar timestamp varje minut och varnar om övriga HA är tysta
     i mer än 10 minuter, endast under de första 4 timmarna (ca 1 gång/timme)
 
-    '
+    "
   triggers:
-  - trigger: time_pattern
-    minutes: /1
+    - trigger: time_pattern
+      minutes: /1
   conditions: []
   actions:
-  - action: mqtt.publish
-    data:
-      topic: timestamp/ha-front
-      payload: '{{ as_timestamp(now()) | timestamp_local }}'
-      retain: true
-      qos: 2
-  - variables:
-      hosts:
-      - entity: sensor.mqtt_timestamp_ha_kottbo
-        name: ha-kottbo
-      - entity: sensor.mqtt_timestamp_ha_front
-        name: ha-front
-      - entity: sensor.mqtt_timestamp_ha_core
-        name: ha-core
-      - entity: sensor.mqtt_timestamp_ha_server
-        name: ha-server
-  - repeat:
-      for_each: '{{ hosts }}'
-      sequence:
-      - if:
-        - condition: template
-          value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
-            \"unavailable\", \"none\", \"\"] %}\n  {% set age = as_timestamp(now())\n
-            \   - as_timestamp(states[repeat.item.entity].last_changed) %}\n  {{ age
-            < 14400 and now().minute == 0 }}\n{% else %}\n  {% set age = as_timestamp(now())
-            - as_timestamp(s) %}\n  {{ age >= 600 and age < 14400 and (age // 60)
-            % 60 == 10 }}\n{% endif %}"
-        then:
-        - action: script.send_user_message
-          data:
-            target: local
-            telegram: true
-            message: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
-              \"unavailable\", \"none\", \"\"] %}\n  Varning! {{ repeat.item.name
-              }} har ingen heartbeat-timestamp.\n{% else %}\n  {% set age = (as_timestamp(now())
-              - as_timestamp(s)) | int %}\n  {% set h = age // 3600 %}\n  {% set m
-              = (age % 3600) // 60 %}\n  Varning! {{ repeat.item.name }} har inte
-              skickat heartbeat på\n  {%- if h > 0 %} {{ h }}h{% endif %} {{ m }}m.\n{%
-              endif %}"
-  mode: single
-- id: '1761301123800'
-  alias: Front Github Commit
-  description: ''
-  triggers:
-  - at: 05:00:00
-    trigger: time
-  conditions: []
-  actions:
-  - action: shell_command.git_sync
-    data: {}
-    metadata: {}
-  mode: single
-- id: '1781637271521'
-  alias: Handle incoming user message
-  description: ''
-  triggers:
-  - trigger: mqtt
-    options:
-      topic: quarry/message
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ data.target == ''kjell'' }}'
-      sequence:
-      - data:
-          message: '{{ data.message }}'
-        action: notify.mobile_app_kjellmobil
-    - conditions:
-      - condition: template
-        value_template: '{{ data.target == ''bettan'' }}'
-      sequence:
-      - action: notify.mobile_app_sm_a236b
-        data:
-          message: '{{ data.message }}'
-    - conditions:
-      - condition: template
-        value_template: '{{ data.target == ''both'' }}'
-      sequence:
-      - data:
-          message: '{{ data.message }}'
-        action: notify.mobile_app_kjellmobil
-      - action: notify.mobile_app_sm_a236b
-        data:
-          message: '{{ data.message }}'
-        enabled: true
-  - if:
-    - condition: template
-      value_template: '{{ data.telegram | default(false) | bool }}'
-    then:
-    - data:
-        message: '{{ data.message }}'
-      action: telegram_bot.send_message
-  - if:
-    - condition: template
-      value_template: '{{ trigger.payload is not none and trigger.payload != ''''
-        }}'
-    then:
-    - data:
-        topic: quarry/message
-        payload: ''
+    - action: mqtt.publish
+      data:
+        topic: timestamp/ha-front
+        payload: "{{ as_timestamp(now()) | timestamp_local }}"
         retain: true
-      action: mqtt.publish
+        qos: 2
+    - variables:
+        hosts:
+          - entity: sensor.mqtt_kottbo_timestamp
+            name: ha-kottbo
+          - entity: sensor.mqtt_front_timestamp
+            name: ha-front
+          - entity: sensor.mqtt_core_timestamp
+            name: ha-core
+          - entity: sensor.mqtt_server_timestamp
+            name: ha-server
+    - repeat:
+        for_each: "{{ hosts }}"
+        sequence:
+          - if:
+              - condition: template
+                value_template: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
+                  \"unavailable\", \"none\", \"\"] %}\n  {% set age = as_timestamp(now())\n
+                  \   - as_timestamp(states[repeat.item.entity].last_changed) %}\n  {{ age
+                  < 14400 and now().minute == 0 }}\n{% else %}\n  {% set age = as_timestamp(now())
+                  - as_timestamp(s) %}\n  {{ age >= 600 and age < 14400 and (age // 60)
+                  % 60 == 10 }}\n{% endif %}"
+            then:
+              - action: script.send_user_message
+                data:
+                  target: local
+                  telegram: true
+                  message: "{% set s = states(repeat.item.entity) %} {% if s in [\"unknown\",
+                    \"unavailable\", \"none\", \"\"] %}\n  Varning! {{ repeat.item.name
+                    }} har ingen heartbeat-timestamp.\n{% else %}\n  {% set age = (as_timestamp(now())
+                    - as_timestamp(s)) | int %}\n  {% set h = age // 3600 %}\n  {% set m
+                    = (age % 3600) // 60 %}\n  Varning! {{ repeat.item.name }} har inte
+                    skickat heartbeat på\n  {%- if h > 0 %} {{ h }}h{% endif %} {{ m }}m.\n{%
+                    endif %}"
+  mode: single
+- id: "1761301123800"
+  alias: Front Github Commit
+  description: ""
+  triggers:
+    - at: 05:00:00
+      trigger: time
+  conditions: []
+  actions:
+    - action: shell_command.git_sync
+      data: {}
+      metadata: {}
+  mode: single
+- id: "1781637271521"
+  alias: Handle incoming user message
+  description: ""
+  triggers:
+    - trigger: mqtt
+      options:
+        topic: quarry/message
+  actions:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ data.target == 'kjell' }}"
+          sequence:
+            - data:
+                message: "{{ data.message }}"
+              action: notify.mobile_app_kjellmobil
+        - conditions:
+            - condition: template
+              value_template: "{{ data.target == 'bettan' }}"
+          sequence:
+            - action: notify.mobile_app_sm_a236b
+              data:
+                message: "{{ data.message }}"
+        - conditions:
+            - condition: template
+              value_template: "{{ data.target == 'both' }}"
+          sequence:
+            - data:
+                message: "{{ data.message }}"
+              action: notify.mobile_app_kjellmobil
+            - action: notify.mobile_app_sm_a236b
+              data:
+                message: "{{ data.message }}"
+              enabled: true
+    - if:
+        - condition: template
+          value_template: "{{ data.telegram | default(false) | bool }}"
+      then:
+        - data:
+            message: "{{ data.message }}"
+          action: telegram_bot.send_message
+    - if:
+        - condition: template
+          value_template: "{{ trigger.payload is not none and trigger.payload != ''
+            }}"
+      then:
+        - data:
+            topic: quarry/message
+            payload: ""
+            retain: true
+          action: mqtt.publish
   mode: queued
   max: 10
   variables:
-    data: '{{ trigger.payload_json | default({}) }}'
+    data: "{{ trigger.payload_json | default({}) }}"
