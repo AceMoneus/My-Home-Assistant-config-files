@@ -79,65 +79,6 @@
       telegram: true
     action: script.send_user_message
   mode: single
-- id: '1667817132698'
-  alias: Temp under 5 - Element ON
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.ewelink_th01_1_temperature
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-    below: 5
-  condition: []
-  action:
-  - service: homeassistant.turn_on
-    data: {}
-    target:
-      entity_id:
-      - switch.silver_element_switch
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-  mode: single
-- id: '1667817190613'
-  alias: Temp över 5 - Element OFF
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.ewelink_th01_1_temperature
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-    above: 5
-  condition: []
-  action:
-  - service: homeassistant.turn_off
-    data: {}
-    target:
-      entity_id:
-      - switch.silver_element_switch
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-  mode: single
-- id: '1667817682853'
-  alias: Telegram - Kök temp under 3
-  description: ''
-  trigger:
-  - type: temperature
-    platform: device
-    device_id: 522ec5c96b4ed7b8223ebf2215704612
-    entity_id: sensor.ewelink_th01_1_temperature
-    domain: sensor
-    below: 3
-  condition: []
-  action:
-  - service: notify.telegram
-    data:
-      title: '!! Temperaturvarning !!'
-      message: Temperatur Kök under 3 grader
-  mode: single
 - id: '1670409339675'
   alias: Remote Reboot
   description: ''
@@ -169,65 +110,6 @@
       telegram: false
       message: '{{ trigger.id }}'
   mode: single
-- id: '1670480699279'
-  alias: Temp under 16 - Element ON
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.ewelink_th01_1_temperature
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-    below: 15.9
-  condition: []
-  action:
-  - service: homeassistant.turn_on
-    data: {}
-    target:
-      entity_id:
-      - switch.silver_element_switch
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-  mode: single
-- id: '1670480832383'
-  alias: Temp över 16 - Element Off
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.ewelink_th01_1_temperature
-    for:
-      hours: 0
-      minutes: 0
-      seconds: 0
-    above: 16.1
-  condition: []
-  action:
-  - service: homeassistant.turn_off
-    data: {}
-    target:
-      entity_id:
-      - switch.silver_element_switch
-      - switch.ikea_of_sweden_tradfri_control_outlet_switch_3
-      - switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-  mode: single
-- id: '1671351353316'
-  alias: Telegram - V-rum temp under 3
-  description: ''
-  trigger:
-  - type: temperature
-    platform: device
-    device_id: add81a6a571f6dc7fb334189f30f7db4
-    entity_id: sensor.ewelink_th01_2_temperature_2
-    domain: sensor
-    below: 3
-  condition: []
-  action:
-  - service: notify.telegram
-    data:
-      title: '!! Temperaturvarning !!'
-      message: Temperatur V-rum under 3 grader
-  mode: single
 - id: '1671351449325'
   alias: Telegram - S-rum temp under 5
   description: ''
@@ -244,26 +126,6 @@
       title: '!! Temperaturvarning !!'
       message: Temperatur Sovrum under 5 grader
     action: notify.telegram
-  mode: single
-- id: '1671352910843'
-  alias: Telegram - V-rum temp över 10 grader
-  description: ''
-  trigger:
-  - type: temperature
-    platform: device
-    device_id: add81a6a571f6dc7fb334189f30f7db4
-    entity_id: sensor.ewelink_th01_2_temperature_2
-    domain: sensor
-    above: 10
-  condition:
-  - condition: state
-    entity_id: switch.ikea_of_sweden_tradfri_control_outlet_4_switch
-    state: 'on'
-  action:
-  - service: notify.telegram
-    data:
-      title: '!! Temperaturvarning !!'
-      message: 'Temperatur V-rum över 8 grader samtidigt som el-element är på. '
   mode: single
 - id: '1679756929851'
   alias: Auto - Bathroom Heat Fan - OFF 15 min
@@ -286,23 +148,6 @@
     target:
       entity_id: switch.plug_bathroom_heat
     data: {}
-  mode: single
-- id: '1682782508740'
-  alias: Telegram - kök över -5
-  description: ''
-  trigger:
-  - type: temperature
-    platform: device
-    device_id: 522ec5c96b4ed7b8223ebf2215704612
-    entity_id: sensor.ewelink_th01_1_temperature
-    domain: sensor
-    above: -5
-  condition: []
-  action:
-  - service: notify.telegram
-    data:
-      title: '!! Temperaturvarning !!'
-      message: Temperatur Kök över - 5 grader
   mode: single
 - id: '1697571704298'
   alias: MoodOnSunset
@@ -711,6 +556,15 @@
       - switch.framsida_detections_person
       - switch.framsida_detections_vehicle
       - switch.baksida_detections_vehicle
+      - switch.hall_detections_person
+      - switch.hall_detections_vehicle
+      - switch.baksida_detections_co
+      - switch.hall_detections_speaking
+      - switch.hall_detections_smoke
+      - switch.framsida_detections_smoke
+      - switch.baksida_detections_smoke
+      - switch.framsida_detections_co
+      - switch.hall_detections_co
   mode: single
 - id: '1750769125651'
   alias: Alarm OFF
@@ -737,6 +591,19 @@
       - switch.hall_detections_person
       - switch.baksida_detections_vehicle
       - switch.framsida_detections_vehicle
+      - switch.baksida_detections_baby_cry
+      - switch.framsida_detections_baby_cry
+      - switch.hall_detections_baby_cry
+      - switch.baksida_detections_animal
+      - switch.framsida_detections_animal
+      - switch.hall_detections_animal
+      - switch.hall_detections_vehicle
+      - switch.framsida_detections_speaking
+      - switch.baksida_detections_speaking
+      - switch.hall_detections_speaking
+      - switch.baksida_detections_motion
+      - switch.hall_detections_motion
+      - switch.framsida_detections_motion
   - delay:
       hours: 0
       minutes: 1
@@ -840,23 +707,6 @@
       telegram: true
     action: script.send_user_message
   mode: single
-- id: '1780480674940'
-  alias: Mount ha_kottbo NFS vid HA-start
-  description: ''
-  triggers:
-  - trigger: homeassistant
-    event: start
-  conditions: []
-  actions:
-  - delay:
-      seconds: 120
-  - action: shell_command.mount_ha_kottbo
-    data: {}
-  - delay:
-      seconds: 120
-  - action: shell_command.mount_ha_kottbo
-    data: {}
-  mode: single
 - id: '1781769288596'
   alias: Rökdetektorer offline
   description: Larmar om en rökdetektor varit offline i minst 30 minuter
@@ -917,27 +767,7 @@
       telegram: true
     action: script.send_user_message
   mode: parallel
-- id: '1782920726652'
-  alias: Stabilisera NFS-mount vid uppstart och före backup
-  description: Säkerställer att NFS-mounten är aktiv efter boot och före nattlig backup.
-  triggers:
-  - event: start
-    trigger: homeassistant
-  - at: 02:45:00
-    trigger: time
-  actions:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ trigger.event == ''start'' }}'
-      sequence:
-      - delay: 00:01:00
-  - action: hassio.mount_reload
-    data:
-      device_id: 9d21dfdd9b23ad12a4f4964c44391b7f
-  mode: single
-- &id001
-  id: '1783822800000'
+- id: '1783822800000'
   alias: Heartbeat & watchdog
   description: Publicerar timestamp varje minut och varnar om övriga HA är tysta i
     mer än 10 minuter (max ca 1 gång/timme)
@@ -978,300 +808,6 @@
             telegram: true
             message: 'Varning! {{ repeat.item.name }} senaste heartbeat: {{ states(repeat.item.entity)
               }}'
-  mode: single
-- *id001
-- id: '1786962000000'
-  alias: Influx – timvis export
-  description: Skriver timmedel till Influx om källan är färsk. Tyst källa ger lucka
-    (null). Samma värde skrivs om igen. Kör XX:01 så utility_meter.last_period hunnit
-    sätta sig. Stale/färskhet för elmätare via spänning (inte effekt).
-  triggers:
-  - trigger: time_pattern
-    minutes: '1'
-  actions:
-  - variables:
-      ts: '{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
-        | int }}'
-      metrics:
-      - tag: influx_telemetry_temperature_inhouse
-        source: sensor.temp_kitchen_temperature
-        stats: sensor.influx_stats_temperature_inhouse
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_humidity_inhouse
-        source: sensor.temp_kitchen_humidity
-        stats: sensor.influx_stats_humidity_inhouse
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_temperature_outside
-        source: sensor.temp_outside_temperatur
-        stats: sensor.influx_stats_temperature_outside
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_humidity_outside
-        source: sensor.temp_outside_luftfuktighet
-        stats: sensor.influx_stats_humidity_outside
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_basement_temperature
-        source: sensor.temp_basement_temperatur
-        stats: sensor.influx_stats_basement_temperature
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_basement_humidity
-        source: sensor.temp_basement_luftfuktighet
-        stats: sensor.influx_stats_basement_humidity
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_bedroom_temperature
-        source: sensor.temp_bedroom_temperatur
-        stats: sensor.influx_stats_bedroom_temperature
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_bedroom_humidity
-        source: sensor.temp_bedroom_luftfuktighet
-        stats: sensor.influx_stats_bedroom_humidity
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_attic_temperature
-        source: sensor.temp_attic_temperatur
-        stats: sensor.influx_stats_attic_temperature
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_attic_humidity
-        source: sensor.temp_attic_luftfuktighet
-        stats: sensor.influx_stats_attic_humidity
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_ground_dry_side_temperature
-        source: sensor.ground_dry_side_temperature
-        stats: sensor.influx_stats_ground_dry_side_temperature
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_ground_dry_side_humidity
-        source: sensor.ground_dry_side_humidity
-        stats: sensor.influx_stats_ground_dry_side_humidity
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_ground_wet_side_temperature
-        source: sensor.ground_wet_side_temperature
-        stats: sensor.influx_stats_ground_wet_side_temperature
-        meas: °C
-        round: 1
-        max_age_min: 180
-        device_class: temperature
-        state_class: measurement
-      - tag: influx_telemetry_ground_wet_side_humidity
-        source: sensor.ground_wet_side_humidity
-        stats: sensor.influx_stats_ground_wet_side_humidity
-        meas: '%'
-        round: 0
-        max_age_min: 180
-        device_class: humidity
-        state_class: measurement
-      - tag: influx_telemetry_total_power_mean
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_total_power
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_total_power_min
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_total_power_min
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_total_power_max
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_total_power_max
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l1_mean
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_power_l1
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l1_min
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_power_l1_min
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l1_max
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_stats_power_l1_max
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l2_mean
-        source: sensor.frient_energy_spanning_fas_b
-        stats: sensor.influx_stats_power_l2
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l2_min
-        source: sensor.frient_energy_spanning_fas_b
-        stats: sensor.influx_stats_power_l2_min
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l2_max
-        source: sensor.frient_energy_spanning_fas_b
-        stats: sensor.influx_stats_power_l2_max
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l3_mean
-        source: sensor.frient_energy_spanning_fas_c
-        stats: sensor.influx_stats_power_l3
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l3_min
-        source: sensor.frient_energy_spanning_fas_c
-        stats: sensor.influx_stats_power_l3_min
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_power_l3_max
-        source: sensor.frient_energy_spanning_fas_c
-        stats: sensor.influx_stats_power_l3_max
-        meas: W
-        round: 0
-        max_age_min: 30
-        device_class: power
-        state_class: measurement
-      - tag: influx_telemetry_energy_imported
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.influx_energy_imported_hourly
-        meas: kWh
-        round: 3
-        max_age_min: 60
-        device_class: energy
-        state_class: total
-        energy_last_period: true
-      - tag: influx_telemetry_energy_imported_total
-        source: sensor.frient_energy_spanning_fas_a
-        stats: sensor.frient_energy_summering_av_leverans
-        meas: kWh
-        round: 3
-        max_age_min: 60
-        device_class: energy
-        state_class: total
-  - variables:
-      payload: "{% set ns = namespace(lines=[]) -%} {% for m in metrics -%}\n  {%
-        set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set fresh = st
-        not in ['unknown', 'unavailable', 'none', '']\n     and (as_timestamp(now())
-        - as_timestamp(states[src].last_updated)) / 60 <= m.max_age_min -%}\n  {%
-        if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
-        set val = state_attr('sensor.influx_energy_imported_hourly', 'last_period')
-        -%}\n    {% else -%}\n      {% set val = states(m.stats) -%}\n    {% endif
-        -%}\n    {% if val not in ['unknown', 'unavailable', 'none', '', none] -%}\n
-        \     {% set num = val | float | round(m.round) -%}\n      {% set line = m.meas\n
-        \        ~ ',domain=sensor,entity_id=' ~ m.tag\n         ~ ',site=ha-kottbo'\n
-        \        ~ ' value=' ~ num\n         ~ ',device_class_str=\"' ~ m.device_class
-        ~ '\"'\n         ~ ',friendly_name_str=\"' ~ m.tag ~ '\"'\n         ~ ',state_class_str=\"'
-        ~ m.state_class ~ '\"'\n         ~ ' ' ~ ts -%}\n      {% set ns.lines = ns.lines
-        + [line] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%} {{ ns.lines
-        | join('\\n') }}"
-  - if:
-    - condition: template
-      value_template: '{{ payload | length > 0 }}'
-    then:
-    - action: rest_command.influx_write_batch
-      data:
-        payload: '{{ payload }}'
-      response_variable: influx_resp
-    - if:
-      - condition: template
-        value_template: '{{ influx_resp is defined and influx_resp.status | int(0)
-          != 204 }}'
-      then:
-      - action: script.send_user_message
-        data:
-          target: kjell
-          telegram: true
-          message: 'Influx timexport misslyckades: HTTP {{ influx_resp.status }}'
-  mode: single
-- id: '1786962000001'
-  alias: Influx – källor stale
-  description: Telegram om minst en Influx-källa är stale i 2 timmar (samma färskhetsregel
-    som timexporten).
-  triggers:
-  - above: 0
-    entity_id: sensor.influx_export_health
-    for:
-      hours: 2
-    trigger: numeric_state
-  conditions: []
-  actions:
-  - action: script.send_user_message
-    data:
-      message: 'KOTTBO Influx-källor stale ({{ states(''sensor.influx_export_health'')
-        }}): {{ state_attr(''sensor.influx_export_health'', ''stale'') | join('',
-        '') }}'
-      target: kjell
-      telegram: true
   mode: single
 - id: '1787910064116'
   alias: MQTT - Kottbo home_away publish
