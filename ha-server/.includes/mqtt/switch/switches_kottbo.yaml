@@ -1,0 +1,10 @@
+- name: "Larm kottbo"
+  unique_id: kottbo_mqtt_alarm_state
+  default_entity_id: switch.mqtt_kottbo_alarm_state
+  command_topic: "kottbo/alarm/state"
+  state_topic: "kottbo/alarm/state"
+  payload_on: "ON"
+  payload_off: "OFF"
+  optimistic: false
+  qos: 2
+  retain: true
