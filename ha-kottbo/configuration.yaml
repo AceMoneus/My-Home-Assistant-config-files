@@ -4,11 +4,6 @@ default_config:
 logger:
   default: info
 
-#####################################################
-# HACS Remote Home-Assistant
-remote_homeassistant:
-  instances:
-
 ######################################################
 # Includes
 automation: !include automations.yaml
@@ -18,9 +13,6 @@ mqtt:
   switch: !include .includes/mqtt/switches.yaml
   sensor: !include .includes/mqtt/sensors.yaml
   binary_sensor: !include .includes/mqtt/binary_sensors.yaml
-rest_command: !include .includes/rest_command.yaml
 script: !include .includes/scripts.yaml
-sensor: !include_dir_merge_list .includes/sensors/
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
-utility_meter: !include .includes/utility_meter.yaml
