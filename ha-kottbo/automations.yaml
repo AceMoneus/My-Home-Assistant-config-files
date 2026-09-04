@@ -309,34 +309,6 @@
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
     domain: switch
   mode: single
-- id: '1723803632613'
-  alias: Camera - snapshot /30
-  description: ''
-  triggers:
-  - minutes: /30
-    trigger: time_pattern
-  conditions: []
-  actions:
-  - action: camera.snapshot
-    metadata: {}
-    data:
-      filename: /config/www/snapshots/front.jpg
-    target:
-      entity_id: camera.framsida_medium_resolution_channel
-  - action: camera.snapshot
-    metadata: {}
-    data:
-      filename: /config/www/snapshots/back.jpg
-    target:
-      entity_id: camera.baksida_medium_resolution_channel
-  - action: camera.snapshot
-    metadata: {}
-    data:
-      filename: /config/www/snapshots/hall.jpg
-    enabled: true
-    target:
-      entity_id: camera.hall_medium_resolution_channel
-  mode: single
 - id: '1727098712935'
   alias: Button - Bathroom Heat ON
   description: ''
