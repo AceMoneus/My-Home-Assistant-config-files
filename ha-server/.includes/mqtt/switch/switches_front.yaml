@@ -1,8 +1,8 @@
-- name: "Send-Message"
-  unique_id: front_mqtt_send_message
-  default_entity_id: switch.mqtt_front_send_message
-  command_topic: "front/switch/send_message"
-  state_topic: "front/switch/send_message"
+- name: "Message Server"
+  unique_id: front_mqtt_message_server
+  default_entity_id: switch.mqtt_front_message_server
+  command_topic: "front/switch/message_server"
+  state_topic: "front/switch/message_server"
   payload_on: "ON"
   payload_off: "OFF"
   optimistic: false
