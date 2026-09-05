@@ -176,3 +176,35 @@
   max: 10
   variables:
     data: "{{ trigger.payload_json | default({}) }}"
+- id: "1756899840000"
+  alias: Message server gate
+  description: Rensar retained quarry/message och styr Handle incoming user message via switch.mqtt_front_message_server
+  triggers:
+    - trigger: state
+      entity_id: switch.mqtt_front_message_server
+      to:
+        - "on"
+        - "off"
+  conditions: []
+  actions:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.to_state.state == 'on' }}"
+          sequence:
+            - action: mqtt.publish
+              data:
+                topic: quarry/message
+                payload: ""
+                retain: true
+            - action: automation.turn_on
+              target:
+                entity_id: automation.handle_incoming_user_message
+        - conditions:
+            - condition: template
+              value_template: "{{ trigger.to_state.state == 'off' }}"
+          sequence:
+            - action: automation.turn_off
+              target:
+                entity_id: automation.handle_incoming_user_message
+  mode: single
