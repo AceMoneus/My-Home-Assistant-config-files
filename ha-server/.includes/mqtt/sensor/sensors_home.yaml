@@ -65,6 +65,46 @@
   value_template: "{{ value }}"
 
 # kottbo
+- name: "Temp inne (kök)"
+  unique_id: kottbo_mqtt_temp_kitchen
+  default_entity_id: sensor.mqtt_kottbo_temp_kitchen
+  state_topic: kottbo/temp/kitchen
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temp inne (sovrum)"
+  unique_id: kottbo_mqtt_temp_bedroom
+  default_entity_id: sensor.mqtt_kottbo_temp_bedroom
+  state_topic: kottbo/temp/bedroom
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temp ute"
+  unique_id: kottbo_mqtt_temp_outside
+  default_entity_id: sensor.mqtt_kottbo_temp_outside
+  state_topic: kottbo/temp/outside
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temp kyl"
+  unique_id: kottbo_mqtt_temp_fridge
+  default_entity_id: sensor.mqtt_kottbo_temp_fridge
+  state_topic: kottbo/temp/fridge
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
+- name: "Temp frys"
+  unique_id: kottbo_mqtt_temp_freezer
+  default_entity_id: sensor.mqtt_kottbo_temp_freezer
+  state_topic: kottbo/temp/freezer
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value }}"
 - name: "Timestamp kottbo"
   state_topic: "timestamp/ha-kottbo"
   device_class: "timestamp"
