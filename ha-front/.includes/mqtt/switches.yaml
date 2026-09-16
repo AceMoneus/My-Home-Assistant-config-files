@@ -9,11 +9,11 @@
   optimistic: false
   qos: 2
   retain: true
-- name: "Kvällslarm home"
-  unique_id: home_mqtt_night_alarm_state
-  default_entity_id: switch.mqtt_home_night_alarm_state
-  command_topic: "home/alarm/night_state"
-  state_topic: "home/alarm/night_state"
+- name: "Skalskydd"
+  unique_id: home_mqtt_perimeter_protection
+  default_entity_id: switch.mqtt_home_perimeter_protection
+  command_topic: "home/alarm/perimeter_protection"
+  state_topic: "home/alarm/perimeter_protection"
   payload_on: "ON"
   payload_off: "OFF"
   optimistic: false
