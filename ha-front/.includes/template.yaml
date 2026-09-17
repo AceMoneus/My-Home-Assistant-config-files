@@ -1,48 +1,31 @@
 - sensor:
-  - name: "day_date"
-    unique_id: day_date
-    state: >-
-      {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d %a') }}
-    icon: "mdi:calendar-clock"
+    - name: "day_date"
+      unique_id: day_date
+      state: >-
+        {{ as_timestamp(states('sensor.date_time_iso')) | timestamp_custom('%d %a') }}
+      icon: "mdi:calendar-clock"
 
-  - name: "sun_angle"
-    unique_id: sun_angle
-    state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
-    attributes:
-      azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
+    - name: "sun_angle"
+      unique_id: sun_angle
+      state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
+      attributes:
+        azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
 
-  - name: "Status Dörrar"
-    unique_id: status_doors
-    state: >
-      {% if is_state('binary_sensor.doors_open', 'on') %}
-        Öppet
-      {% else %}
-        Stängt
-      {% endif %}
+- binary_sensor:
+    - name: "Larm home"
+      unique_id: mqtt_home_alarm_state
+      default_entity_id: binary_sensor.mqtt_home_alarm_state
+      icon: "{{ 'mdi:shield-home' if is_state('switch.mqtt_home_alarm_state', 'on') else 'mdi:shield-off' }}"
+      state: "{{ is_state('switch.mqtt_home_alarm_state', 'on') }}"
 
-  - name: "Status Larm Hemma"
-    unique_id: status_alarm_home
-    state: >
-      {% if is_state('switch.mqtt_home_alarm_state', 'on') %}
-        Larmat
-      {% else %}
-        Avlarmat
-      {% endif %}
+    - name: "Skalskydd"
+      unique_id: mqtt_home_perimeter_protection
+      default_entity_id: binary_sensor.mqtt_home_perimeter_protection
+      icon: "{{ 'mdi:shield-moon' if is_state('switch.mqtt_home_perimeter_protection', 'on') else 'mdi:shield-off' }}"
+      state: "{{ is_state('switch.mqtt_home_perimeter_protection', 'on') }}"
 
-  - name: "Status Skalskydd"
-    unique_id: status_alarm_night
-    state: >
-      {% if is_state('switch.mqtt_home_perimeter_protection', 'on') %}
-        På
-      {% else %}
-        Av
-      {% endif %}
-
-  - name: "Status Larm Kottbo"
-    unique_id: status_alarm_kottbo
-    state: >
-      {% if is_state('switch.mqtt_kottbo_alarm_state', 'on') %}
-        Larmat
-      {% else %}
-        Avlarmat
-      {% endif %}
+    - name: "Larm Kottbo"
+      unique_id: mqtt_kottbo_alarm_state
+      default_entity_id: binary_sensor.mqtt_kottbo_alarm_state
+      icon: "{{ 'mdi:shield-home' if is_state('switch.mqtt_kottbo_alarm_state', 'on') else 'mdi:shield-off' }}"
+      state: "{{ is_state('switch.mqtt_kottbo_alarm_state', 'on') }}"
