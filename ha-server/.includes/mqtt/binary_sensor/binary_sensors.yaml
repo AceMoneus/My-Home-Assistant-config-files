@@ -28,6 +28,14 @@
   payload_off: "away"
   device_class: presence
   qos: 2
+- name: "Doors Open"
+  default_entity_id: binary_sensor.doors_open
+  unique_id: mqtt_doors_open
+  state_topic: "home/doors/open"
+  payload_on: "ON"
+  payload_off: "OFF"
+  device_class: opening
+  qos: 1
 
 # kottbo
 - name: "Kottbo hemma/borta"
