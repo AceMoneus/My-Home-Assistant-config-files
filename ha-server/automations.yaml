@@ -1050,7 +1050,7 @@
           data: {}
 - id: "1781638175577"
   alias: Röklarm notifiering
-  description: ""
+  description: "HEIMAN-rökdetektorer + UniFi-kameror (INNE/UTE)"
   triggers:
     - type: smoke
       device_id: 7fe07ddc8393c1de1a097f765a6b5a25
@@ -1092,20 +1092,57 @@
       from: "off"
       to: "on"
       id: test
+    - trigger: state
+      entity_id:
+        - binary_sensor.security_hall_roklarm_detekterat
+        - binary_sensor.kok_smoke_alarm_detected
+        - binary_sensor.g4_instant_roklarm_detekterat
+      from: "off"
+      to: "on"
+      id: camera_inne
+    - trigger: state
+      entity_id:
+        - binary_sensor.security_ytterdorr_roklarm_detekterat
+        - binary_sensor.koksdorr_roklarm_detekterat
+        - binary_sensor.g5_flex_roklarm_detekterat_2
+      from: "off"
+      to: "on"
+      id: camera_ute
   conditions: []
   actions:
     - variables:
-        detector_name: "{% set by_device = {\n  \"7fe07ddc8393c1de1a097f765a6b5a25\":
-          \"3D‑printer\",\n  \"152e232011bbe9be8597b785f31d6ea4\": \"Serverskåp\",\n
-          \ \"4405a823e4dbdfe433dafadcef20bb02\": \"Källartrappa\",\n  \"168b90f422d73f51b485c0f95b6b0420\":
-          \"Övervåning\",\n  \"5d41e438a1dcd2d648e133fea1848af8\": \"Garage\"\n} %}
-          {% set by_entity = {\n  \"binary_sensor.mt33_test_pagar\": \"3D‑printer\",\n
-          \ \"binary_sensor.mt34_test_pagar\": \"Serverskåp\",\n  \"binary_sensor.mt35_test_pagar\":
-          \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Övervåning\",\n
-          \ \"binary_sensor.mt48_test_pagar\": \"Garage\"\n} %} {{ by_entity.get(trigger.entity_id,
-          by_device.get(trigger.device_id, \"Okänd rökdetektor\")) }}"
-        message: "{% if trigger.id == \"test\" %}\n  RÖKLARM TEST – {{ detector_name
-          }}\n{% else %}\n  RÖKLARM – {{ detector_name }}\n{% endif %}"
+        detector_name: >-
+          {% set by_device = {
+            "7fe07ddc8393c1de1a097f765a6b5a25": "3D‑printer",
+            "152e232011bbe9be8597b785f31d6ea4": "Serverskåp",
+            "4405a823e4dbdfe433dafadcef20bb02": "Källartrappa",
+            "168b90f422d73f51b485c0f95b6b0420": "Övervåning",
+            "5d41e438a1dcd2d648e133fea1848af8": "Garage"
+          } %}
+          {% set by_entity = {
+            "binary_sensor.mt33_test_pagar": "3D‑printer",
+            "binary_sensor.mt34_test_pagar": "Serverskåp",
+            "binary_sensor.mt35_test_pagar": "Källartrappa",
+            "binary_sensor.mt39_test_pagar": "Övervåning",
+            "binary_sensor.mt48_test_pagar": "Garage",
+            "binary_sensor.security_hall_roklarm_detekterat": "Hall",
+            "binary_sensor.kok_smoke_alarm_detected": "Matplats",
+            "binary_sensor.g4_instant_roklarm_detekterat": "Vind",
+            "binary_sensor.security_ytterdorr_roklarm_detekterat": "Ytterdörr",
+            "binary_sensor.koksdorr_roklarm_detekterat": "Köksdörr",
+            "binary_sensor.g5_flex_roklarm_detekterat_2": "Altan"
+          } %}
+          {{ by_entity.get(trigger.entity_id, by_device.get(trigger.device_id, "Okänd rökdetektor")) }}
+        message: >-
+          {% if trigger.id == "test" %}
+            RÖKLARM TEST – {{ detector_name }}
+          {% elif trigger.id == "camera_inne" %}
+            Röklarm via kamera INNE – {{ detector_name }}
+          {% elif trigger.id == "camera_ute" %}
+            Röklarm via kamera UTE – {{ detector_name }}
+          {% else %}
+            RÖKLARM – {{ detector_name }}
+          {% endif %}
     - action: telegram_bot.send_message
       data:
         message: "{{ message }}"
@@ -1627,3 +1664,100 @@
         telegram: true
         message: Bettan LiveTrack
   mode: single
+- id: "1789457994078"
+  alias: Publish doors_open
+  triggers:
+    - entity_id:
+        - binary_sensor.mt30_dorr
+        - binary_sensor.mt32_dorr
+        - binary_sensor.mt68_dorr
+        - binary_sensor.mt69_dorr
+      trigger: state
+  actions:
+    - data:
+        topic: home/doors/open
+        payload: "{% if is_state('binary_sensor.mt30_dorr', 'on')\n   or is_state('binary_sensor.mt32_dorr',
+          'on')\n   or is_state('binary_sensor.mt68_dorr', 'on')\n   or is_state('binary_sensor.mt69_dorr',
+          'on') %}\n  ON\n{% else %}\n  OFF\n{% endif %}\n"
+        qos: 1
+        retain: true
+      action: mqtt.publish
+  mode: single
+- id: "1757932140000"
+  alias: "Perimeter-protection - tidsschema"
+  description: "ON 22:00–06:00, OFF övrig tid (inkl. efter HA-start)"
+  triggers:
+    - trigger: time
+      at: "22:00:00"
+    - trigger: time
+      at: "06:00:00"
+    - trigger: homeassistant
+      event: start
+  conditions: []
+  actions:
+    - choose:
+        - conditions:
+            - condition: time
+              after: "22:00:00"
+              before: "06:00:00"
+          sequence:
+            - action: switch.turn_on
+              target:
+                entity_id: switch.mqtt_home_perimeter_protection
+      default:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.mqtt_home_perimeter_protection
+  mode: single
+- id: "1757935900000"
+  alias: "Perimeter-protection"
+  description: "Notifierar person/dörr när perimeter protection är ON"
+  triggers:
+    - trigger: state
+      entity_id:
+        - binary_sensor.security_ytterdorr_person_detekterad
+        - binary_sensor.koksdorr_person_detekterad
+        - binary_sensor.g5_flex_person_detekterad_2
+        - binary_sensor.uppfart_person_detekterad
+      from: "off"
+      to: "on"
+      id: person
+    - trigger: state
+      entity_id:
+        - binary_sensor.mt32_dorr
+        - binary_sensor.mt68_dorr
+        - binary_sensor.mt69_dorr
+      to: "on"
+      id: door
+  conditions:
+    - condition: state
+      entity_id: switch.mqtt_home_perimeter_protection
+      state: "on"
+  actions:
+    - variables:
+        source_name: >-
+          {% set names = {
+            "binary_sensor.security_ytterdorr_person_detekterad": "Ytterdörr",
+            "binary_sensor.koksdorr_person_detekterad": "Köksdörr",
+            "binary_sensor.g5_flex_person_detekterad_2": "Altan",
+            "binary_sensor.uppfart_person_detekterad": "Uppfart",
+            "binary_sensor.mt32_dorr": "Ytterdörr",
+            "binary_sensor.mt68_dorr": "Altandörr",
+            "binary_sensor.mt69_dorr": "Köksdörr"
+          } %}
+          {{ names.get(trigger.entity_id, "Okänd") }}
+        message: >-
+          {% if trigger.id == "door" %}
+            Dörr öppnad: {{ source_name }}
+          {% else %}
+            Person: {{ source_name }}
+          {% endif %}
+    - action: telegram_bot.send_message
+      data:
+        message: "{{ message }}"
+    - action: script.send_user_message
+      data:
+        target: both
+        message: "{{ message }}"
+        telegram: true
+  mode: queued
