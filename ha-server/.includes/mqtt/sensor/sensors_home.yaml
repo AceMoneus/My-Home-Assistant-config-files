@@ -1,4 +1,4 @@
-# home — climate (Matter bridge; publish automations feed these topics)
+# home
 - name: "Temperatur inne"
   unique_id: mqtt_temperatur_inne
   default_entity_id: sensor.mqtt_home_temp_inhouse
