@@ -28,7 +28,6 @@ text_sensor:
     icon: "mdi:information-outline"
     entity_category: diagnostic
     lambda: |-
-      ESP_LOGI("version", "Firmware Version: %s", id(fw_version).c_str());
       return std::string(id(fw_version));
 
   - platform: template
