@@ -1,6 +1,6 @@
 substitutions:
-  device_name: c3-buzzer-1
-  friendly_name: "C3 Buzzer 1"
+  device_name: buzzer-1
+  friendly_name: "Buzzer 1"
 
 esphome:
   name: ${device_name}
@@ -30,11 +30,11 @@ output:
 rtttl:
   id: buzzer_rtttl
   output: buzzer_out
-  gain: 70%
+  gain: 10%
 
 button:
   - platform: template
     name: "Buzzer beep"
     icon: "mdi:bell-ring"
     on_press:
-      - rtttl.play: "beep:d=8,o=5,b=120:c6,e6,g6"
+      - rtttl.play: "dingdong:d=8,o=5,b=160:g,p,c6"
