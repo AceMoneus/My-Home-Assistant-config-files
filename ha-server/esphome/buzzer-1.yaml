@@ -37,4 +37,4 @@ button:
     name: "Buzzer beep"
     icon: "mdi:bell-ring"
     on_press:
-      - rtttl.play: "dingdong:d=8,o=5,b=160:g,p,c6"
+      - rtttl.play: "dingdong:d=4,o=5,b=240:e6,c5,e6,c5"
