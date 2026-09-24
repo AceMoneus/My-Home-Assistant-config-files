@@ -1,6 +1,28 @@
 - trigger:
     - platform: time_pattern
       minutes: "/5"
+    - platform: homeassistant
+      event: start
+    - platform: event
+      event_type: event_template_reloaded
   sensor:
     - name: "heartbeat"
       state: "{{ now().strftime('%Y-%m-%d %H:%M') }}"
+    - name: "power_l1_sampled"
+      unique_id: power_l1_sampled
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      state: "{{ states('sensor.frient_energy_effekt_fas_a') | float(0) }}"
+    - name: "power_l2_sampled"
+      unique_id: power_l2_sampled
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      state: "{{ states('sensor.frient_energy_effekt_fas_b') | float(0) }}"
+    - name: "power_l3_sampled"
+      unique_id: power_l3_sampled
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      state: "{{ states('sensor.frient_energy_effekt_fas_c') | float(0) }}"
