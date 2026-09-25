@@ -1105,3 +1105,118 @@
                 entity_id: switch.silver_1_hall_switch
               continue_on_error: true
   mode: restart
+- id: "1790255414306"
+  alias: Zigbee-enhet borta
+  description: >
+    Meddelar Kjell en gång per avbrott när en Zigbee-enhet varit
+    unavailable i minst en timme. Klockan sparas i hjälparen så att
+    en omstart inte nollställer den.
+  triggers:
+    - trigger: time_pattern
+      minutes: "/15"
+  conditions: []
+  actions:
+    - variables:
+        previous: "{{ states('input_text.zigbee_enhet_notifierat') }}"
+        tracked: |
+          {% set clock = namespace(items={}) %}
+          {% set noted = namespace(items=[]) %}
+          {% if previous not in ['', 'unknown', 'none', 'unavailable', '*'] %}
+            {% for item in previous.split(',') %}
+              {% if item.startswith('!') %}
+                {% set noted.items = noted.items + [item[1:]] %}
+              {% elif '|' in item %}
+                {% set bits = item.split('|', 1) %}
+                {% set clock.items = dict(clock.items, **{bits[0]: bits[1] | int(0)}) %}
+              {% elif item %}
+                {% set noted.items = noted.items + [item] %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          {% set ns = namespace(seen=[], rows=[]) %}
+          {% for eid in integration_entities('zha') %}
+            {% set name = device_attr(eid, 'name_by_user') %}
+            {% if name and ',' not in name and '|' not in name and '!' not in name and name not in ns.seen %}
+              {% set ns.seen = ns.seen + [name] %}
+              {% set own = device_entities(device_id(eid)) %}
+              {% set up = namespace(ok=false, latest=none) %}
+              {% for e in own %}
+                {% if states(e) not in ['unavailable', 'unknown'] %}
+                  {% set up.ok = true %}
+                {% elif is_state(e, 'unavailable') and states[e] is not none %}
+                  {% if up.latest is none or states[e].last_changed > up.latest %}
+                    {% set up.latest = states[e].last_changed %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              {% if not up.ok and up.latest %}
+                {% if name in clock.items %}
+                  {% set epoch = clock.items[name] %}
+                {% else %}
+                  {% set epoch = as_timestamp(up.latest) | int %}
+                {% endif %}
+                {% set ns.rows = ns.rows + [name ~ '|' ~ epoch ~ '|' ~ (1 if name in noted.items else 0)] %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {{- ns.rows | sort | join(',') -}}
+        new_names: |
+          {% if previous == '*' %}
+          {% elif (tracked | length) > 240 %}
+            *
+          {% else %}
+            {% set cutoff = (as_timestamp(now()) - 3600) | int %}
+            {% set fresh = namespace(items=[]) %}
+            {% for row in tracked.split(',') | reject('equalto', '') %}
+              {% set bits = row.split('|') %}
+              {% if bits | length == 3 and bits[2] == '0' and (bits[1] | int(0)) < cutoff %}
+                {% set fresh.items = fresh.items + [bits[0]] %}
+              {% endif %}
+            {% endfor %}
+            {{- fresh.items | sort | join(', ') -}}
+          {% endif %}
+        remembered: |
+          {% if (tracked | length) > 240 %}
+            *
+          {% else %}
+            {% set cutoff = (as_timestamp(now()) - 3600) | int %}
+            {% set out = namespace(items=[]) %}
+            {% for row in tracked.split(',') | reject('equalto', '') %}
+              {% set bits = row.split('|') %}
+              {% if bits | length == 3 %}
+                {% if bits[2] == '1' or (bits[1] | int(0)) < cutoff %}
+                  {% set out.items = out.items + ['!' ~ bits[0]] %}
+                {% else %}
+                  {% set out.items = out.items + [bits[0] ~ '|' ~ bits[1]] %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            {{- out.items | sort | join(',') -}}
+          {% endif %}
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ new_names | trim == '*' }}"
+          sequence:
+            - action: script.send_user_message
+              data:
+                target: kjell
+                telegram: true
+                message: "Alla Zigbee-enheter borta minst 1 h"
+        - conditions:
+            - condition: template
+              value_template: "{{ new_names | trim != '' }}"
+          sequence:
+            - action: script.send_user_message
+              data:
+                target: kjell
+                telegram: true
+                message: "Zigbee borta minst 1 h: {{ new_names | trim }}"
+    - condition: template
+      value_template: "{{ remembered | trim != previous }}"
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.zigbee_enhet_notifierat
+      data:
+        value: "{{ remembered | trim }}"
+  mode: single
