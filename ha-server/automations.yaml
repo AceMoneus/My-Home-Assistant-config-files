@@ -1380,11 +1380,11 @@
           -%}\n{{ {'site': 'ha-server', 'time': ts, 'rows': ns.rows} | to_json }}"
     - if:
         - condition: template
-          value_template: "{{ (payload | from_json).rows | count > 0 }}"
+          value_template: "{{ payload.rows | count > 0 }}"
       then:
         - action: shell_command.pg_telemetry_write
           data:
-            payload_b64: "{{ payload | base64_encode }}"
+            payload_b64: "{{ payload | to_json | base64_encode }}"
           response_variable: pg_response
         - if:
             - condition: template
@@ -1759,3 +1759,89 @@
         message: "{{ message }}"
         telegram: true
   mode: queued
+- id: "1790302500001"
+  alias: Matter-enhet borta
+  description: >
+    Meddelar Kjell en gång per avbrott när en Matter-enhet varit
+    unavailable i minst en timme.
+  triggers:
+    - trigger: time_pattern
+      minutes: "/15"
+  conditions: []
+  actions:
+    - variables:
+        down: |
+          {% set cutoff = now() - timedelta(hours=1) %}
+          {% set ns = namespace(seen=[], down=[], stale=[]) %}
+          {% for eid in integration_entities('matter') %}
+            {% set name = device_attr(eid, 'name_by_user') %}
+            {% if name and name not in ns.seen %}
+              {% set ns.seen = ns.seen + [name] %}
+              {% set own = device_entities(device_id(eid)) %}
+              {% set up = namespace(ok=false, latest=none) %}
+              {% for e in own %}
+                {% if states(e) not in ['unavailable', 'unknown'] %}
+                  {% set up.ok = true %}
+                {% elif is_state(e, 'unavailable') and states[e] is not none %}
+                  {% if up.latest is none or states[e].last_changed > up.latest %}
+                    {% set up.latest = states[e].last_changed %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              {% if not up.ok and up.latest %}
+                {% set ns.down = ns.down + [name] %}
+                {% if up.latest < cutoff %}
+                  {% set ns.stale = ns.stale + [name] %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {{- ns.down | sort | join(',') -}}||{{- ns.stale | sort | join(',') -}}
+        down_names: "{{ (down | trim).split('||')[0] }}"
+        stale_names: "{{ (down | trim).split('||')[1] }}"
+        previous: "{{ states('input_text.matter_enhet_notifierat') }}"
+        new_names: |
+          {% if previous == '*' %}
+          {% elif (stale_names | length) > 240 %}
+            *
+          {% else %}
+            {% set old = previous.split(',') | reject('equalto', '') | reject('equalto', 'unknown') | list %}
+            {% set cur = stale_names.split(',') | reject('equalto', '') | list %}
+            {{- cur | reject('in', old) | list | join(', ') -}}
+          {% endif %}
+        remembered: |
+          {% if (stale_names | length) > 240 %}
+            *
+          {% else %}
+            {% set old = [] if previous in ['*', 'unknown', '', 'none'] else previous.split(',') %}
+            {% set still = down_names.split(',') | reject('equalto', '') | list %}
+            {% set cur = stale_names.split(',') | reject('equalto', '') | list %}
+            {{- (old | select('in', still) | list + cur) | unique | reject('equalto', '') | sort | join(',') -}}
+          {% endif %}
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ new_names | trim == '*' }}"
+          sequence:
+            - action: script.send_user_message
+              data:
+                target: kjell
+                telegram: true
+                message: "Alla Matter-enheter borta minst 1 h"
+        - conditions:
+            - condition: template
+              value_template: "{{ new_names | trim != '' }}"
+          sequence:
+            - action: script.send_user_message
+              data:
+                target: kjell
+                telegram: true
+                message: "Matter borta minst 1 h: {{ new_names | trim }}"
+    - condition: template
+      value_template: "{{ remembered | trim != previous }}"
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.matter_enhet_notifierat
+      data:
+        value: "{{ remembered | trim }}"
+  mode: single
