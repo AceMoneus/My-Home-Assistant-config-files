@@ -1,1 +1,2 @@
 git_sync: 'bash /config/scripts/git_sync.sh'
+pg_telemetry_write: 'python3 /config/scripts/pg_telemetry_write.py "{{ payload_b64 }}"'
