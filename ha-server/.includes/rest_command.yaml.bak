@@ -1,5 +1,5 @@
 influx_write_batch:
-  url: "http://influxdb.moneus.lan:8086/write?db=homeassistant&precision=s"
+  url: "http://influxdb.moneus.lan:8086/api/v2/write?org=MoneusNet&bucket=HomeAssistant&precision=s"
   method: POST
   headers:
     Authorization: !secret influx_authorization
