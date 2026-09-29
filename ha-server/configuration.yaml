@@ -27,4 +27,3 @@ script: !include_dir_merge_named .includes/script/
 sensor: !include_dir_merge_list .includes/sensor/
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/template/
-utility_meter: !include .includes/utility_meter.yaml
