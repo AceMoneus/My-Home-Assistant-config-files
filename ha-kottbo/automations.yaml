@@ -1187,27 +1187,141 @@
   mode: single
 - id: '1790338537495'
   alias: PostgreSQL – timvis export
-  description: Batch JSON till lokal Postgres ha-metrics.telemetry varje XX:01 via
-    shell_command.pg_telemetry_write. Effekt är redan i W, ingen kW-skalning.
+  description: Timvis export från recorder.get_statistics till ha-metrics.telemetry
+    via shell_command.pg_telemetry_write. Tid är föregående timmes UTC-start. Väntar
+    tills timstatistiken är kompilerad. Effekt är redan i W.
   triggers:
   - trigger: time_pattern
     minutes: '1'
   actions:
+  - repeat:
+      sequence:
+      - action: recorder.get_statistics
+        data:
+          start_time: '{{ ((ts | int) - 3600) | timestamp_custom(''%Y-%m-%dT%H:%M:%S+00:00'',
+            false) }}'
+          end_time: '{{ ((ts | int) + 3600) | timestamp_custom(''%Y-%m-%dT%H:%M:%S+00:00'',
+            false) }}'
+          period: hour
+          types:
+          - mean
+          - min
+          - max
+          - state
+          units:
+            energy: kWh
+          statistic_ids:
+          - sensor.temp_kitchen_temperature
+          - sensor.temp_kitchen_humidity
+          - sensor.temp_outside_temperatur
+          - sensor.temp_outside_luftfuktighet
+          - sensor.temp_basement_temperatur
+          - sensor.temp_basement_luftfuktighet
+          - sensor.temp_bedroom_temperatur
+          - sensor.temp_bedroom_luftfuktighet
+          - sensor.ground_dry_side_temperature
+          - sensor.ground_dry_side_humidity
+          - sensor.ground_wet_side_temperature
+          - sensor.ground_wet_side_humidity
+          - sensor.frient_energy_effekt_fas_a
+          - sensor.frient_energy_effekt_fas_b
+          - sensor.frient_energy_effekt_fas_c
+          - sensor.frient_energy_total_effekt
+          - sensor.frient_energy_summering_av_leverans
+        response_variable: recorder_stats
+      - if:
+        - condition: template
+          value_template: "{% set stats = recorder_stats.statistics | default({},
+            true) %} {% set rows = stats['sensor.frient_energy_total_effekt']\n   if
+            'sensor.frient_energy_total_effekt' in stats else [] %}\n{% set ns = namespace(ok=false)
+            %} {% for row in rows %}\n  {% if (as_timestamp(row.start) | int) == (ts
+            | int)\n        and row.mean is number %}\n    {% set ns.ok = true %}\n
+            \ {% endif %}\n{% endfor %} {{ not ns.ok and repeat.index < 8 }}\n"
+        then:
+        - delay:
+            seconds: 15
+      until:
+      - condition: template
+        value_template: "{% set stats = recorder_stats.statistics | default({}, true)
+          %} {% set rows = stats['sensor.frient_energy_total_effekt']\n   if 'sensor.frient_energy_total_effekt'
+          in stats else [] %}\n{% set ns = namespace(ok=false) %} {% for row in rows
+          %}\n  {% if (as_timestamp(row.start) | int) == (ts | int)\n        and row.mean
+          is number %}\n    {% set ns.ok = true %}\n  {% endif %}\n{% endfor %} {{
+          ns.ok or repeat.index >= 8 }}\n"
   - variables:
-      payload: "{% set ns = namespace(rows=[]) -%}\n{% for m in metrics -%}\n  {%
-        set src = m.source -%}\n  {% set st = states(src) -%}\n  {% set lu = states[src].last_updated
-        if states[src] is defined else none -%}\n  {% set age = (as_timestamp(now())
-        - as_timestamp(lu)) / 60 if lu else 99999 -%}\n  {% set fresh = st not in
-        ['unknown', 'unavailable', 'none', ''] and age <= m.max_age_min -%}\n  {%
-        if fresh -%}\n    {% if m.energy_last_period | default(false) -%}\n      {%
-        set val = state_attr(m.stats, 'last_period') -%}\n    {% else -%}\n      {%
-        set val = states(m.stats) -%}\n    {% endif -%}\n    {% if val not in ['unknown',
-        'unavailable', 'none', '', none] -%}\n      {% set raw = val | float -%}\n
-        \     {% set num = ((raw * 1000) if m.scale_kw | default(false) else raw)
-        | round(m.round) -%}\n      {% set ns.rows = ns.rows + [{'metric': m.tag,
-        'value': num, 'unit': m.meas, 'device_class': m.device_class, 'state_class':
-        m.state_class}] -%}\n    {% endif -%}\n  {% endif -%}\n{% endfor -%}\n{{ {'site':
-        'ha-kottbo', 'time': ts, 'rows': ns.rows} | to_json }}"
+      payload: "{% set stats = recorder_stats.statistics | default({}, true) %}\n{%
+        set target = ts | int %}\n{% set previous = target - 3600 %}\n{% set ns =
+        namespace(rows=[]) %}\n\n{% macro rhu(v, d) %}\n{%- set q = 10 ** d -%}\n{%-
+        set neg = v < 0 -%}\n{%- set mag = (v | abs) * q -%}\n{%- set base = mag |
+        int -%}\n{%- set frac = mag - base -%}\n{%- set bumped = base + (1 if frac
+        >= 0.5 else 0) -%}\n{{ ((-1 * bumped / q) if neg else (bumped / q)) | float
+        }}\n{% endmacro %}\n\n{% set climate = [\n  {\"metric\": \"temperature_inhouse\",
+        \"source\": \"sensor.temp_kitchen_temperature\", \"digits\": 1, \"unit\":
+        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"humidity_inhouse\",
+        \"source\": \"sensor.temp_kitchen_humidity\", \"digits\": 0, \"unit\": \"%\",
+        \"device_class\": \"humidity\"},\n  {\"metric\": \"temperature_outside\",
+        \"source\": \"sensor.temp_outside_temperatur\", \"digits\": 1, \"unit\": \"°C\",
+        \"device_class\": \"temperature\"},\n  {\"metric\": \"humidity_outside\",
+        \"source\": \"sensor.temp_outside_luftfuktighet\", \"digits\": 0, \"unit\":
+        \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"basement_temperature\",
+        \"source\": \"sensor.temp_basement_temperatur\", \"digits\": 1, \"unit\":
+        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"basement_humidity\",
+        \"source\": \"sensor.temp_basement_luftfuktighet\", \"digits\": 0, \"unit\":
+        \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"bedroom_temperature\",
+        \"source\": \"sensor.temp_bedroom_temperatur\", \"digits\": 1, \"unit\": \"°C\",
+        \"device_class\": \"temperature\"},\n  {\"metric\": \"bedroom_humidity\",
+        \"source\": \"sensor.temp_bedroom_luftfuktighet\", \"digits\": 0, \"unit\":
+        \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_dry_side_temperature\",
+        \"source\": \"sensor.ground_dry_side_temperature\", \"digits\": 1, \"unit\":
+        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_dry_side_humidity\",
+        \"source\": \"sensor.ground_dry_side_humidity\", \"digits\": 0, \"unit\":
+        \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_wet_side_temperature\",
+        \"source\": \"sensor.ground_wet_side_temperature\", \"digits\": 1, \"unit\":
+        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_wet_side_humidity\",
+        \"source\": \"sensor.ground_wet_side_humidity\", \"digits\": 0, \"unit\":
+        \"%\", \"device_class\": \"humidity\"}\n] %}\n\n{% for spec in climate %}\n
+        \ {% if spec.source in stats %}\n    {% set found = namespace(row=none) %}\n
+        \   {% for row in stats[spec.source] %}\n      {% if (as_timestamp(row.start)
+        | int) == target %}\n        {% set found.row = row %}\n      {% endif %}\n
+        \   {% endfor %}\n    {% if found.row is not none and found.row.mean is number
+        %}\n      {% set ns.rows = ns.rows + [{\n        \"metric\": spec.metric,\n
+        \       \"value\": rhu(found.row.mean, spec.digits) | float,\n        \"unit\":
+        spec.unit,\n        \"device_class\": spec.device_class,\n        \"state_class\":
+        \"measurement\"\n      }] %}\n    {% endif %}\n  {% endif %}\n{% endfor %}\n\n{%
+        for phase in [\n  {\"metric\": \"power_l1\", \"source\": \"sensor.frient_energy_effekt_fas_a\"},\n
+        \ {\"metric\": \"power_l2\", \"source\": \"sensor.frient_energy_effekt_fas_b\"},\n
+        \ {\"metric\": \"power_l3\", \"source\": \"sensor.frient_energy_effekt_fas_c\"},\n
+        \ {\"metric\": \"total_power\", \"source\": \"sensor.frient_energy_total_effekt\"}\n]
+        %}\n  {% if phase.source in stats %}\n    {% set found = namespace(row=none)
+        %}\n    {% for row in stats[phase.source] %}\n      {% if (as_timestamp(row.start)
+        | int) == target %}\n        {% set found.row = row %}\n      {% endif %}\n
+        \   {% endfor %}\n\n    {% if found.row is not none\n          and found.row.mean
+        is number\n          and found.row.min is number\n          and found.row.max
+        is number %}\n      {% set ns.rows = ns.rows + [\n        {\n          \"metric\":
+        phase.metric ~ \"_mean\",\n          \"value\": rhu(found.row.mean, 0) | float,\n
+        \         \"unit\": \"W\",\n          \"device_class\": \"power\",\n          \"state_class\":
+        \"measurement\"\n        },\n        {\n          \"metric\": phase.metric
+        ~ \"_min\",\n          \"value\": rhu(found.row.min, 0) | float,\n          \"unit\":
+        \"W\",\n          \"device_class\": \"power\",\n          \"state_class\":
+        \"measurement\"\n        },\n        {\n          \"metric\": phase.metric
+        ~ \"_max\",\n          \"value\": rhu(found.row.max, 0) | float,\n          \"unit\":
+        \"W\",\n          \"device_class\": \"power\",\n          \"state_class\":
+        \"measurement\"\n        }\n      ] %}\n    {% endif %}\n  {% endif %}\n{%
+        endfor %}\n\n{% set energy = namespace(cur=none, prev=none) %}\n\n{% if \"sensor.frient_energy_summering_av_leverans\"
+        in stats %}\n  {% for row in stats[\"sensor.frient_energy_summering_av_leverans\"]
+        %}\n    {% if (as_timestamp(row.start) | int) == target\n          and row.state
+        is number %}\n      {% set energy.cur = row.state %}\n    {% elif (as_timestamp(row.start)
+        | int) == previous\n            and row.state is number %}\n      {% set energy.prev
+        = row.state %}\n    {% endif %}\n  {% endfor %}\n{% endif %}\n\n{% if energy.cur
+        is not none %}\n  {% set ns.rows = ns.rows + [{\n    \"metric\": \"energy_imported_total\",\n
+        \   \"value\": rhu(energy.cur, 3) | float,\n    \"unit\": \"kWh\",\n    \"device_class\":
+        \"energy\",\n    \"state_class\": \"total_increasing\"\n  }] %}\n\n  {% if
+        energy.prev is not none and energy.cur >= energy.prev %}\n    {% set ns.rows
+        = ns.rows + [{\n      \"metric\": \"energy_imported\",\n      \"value\": rhu(energy.cur
+        - energy.prev, 3) | float,\n      \"unit\": \"kWh\",\n      \"device_class\":
+        \"energy\",\n      \"state_class\": \"measurement\"\n    }] %}\n  {% endif
+        %}\n{% endif %}\n\n{{ {\n  \"site\": \"ha-kottbo\",\n  \"time\": target,\n
+        \ \"rows\": ns.rows\n} | to_json }}\n"
   - if:
     - condition: template
       value_template: '{{ payload.rows | count > 0 }}'
@@ -1227,185 +1341,7 @@
           message: 'Postgres telemetry export misslyckades (rc={{ pg_response[''returncode'']
             | default(''?'') }}): {{ pg_response[''stderr''] | default(pg_response[''stdout'']
             | default('''')) | truncate(200) }}'
-  mode: single
   variables:
     ts: '{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
       | int }}'
-    metrics:
-    - tag: temperature_inhouse
-      source: sensor.temp_kitchen_temperature
-      stats: sensor.postgresql_stats_temperature_inhouse
-      meas: °C
-      round: 1
-      max_age_min: 180
-      device_class: temperature
-      state_class: measurement
-    - tag: humidity_inhouse
-      source: sensor.temp_kitchen_humidity
-      stats: sensor.postgresql_stats_humidity_inhouse
-      meas: '%'
-      round: 0
-      max_age_min: 180
-      device_class: humidity
-      state_class: measurement
-    - tag: temperature_outside
-      source: sensor.temp_outside_temperatur
-      stats: sensor.postgresql_stats_temperature_outside
-      meas: °C
-      round: 1
-      max_age_min: 180
-      device_class: temperature
-      state_class: measurement
-    - tag: humidity_outside
-      source: sensor.temp_outside_luftfuktighet
-      stats: sensor.postgresql_stats_humidity_outside
-      meas: '%'
-      round: 0
-      max_age_min: 180
-      device_class: humidity
-      state_class: measurement
-    - tag: basement_temperature
-      source: sensor.temp_basement_temperatur
-      stats: sensor.postgresql_stats_basement_temperature
-      meas: °C
-      round: 1
-      max_age_min: 180
-      device_class: temperature
-      state_class: measurement
-    - tag: basement_humidity
-      source: sensor.temp_basement_luftfuktighet
-      stats: sensor.postgresql_stats_basement_humidity
-      meas: '%'
-      round: 0
-      max_age_min: 180
-      device_class: humidity
-      state_class: measurement
-    - tag: bedroom_temperature
-      source: sensor.temp_bedroom_temperatur
-      stats: sensor.postgresql_stats_bedroom_temperature
-      meas: °C
-      round: 1
-      max_age_min: 180
-      device_class: temperature
-      state_class: measurement
-    - tag: bedroom_humidity
-      source: sensor.temp_bedroom_luftfuktighet
-      stats: sensor.postgresql_stats_bedroom_humidity
-      meas: '%'
-      round: 0
-      max_age_min: 180
-      device_class: humidity
-      state_class: measurement
-    - tag: total_power_mean
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_total_power
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: total_power_min
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_total_power_min
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: total_power_max
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_total_power_max
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l1_mean
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_power_l1
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l1_min
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_power_l1_min
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l1_max
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_stats_power_l1_max
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l2_mean
-      source: sensor.frient_energy_spanning_fas_b
-      stats: sensor.postgresql_stats_power_l2
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l2_min
-      source: sensor.frient_energy_spanning_fas_b
-      stats: sensor.postgresql_stats_power_l2_min
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l2_max
-      source: sensor.frient_energy_spanning_fas_b
-      stats: sensor.postgresql_stats_power_l2_max
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l3_mean
-      source: sensor.frient_energy_spanning_fas_c
-      stats: sensor.postgresql_stats_power_l3
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l3_min
-      source: sensor.frient_energy_spanning_fas_c
-      stats: sensor.postgresql_stats_power_l3_min
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: power_l3_max
-      source: sensor.frient_energy_spanning_fas_c
-      stats: sensor.postgresql_stats_power_l3_max
-      meas: W
-      round: 0
-      max_age_min: 30
-      device_class: power
-      state_class: measurement
-    - tag: energy_imported
-      source: sensor.frient_energy_spanning_fas_a
-      stats: sensor.postgresql_energy_imported_hourly
-      meas: kWh
-      round: 3
-      max_age_min: 60
-      device_class: energy
-      state_class: total
-      energy_last_period: true
-    - tag: energy_imported_total
-      source: sensor.frient_energy_summering_av_leverans
-      stats: sensor.frient_energy_summering_av_leverans
-      meas: kWh
-      round: 3
-      max_age_min: 60
-      device_class: energy
-      state_class: total_increasing
+  mode: single
