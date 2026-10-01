@@ -524,19 +524,35 @@
     data: {}
     target:
       entity_id:
-      - switch.baksida_detections_person
       - switch.framsida_detections_person
       - switch.framsida_detections_vehicle
-      - switch.baksida_detections_vehicle
-      - switch.hall_detections_person
-      - switch.hall_detections_vehicle
-      - switch.baksida_detections_co
-      - switch.hall_detections_speaking
-      - switch.hall_detections_smoke
+      - switch.framsida_detections_animal
       - switch.framsida_detections_smoke
-      - switch.baksida_detections_smoke
       - switch.framsida_detections_co
+      - switch.baksida_detections_person
+      - switch.baksida_detections_vehicle
+      - switch.baksida_detections_animal
+      - switch.baksida_detections_smoke
+      - switch.baksida_detections_co
+      - switch.hall_detections_person
+      - switch.hall_detections_smoke
       - switch.hall_detections_co
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.framsida_detections_baby_cry
+      - switch.framsida_detections_motion
+      - switch.framsida_detections_speaking
+      - switch.baksida_detections_baby_cry
+      - switch.baksida_detections_motion
+      - switch.baksida_detections_speaking
+      - switch.hall_detections_vehicle
+      - switch.hall_detections_animal
+      - switch.hall_detections_baby_cry
+      - switch.hall_detections_motion
+      - switch.hall_detections_speaking
   mode: single
 - id: '1750769125651'
   alias: Alarm OFF
@@ -553,29 +569,40 @@
       target: both
       telegram: false
       message: Larm av
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id:
+      - switch.framsida_detections_smoke
+      - switch.framsida_detections_co
+      - switch.baksida_detections_smoke
+      - switch.baksida_detections_co
+      - switch.hall_detections_smoke
+      - switch.hall_detections_co
   - action: switch.turn_off
     metadata: {}
     data: {}
     target:
       entity_id:
-      - switch.baksida_detections_person
       - switch.framsida_detections_person
-      - switch.hall_detections_person
-      - switch.baksida_detections_vehicle
       - switch.framsida_detections_vehicle
-      - switch.baksida_detections_baby_cry
-      - switch.framsida_detections_baby_cry
-      - switch.hall_detections_baby_cry
-      - switch.baksida_detections_animal
       - switch.framsida_detections_animal
-      - switch.hall_detections_animal
-      - switch.hall_detections_vehicle
-      - switch.framsida_detections_speaking
-      - switch.baksida_detections_speaking
-      - switch.hall_detections_speaking
-      - switch.baksida_detections_motion
-      - switch.hall_detections_motion
+      - switch.framsida_detections_baby_cry
       - switch.framsida_detections_motion
+      - switch.framsida_detections_speaking
+      - switch.baksida_detections_person
+      - switch.baksida_detections_vehicle
+      - switch.baksida_detections_animal
+      - switch.baksida_detections_baby_cry
+      - switch.baksida_detections_motion
+      - switch.baksida_detections_speaking
+      - switch.hall_detections_person
+      - switch.hall_detections_vehicle
+      - switch.hall_detections_animal
+      - switch.hall_detections_baby_cry
+      - switch.hall_detections_motion
+      - switch.hall_detections_speaking
   - delay:
       hours: 0
       minutes: 1
