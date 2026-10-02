@@ -434,18 +434,37 @@
     - trigger: sun
       entity_id: sun.sun
       event: sunrise
-      for:
-        hours: 0
-        minutes: 30
-        seconds: 0
+      id: sunrise
     - trigger: numeric_state
       entity_id: sensor.mt29_belysningsstyrka
-      below: 2
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 0
-  conditions: []
+      above: 2
+      id: lux_above_2
+    - trigger: sun
+      entity_id: sun.sun
+      event: sunrise
+      offset: "00:30:00"
+      id: sunrise_plus_30
+  conditions:
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: sunrise
+            - condition: numeric_state
+              entity_id: sensor.mt29_belysningsstyrka
+              above: 2
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: lux_above_2
+            - condition: sun
+              entity_id: sun.sun
+              after: sunrise
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: sunrise_plus_30
   actions:
     - action: switch.turn_off
       metadata: {}
