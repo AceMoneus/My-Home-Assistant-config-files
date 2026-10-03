@@ -429,18 +429,39 @@
   mode: restart
 - id: '1754981360756'
   alias: Släck alla lampor när det blir ljust
-  description: 'Edit-test'
+  description: ''
   triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.mqtt_home_dark
-    to:
-    - 'off'
-    for:
-      hours: 0
-      minutes: 30
-      seconds: 0
-  conditions: []
+  - trigger: sun
+    id: sunrise
+    event: sunrise
+  - trigger: numeric_state
+    entity_id: sensor.mt29_belysningsstyrka
+    above: 2
+    id: lux_above_2
+  - trigger: sun
+    id: sunrise_plus_30
+    offset: '00:30:00'
+    event: sunrise
+  conditions:
+  - condition: or
+    conditions:
+      - condition: and
+        conditions:
+          - condition: trigger
+            id: sunrise
+          - condition: numeric_state
+            entity_id: sensor.mt29_belysningsstyrka
+            above: 2
+      - condition: and
+        conditions:
+          - condition: trigger
+            id: lux_above_2
+          - condition: sun
+            after: sunrise
+      - condition: and
+        conditions:
+          - condition: trigger
+            id: sunrise_plus_30
   actions:
   - action: switch.turn_off
     metadata: {}
