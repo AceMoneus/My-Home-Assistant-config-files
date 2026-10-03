@@ -1,0 +1,15 @@
+substitutions:
+  device_name: esphome-cam-printer1
+  friendly_name: "ESPHome Cam Printer1"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-s2-saola-1
+  framework:
+    type: esp-idf
+
+packages:
+  common: !include ../common/common.yaml
