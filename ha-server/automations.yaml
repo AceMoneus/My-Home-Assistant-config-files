@@ -429,57 +429,42 @@
   mode: restart
 - id: '1754981360756'
   alias: Släck alla lampor när det blir ljust
-  description: ''
+  description: Släcker vid lux över 15 efter soluppgång, alltid 30 min efter soluppgång
   triggers:
-  - trigger: sun
-    id: sunrise
-    event: sunrise
   - trigger: numeric_state
     entity_id: sensor.mt29_belysningsstyrka
-    above: 2
-    id: lux_above_2
+    above: 15
+    id: lux_above_15
+
   - trigger: sun
-    id: sunrise_plus_30
-    offset: '00:30:00'
     event: sunrise
+    offset: '00:30:00'
+    id: sunrise_plus_30
+
   conditions:
   - condition: or
     conditions:
-      - condition: and
-        conditions:
-          - condition: trigger
-            id: sunrise
-          - condition: numeric_state
-            entity_id: sensor.mt29_belysningsstyrka
-            above: 2
-      - condition: and
-        conditions:
-          - condition: trigger
-            id: lux_above_2
-          - condition: sun
-            after: sunrise
-      - condition: and
-        conditions:
-          - condition: trigger
-            id: sunrise_plus_30
+    - condition: trigger
+      id: sunrise_plus_30
+
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: lux_above_15
+      - condition: sun
+        after: sunrise
+
   actions:
-  - action: switch.turn_off
-    metadata: {}
+  - action: homeassistant.turn_off
     target:
       entity_id:
       - switch.mqtt_home_morning_lights
       - switch.mqtt_home_evening_lights
       - switch.mqtt_home_bedroom_light
-    data: {}
-    continue_on_error: true
-  - action: homeassistant.turn_off
-    metadata: {}
-    data: {}
-    target:
-      entity_id:
       - switch.mqtt_home_outside_mood_lights
       - switch.mqtt_home_outside_lighting
     continue_on_error: true
+
   mode: restart
 - id: '1759147194593'
   alias: GitHub commits
@@ -711,46 +696,37 @@
   mode: restart
 - id: '1762609393709'
   alias: Tänd lampor när det blir mörkt
-  description: ''
+  description: Tänder vid solnedgång eller när lux går under 15 inom 30 min före solnedgång
   triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.sun_down
-    from:
-    to:
-    - 'on'
-  conditions: []
+  - trigger: sun
+    event: sunset
+    id: sunset
+  - trigger: numeric_state
+    entity_id: sensor.mt29_belysningsstyrka
+    below: 15
+    id: low_lux
+  conditions:
+  - condition: or
+    conditions:
+    - condition: trigger
+      id: sunset
+    - condition: and
+      conditions:
+      - condition: trigger
+        id: low_lux
+      - condition: sun
+        after: sunset
+        after_offset: '-00:30:00'
+      - condition: sun
+        before: sunset
   actions:
   - action: homeassistant.turn_on
-    metadata: {}
-    data: {}
     target:
       entity_id:
       - switch.mqtt_home_evening_lights
       - switch.mqtt_home_bedroom_light
       - switch.mqtt_home_morning_lights
       - switch.mqtt_home_outside_mood_lights
-    continue_on_error: true
-  mode: restart
-- id: '1764586567605'
-  alias: Släck innelampor när Evening = off
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - binary_sensor.mqtt_home_evening
-    to:
-    - 'off'
-  conditions: []
-  actions:
-  - action: switch.turn_off
-    metadata: {}
-    target:
-      entity_id:
-      - switch.mqtt_home_evening_lights
-      - switch.mqtt_home_morning_lights
-      - switch.mqtt_home_bedroom_light
-    data: {}
     continue_on_error: true
   mode: restart
 - id: '1768673214791'
@@ -932,7 +908,7 @@
   description: ''
   triggers:
   - trigger: time
-    at: 06:00:00
+    at: 05:45:00
     weekday:
     - mon
     - tue
@@ -944,7 +920,9 @@
     weekday:
     - sat
     - sun
-  conditions: []
+  conditions:
+  - condition: sun
+    before: sunrise
   actions:
   - action: switch.turn_on
     target:
@@ -1796,3 +1774,119 @@
       scale: 1000
       device_class: power
       state_class: measurement
+- id: '1738679737178'
+  alias: Alarm Home
+  description: Hanterar aktivering och avaktivering av hemlarm
+  triggers:
+  - trigger: state
+    entity_id: switch.mqtt_home_alarm_state
+    from: 'off'
+    to: 'on'
+    id: alarm_on
+
+  - trigger: state
+    entity_id: switch.mqtt_home_alarm_state
+    from: 'on'
+    to: 'off'
+    id: alarm_off
+
+  conditions: []
+
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: alarm_on
+      sequence:
+      - action: script.send_user_message
+        data:
+          target: both
+          telegram: true
+          message: >-
+            {% if is_state('binary_sensor.mt30_dorr', 'on')
+                or is_state('binary_sensor.mt32_dorr', 'on')
+                or is_state('binary_sensor.mt68_dorr', 'on')
+                or is_state('binary_sensor.mt69_dorr', 'on') %}
+              Larm PÅ - Dörr/fönster öppet
+            {% else %}
+              Larm PÅ
+            {% endif %}
+
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.mt4
+          - switch.mt8
+
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: switch.mt18
+
+      - action: switch.turn_off
+        target:
+          entity_id: switch.fresh_ovre_badrum_constant_speed
+
+      - delay:
+          minutes: 1
+
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.security_hall_detektioner_person
+          - switch.g5_flex_detektioner_person_2
+          - switch.kok_detections_person
+          - switch.uppfart_detektioner_person
+          - switch.security_ytterdorr_detektioner_person
+          - switch.koksdorr_detektioner_person
+          - switch.g4_instant_detektioner_person
+
+    - conditions:
+      - condition: trigger
+        id: alarm_off
+      sequence:
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.security_hall_detektioner_person
+          - switch.g5_flex_detektioner_person_2
+          - switch.kok_detections_person
+          - switch.uppfart_detektioner_person
+          - switch.security_ytterdorr_detektioner_person
+          - switch.koksdorr_detektioner_person
+          - switch.g4_instant_detektioner_person
+
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id: switch.mt18
+
+      - action: script.send_user_message
+        data:
+          target: both
+          telegram: true
+          message: Larm AV
+
+      - if:
+        - condition: time
+          after: '06:00:00'
+          before: '22:00:00'
+        then:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.fresh_ovre_badrum_constant_speed
+
+      - delay:
+          seconds: 10
+
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.mt4
+          - switch.mt8
+
+  mode: restart
