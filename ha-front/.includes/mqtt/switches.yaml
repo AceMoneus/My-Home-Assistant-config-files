@@ -67,16 +67,6 @@
   optimistic: false
   qos: 2
   retain: true
-- name: "Ljusknapp"
-  unique_id: home_mqtt_light_button
-  default_entity_id: switch.mqtt_home_light_button
-  command_topic: "home/switch/light_button"
-  state_topic: "home/switch/light_button"
-  payload_on: "ON"
-  payload_off: "OFF"
-  optimistic: false
-  qos: 2
-  retain: true
 - name: "Kjell bilvärme"
   unique_id: home_mqtt_kjell_carheat
   default_entity_id: switch.mqtt_home_kjell_carheat
