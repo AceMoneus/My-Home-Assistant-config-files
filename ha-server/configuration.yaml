@@ -16,13 +16,12 @@ wake_on_lan:
 ######################################################
 # Includes
 automation: !include automations.yaml
+input_select: !include .includes/input_select/input_select.yaml
 group: !include .includes/group.yaml
-
 mqtt:
   switch: !include_dir_merge_list .includes/mqtt/switch/
   sensor: !include_dir_merge_list .includes/mqtt/sensor/
   binary_sensor: !include_dir_merge_list .includes/mqtt/binary_sensor/
-
 script: !include_dir_merge_named .includes/script/
 sensor: !include_dir_merge_list .includes/sensor/
 shell_command: !include .includes/shell_command.yaml

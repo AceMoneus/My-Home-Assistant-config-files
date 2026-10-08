@@ -1,0 +1,7 @@
+lighting_period:
+  name: Belysningsperiod
+  options:
+    - day
+    - evening
+    - night
+    - morning
