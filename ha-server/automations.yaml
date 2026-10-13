@@ -308,7 +308,7 @@
   mode: restart
 - id: '1754568986656'
   alias: Tänd lampor vid rörelse om det är mörkt
-  description: Rörelse tänder utebelysning i morning/evening/night. Släcks efter 2 min. Ingen löpande korrigering.
+  description: Rörelse tänder utebelysning från solnedgång till soluppgång. Släcks efter 2 min.
   triggers:
   - trigger: state
     entity_id:
@@ -318,18 +318,14 @@
     - binary_sensor.mt52_belaggning
     to: 'on'
   conditions:
-  - condition: state
-    entity_id: input_select.lighting_period
-    state:
-    - morning
-    - evening
-    - night
+  - condition: sun
+    after: sunset
+    before: sunrise
   actions:
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{ trigger.entity_id == ''binary_sensor.mt29_belaggning''
-          }}'
+        value_template: "{{ trigger.entity_id == 'binary_sensor.mt29_belaggning' }}"
       sequence:
       - action: light.turn_on
         target:
@@ -338,8 +334,7 @@
           - light.mt54
     - conditions:
       - condition: template
-        value_template: '{{ trigger.entity_id == ''binary_sensor.mt50_belaggning''
-          }}'
+        value_template: "{{ trigger.entity_id == 'binary_sensor.mt50_belaggning' }}"
       sequence:
       - action: light.turn_on
         target:
@@ -349,16 +344,14 @@
           - light.mt56
     - conditions:
       - condition: template
-        value_template: '{{ trigger.entity_id == ''binary_sensor.mt52_belaggning''
-          }}'
+        value_template: "{{ trigger.entity_id == 'binary_sensor.mt52_belaggning' }}"
       sequence:
       - action: light.turn_on
         target:
           entity_id: light.mt56
     - conditions:
       - condition: template
-        value_template: '{{ trigger.entity_id == ''binary_sensor.mt49_belaggning''
-          }}'
+        value_template: "{{ trigger.entity_id == 'binary_sensor.mt49_belaggning' }}"
       sequence:
       - action: light.turn_on
         target:
@@ -1718,7 +1711,7 @@
           - switch.mt4
           - switch.mt8
   mode: restart
-- id: 'lighting_period_control'
+- id: lighting_period_control
   alias: Belysningsperiod - styrning
   description: Sätter day/evening/night/morning utifrån tid, sol och lux
 
@@ -1754,6 +1747,11 @@
     entity_id: sensor.mt29_belysningsstyrka
     below: 15
     id: dark
+
+  - trigger: sun
+    event: sunset
+    offset: "-00:30:00"
+    id: sunset_minus_30
 
   - trigger: sun
     event: sunset
@@ -1852,6 +1850,20 @@
         after_offset: "-00:30:00"
       - condition: sun
         before: sunset
+      sequence:
+      - action: input_select.select_option
+        target:
+          entity_id: input_select.lighting_period
+        data:
+          option: evening
+
+    # Absolut start på evening-fönstret – sätt evening om redan mörkt (lux < 15)
+    - conditions:
+      - condition: trigger
+        id: sunset_minus_30
+      - condition: numeric_state
+        entity_id: sensor.mt29_belysningsstyrka
+        below: 15
       sequence:
       - action: input_select.select_option
         target:
@@ -2055,7 +2067,6 @@
           - switch.mqtt_home_evening_lights
           - switch.mqtt_home_bedroom_light
           - switch.mqtt_home_outside_mood_lights
-          - switch.mqtt_home_outside_lighting
         continue_on_error: true
     - conditions:
       - condition: trigger
@@ -2080,4 +2091,55 @@
           - switch.mqtt_home_morning_lights
           - switch.mqtt_home_bedroom_light
         continue_on_error: true
+  mode: single
+
+- id: outdoor_lighting_sun
+  alias: Utomhusbelysning - solstyrning
+  description: Tänds vid solnedgång, släcks vid soluppgång. Oberoende av lighting_period.
+  triggers:
+  - trigger: sun
+    event: sunset
+    id: sunset
+  - trigger: sun
+    event: sunrise
+    id: sunrise
+  - trigger: homeassistant
+    event: start
+    id: bootstrap
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: sunset
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_home_outside_lighting
+        continue_on_error: true
+    - conditions:
+      - condition: trigger
+        id: sunrise
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_home_outside_lighting
+        continue_on_error: true
+    - conditions:
+      - condition: trigger
+        id: bootstrap
+      sequence:
+      - if:
+        - condition: sun
+          after: sunset
+        then:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.mqtt_home_outside_lighting
+          continue_on_error: true
+        else:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.mqtt_home_outside_lighting
+          continue_on_error: true
   mode: single
