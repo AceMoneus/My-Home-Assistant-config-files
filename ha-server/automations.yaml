@@ -967,11 +967,11 @@
       detector_name: "{% set by_device = {\n  \"7fe07ddc8393c1de1a097f765a6b5a25\":
         \"3D‑printer\",\n  \"152e232011bbe9be8597b785f31d6ea4\": \"Serverskåp\",\n
         \ \"4405a823e4dbdfe433dafadcef20bb02\": \"Källartrappa\",\n  \"168b90f422d73f51b485c0f95b6b0420\":
-        \"Övervåning\",\n  \"5d41e438a1dcd2d648e133fea1848af8\": \"Garage\"\n} %}
+        \"Garage\",\n  \"5d41e438a1dcd2d648e133fea1848af8\": \"Övre hall\"\n} %}
         {% set by_entity = {\n  \"binary_sensor.mt33_test_pagar\": \"3D‑printer\",\n
         \ \"binary_sensor.mt34_test_pagar\": \"Serverskåp\",\n  \"binary_sensor.mt35_test_pagar\":
-        \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Övervåning\",\n
-        \ \"binary_sensor.mt48_test_pagar\": \"Garage\",\n  \"binary_sensor.security_hall_roklarm_detekterat\":
+        \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Garage\",\n
+        \ \"binary_sensor.mt48_test_pagar\": \"Övre hall\",\n  \"binary_sensor.security_hall_roklarm_detekterat\":
         \"Hall\",\n  \"binary_sensor.kok_smoke_alarm_detected\": \"Matplats\",\n  \"binary_sensor.g4_instant_roklarm_detekterat\":
         \"Vind\",\n  \"binary_sensor.security_ytterdorr_roklarm_detekterat\": \"Ytterdörr\",\n
         \ \"binary_sensor.koksdorr_roklarm_detekterat\": \"Köksdörr\",\n  \"binary_sensor.g5_flex_roklarm_detekterat_2\":
@@ -1007,24 +1007,20 @@
         state:
         - 'on'
       sequence:
-      - action: number.set_value
+      - action: button.press
         metadata: {}
         target:
-          entity_id: number.fresh_ovre_badrum_constant_speed
-        data:
-          value: '2200'
+          entity_id: button.overvaning_fresh_ovre_badrum_starta_boost
     - conditions:
       - condition: state
         entity_id: switch.mqtt_home_top_bathroom_fan
         state:
         - 'off'
       sequence:
-      - action: number.set_value
+      - action: button.press
         metadata: {}
         target:
-          entity_id: number.fresh_ovre_badrum_constant_speed
-        data:
-          value: '800'
+          entity_id: button.overvaning_fresh_ovre_badrum_avsluta_boost
   mode: restart
 - id: '1783629183654'
   alias: Uppdatera Home Away och Alarm State baserat på mobiler
