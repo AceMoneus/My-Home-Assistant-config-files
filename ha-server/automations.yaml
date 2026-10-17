@@ -308,7 +308,8 @@
   mode: restart
 - id: '1754568986656'
   alias: Tänd lampor vid rörelse om det är mörkt
-  description: Rörelse tänder utebelysning från solnedgång till soluppgång. Släcks efter 2 min.
+  description: Rörelse tänder utebelysning från solnedgång till soluppgång. Släcks
+    efter 2 min.
   triggers:
   - trigger: state
     entity_id:
@@ -325,7 +326,8 @@
   - choose:
     - conditions:
       - condition: template
-        value_template: "{{ trigger.entity_id == 'binary_sensor.mt29_belaggning' }}"
+        value_template: '{{ trigger.entity_id == ''binary_sensor.mt29_belaggning''
+          }}'
       sequence:
       - action: light.turn_on
         target:
@@ -334,7 +336,8 @@
           - light.mt54
     - conditions:
       - condition: template
-        value_template: "{{ trigger.entity_id == 'binary_sensor.mt50_belaggning' }}"
+        value_template: '{{ trigger.entity_id == ''binary_sensor.mt50_belaggning''
+          }}'
       sequence:
       - action: light.turn_on
         target:
@@ -344,14 +347,16 @@
           - light.mt56
     - conditions:
       - condition: template
-        value_template: "{{ trigger.entity_id == 'binary_sensor.mt52_belaggning' }}"
+        value_template: '{{ trigger.entity_id == ''binary_sensor.mt52_belaggning''
+          }}'
       sequence:
       - action: light.turn_on
         target:
           entity_id: light.mt56
     - conditions:
       - condition: template
-        value_template: "{{ trigger.entity_id == 'binary_sensor.mt49_belaggning' }}"
+        value_template: '{{ trigger.entity_id == ''binary_sensor.mt49_belaggning''
+          }}'
       sequence:
       - action: light.turn_on
         target:
@@ -967,12 +972,12 @@
       detector_name: "{% set by_device = {\n  \"7fe07ddc8393c1de1a097f765a6b5a25\":
         \"3D‑printer\",\n  \"152e232011bbe9be8597b785f31d6ea4\": \"Serverskåp\",\n
         \ \"4405a823e4dbdfe433dafadcef20bb02\": \"Källartrappa\",\n  \"168b90f422d73f51b485c0f95b6b0420\":
-        \"Garage\",\n  \"5d41e438a1dcd2d648e133fea1848af8\": \"Övre hall\"\n} %}
-        {% set by_entity = {\n  \"binary_sensor.mt33_test_pagar\": \"3D‑printer\",\n
+        \"Garage\",\n  \"5d41e438a1dcd2d648e133fea1848af8\": \"Övre hall\"\n} %} {%
+        set by_entity = {\n  \"binary_sensor.mt33_test_pagar\": \"3D‑printer\",\n
         \ \"binary_sensor.mt34_test_pagar\": \"Serverskåp\",\n  \"binary_sensor.mt35_test_pagar\":
-        \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Garage\",\n
-        \ \"binary_sensor.mt48_test_pagar\": \"Övre hall\",\n  \"binary_sensor.security_hall_roklarm_detekterat\":
-        \"Hall\",\n  \"binary_sensor.kok_smoke_alarm_detected\": \"Matplats\",\n  \"binary_sensor.g4_instant_roklarm_detekterat\":
+        \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Garage\",\n  \"binary_sensor.mt48_test_pagar\":
+        \"Övre hall\",\n  \"binary_sensor.security_hall_roklarm_detekterat\": \"Hall\",\n
+        \ \"binary_sensor.kok_smoke_alarm_detected\": \"Matplats\",\n  \"binary_sensor.g4_instant_roklarm_detekterat\":
         \"Vind\",\n  \"binary_sensor.security_ytterdorr_roklarm_detekterat\": \"Ytterdörr\",\n
         \ \"binary_sensor.koksdorr_roklarm_detekterat\": \"Köksdörr\",\n  \"binary_sensor.g5_flex_roklarm_detekterat_2\":
         \"Altan\"\n} %} {{ by_entity.get(trigger.entity_id, by_device.get(trigger.device_id,
@@ -1378,6 +1383,23 @@
           target: kjell
           telegram: true
           message: 'Matter borta minst 1 h: {{ new_names | trim }}'
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.matter_enheter_borta
+    data:
+      value: "{% set cutoff = now() - timedelta(hours=1) %} {% set ns = namespace(seen=[],
+        lines=[]) %}\n{% for eid in integration_entities('matter') %}\n  {% set name
+        = device_attr(eid, 'name_by_user') %}\n\n  {% if name and name not in ns.seen
+        %}\n    {% set ns.seen = ns.seen + [name] %}\n\n    {% set own = device_entities(device_id(eid))
+        %}\n    {% set up = namespace(ok=false, latest=none) %}\n\n    {% for e in
+        own %}\n      {% if states(e) not in ['unavailable', 'unknown'] %}\n        {%
+        set up.ok = true %}\n      {% elif is_state(e, 'unavailable') %}\n        {%
+        if up.latest is none or states[e].last_changed > up.latest %}\n          {%
+        set up.latest = states[e].last_changed %}\n        {% endif %}\n      {% endif
+        %}\n    {% endfor %}\n\n    {% if not up.ok and up.latest and up.latest <
+        cutoff %}\n      {% set ns.lines = ns.lines + [\n        name ~ '|' ~ relative_time(up.latest)\n
+        \     ] %}\n    {% endif %}\n  {% endif %}\n{% endfor %}\n{{ ns.lines | join(';')
+        }}\n"
   - condition: template
     value_template: '{{ remembered | trim != previous }}'
   - action: input_text.set_value
@@ -1710,10 +1732,9 @@
 - id: lighting_period_control
   alias: Belysningsperiod - styrning
   description: Sätter day/evening/night/morning utifrån tid, sol och lux
-
   triggers:
   - trigger: time
-    at: "05:45:00"
+    at: 05:45:00
     weekday:
     - mon
     - tue
@@ -1721,59 +1742,45 @@
     - thu
     - fri
     id: morning
-
   - trigger: time
-    at: "07:00:00"
+    at: 07:00:00
     weekday:
     - sat
     - sun
     id: morning
-
   - trigger: numeric_state
     entity_id: sensor.mt29_belysningsstyrka
     above: 15
     id: light
-
   - trigger: sun
     event: sunrise
-    offset: "00:30:00"
+    offset: 00:30:00
     id: sunrise_plus_30
-
   - trigger: numeric_state
     entity_id: sensor.mt29_belysningsstyrka
-    below: 15
+    below: 50
     id: dark
-
   - trigger: sun
     event: sunset
-    offset: "-00:30:00"
-    id: sunset_minus_30
-
+    offset: -01:00:00
+    id: sunset_minus_60
   - trigger: sun
     event: sunset
     id: sunset
-
   - trigger: time
-    at: "23:30:00"
+    at: '23:30:00'
     id: night
-
   - trigger: homeassistant
     event: start
     id: bootstrap
-
   conditions: []
-
   actions:
   - choose:
-
-    # Morgonstart 05:45 vardag / 07:00 helg
     - conditions:
       - condition: trigger
         id: morning
       sequence:
       - choose:
-
-        # Före sunrise -> morning
         - conditions:
           - condition: sun
             before: sunrise
@@ -1783,14 +1790,12 @@
               entity_id: input_select.lighting_period
             data:
               option: morning
-
-        # Sunrise -> sunrise+30 och lux < 15 -> morning
         - conditions:
           - condition: sun
             after: sunrise
           - condition: sun
             before: sunrise
-            before_offset: "00:30:00"
+            before_offset: 00:30:00
           - condition: numeric_state
             entity_id: sensor.mt29_belysningsstyrka
             below: 15
@@ -1800,17 +1805,12 @@
               entity_id: input_select.lighting_period
             data:
               option: morning
-
-        # Annars är dagen redan igång
         default:
         - action: input_select.select_option
           target:
             entity_id: input_select.lighting_period
           data:
             option: day
-
-    # Lux går över 15 under dagperioden.
-    # Blockeras från sunset-30 så evening inte kan studsa tillbaka till day.
     - conditions:
       - condition: trigger
         id: light
@@ -1818,15 +1818,13 @@
         after: sunrise
       - condition: sun
         before: sunset
-        before_offset: "-00:30:00"
+        before_offset: -00:30:00
       sequence:
       - action: input_select.select_option
         target:
           entity_id: input_select.lighting_period
         data:
           option: day
-
-    # Absolut slut på morgonfönstret
     - conditions:
       - condition: trigger
         id: sunrise_plus_30
@@ -1836,14 +1834,12 @@
           entity_id: input_select.lighting_period
         data:
           option: day
-
-    # Lux < 15 inom 30 min före sunset -> evening
     - conditions:
       - condition: trigger
         id: dark
       - condition: sun
         after: sunset
-        after_offset: "-00:30:00"
+        after_offset: -01:00:00
       - condition: sun
         before: sunset
       sequence:
@@ -1852,22 +1848,18 @@
           entity_id: input_select.lighting_period
         data:
           option: evening
-
-    # Absolut start på evening-fönstret – sätt evening om redan mörkt (lux < 15)
     - conditions:
       - condition: trigger
-        id: sunset_minus_30
+        id: sunset_minus_60
       - condition: numeric_state
         entity_id: sensor.mt29_belysningsstyrka
-        below: 15
+        below: 50
       sequence:
       - action: input_select.select_option
         target:
           entity_id: input_select.lighting_period
         data:
           option: evening
-
-    # Absolut start på evening
     - conditions:
       - condition: trigger
         id: sunset
@@ -1877,8 +1869,6 @@
           entity_id: input_select.lighting_period
         data:
           option: evening
-
-    # Absolut start på night
     - conditions:
       - condition: trigger
         id: night
@@ -1888,36 +1878,25 @@
           entity_id: input_select.lighting_period
         data:
           option: night
-
-    # Bootstrap efter HA-start
     - conditions:
       - condition: trigger
         id: bootstrap
       sequence:
-
-      # Ge luxsensorn möjlighet att bli tillgänglig efter uppstart
-      - delay: "00:00:10"
-
+      - delay: 00:00:10
       - choose:
-
-        # 23:30 -> midnatt
         - conditions:
           - condition: time
-            after: "23:30:00"
+            after: '23:30:00'
           sequence:
           - action: input_select.select_option
             target:
               entity_id: input_select.lighting_period
             data:
               option: night
-
-        # Midnatt -> sunrise, FÖRE dagens morgonstart -> night
         - conditions:
           - condition: template
-            value_template: >
-              {% set morning_start =
-                   '05:45' if now().weekday() < 5 else '07:00' %}
-              {{ now() < today_at(morning_start) }}
+            value_template: "{% set morning_start =\n     '05:45' if now().weekday()
+              < 5 else '07:00' %}\n{{ now() < today_at(morning_start) }}\n"
           - condition: sun
             before: sunrise
           sequence:
@@ -1926,14 +1905,10 @@
               entity_id: input_select.lighting_period
             data:
               option: night
-
-        # Morgonstart -> sunrise -> morning
         - conditions:
           - condition: template
-            value_template: >
-              {% set morning_start =
-                   '05:45' if now().weekday() < 5 else '07:00' %}
-              {{ now() >= today_at(morning_start) }}
+            value_template: "{% set morning_start =\n     '05:45' if now().weekday()
+              < 5 else '07:00' %}\n{{ now() >= today_at(morning_start) }}\n"
           - condition: sun
             before: sunrise
           sequence:
@@ -1942,15 +1917,12 @@
               entity_id: input_select.lighting_period
             data:
               option: morning
-
-        # Sunrise -> sunrise+30 och lux <15.
-        # Före morgonstart = night, efter morgonstart = morning.
         - conditions:
           - condition: sun
             after: sunrise
           - condition: sun
             before: sunrise
-            before_offset: "00:30:00"
+            before_offset: 00:30:00
           - condition: numeric_state
             entity_id: sensor.mt29_belysningsstyrka
             below: 15
@@ -1958,10 +1930,8 @@
           - choose:
             - conditions:
               - condition: template
-                value_template: >
-                  {% set morning_start =
-                       '05:45' if now().weekday() < 5 else '07:00' %}
-                  {{ now() >= today_at(morning_start) }}
+                value_template: "{% set morning_start =\n     '05:45' if now().weekday()
+                  < 5 else '07:00' %}\n{{ now() >= today_at(morning_start) }}\n"
               sequence:
               - action: input_select.select_option
                 target:
@@ -1974,53 +1944,39 @@
                 entity_id: input_select.lighting_period
               data:
                 option: night
-
-        # Sunset-30 -> sunset och lux <15 -> evening
         - conditions:
           - condition: sun
             after: sunset
-            after_offset: "-00:30:00"
+            after_offset: -01:00:00
           - condition: sun
             before: sunset
           - condition: numeric_state
             entity_id: sensor.mt29_belysningsstyrka
-            below: 15
+            below: 50
           sequence:
           - action: input_select.select_option
             target:
               entity_id: input_select.lighting_period
             data:
               option: evening
-
-        # Sunset -> 23:30 -> evening
         - conditions:
           - condition: sun
             after: sunset
           - condition: time
-            before: "23:30:00"
+            before: '23:30:00'
           sequence:
           - action: input_select.select_option
             target:
               entity_id: input_select.lighting_period
             data:
               option: evening
-
-        # Alla kvarvarande fall -> day
-        #
-        # Hit kommer bl.a.:
-        # - sunrise..sunrise+30 med lux >=15
-        # - efter sunrise+30, även före morgonstart på sommaren
-        # - normal dag
-        # - sunset-30..sunset med lux >=15
         default:
         - action: input_select.select_option
           target:
             entity_id: input_select.lighting_period
           data:
             option: day
-
   mode: restart
-
 - id: lighting_period_actions
   alias: Belysning - periodstyrning
   description: Agerar bara vid periodövergång. Skriver inte tillbaka manuella ändringar.
@@ -2088,7 +2044,6 @@
           - switch.mqtt_home_bedroom_light
         continue_on_error: true
   mode: single
-
 - id: outdoor_lighting_sun
   alias: Utomhusbelysning - solstyrning
   description: Tänds vid solnedgång, släcks vid soluppgång. Oberoende av lighting_period.
