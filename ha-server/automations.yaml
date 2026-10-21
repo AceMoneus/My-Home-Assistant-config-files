@@ -2094,3 +2094,33 @@
             entity_id: switch.mqtt_home_outside_lighting
           continue_on_error: true
   mode: single
+- id: "1792500000001"
+  alias: "Bettan motorvärmare"
+  description: "Testar mt31 kl 21:00 i 20 sekunder. Meddelar om effekten är under 100 W. Hoppar över om bilvärmen redan är på."
+  triggers:
+    - trigger: time
+      at: "21:00:00"
+  conditions:
+    - condition: template
+      value_template: "{{ not is_state('switch.mqtt_home_bettan_carheat', 'on') }}"
+  actions:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.mt31
+    - delay:
+        seconds: 20
+    - variables:
+        effekt: "{{ states('sensor.mt31_effekt') | float(0) }}"
+    - action: switch.turn_off
+      target:
+        entity_id: switch.mt31
+    - if:
+        - condition: template
+          value_template: "{{ effekt < 100 }}"
+      then:
+        - action: script.send_user_message
+          data:
+            target: both
+            telegram: true
+            message: "Bettan motorvärmare"
+  mode: single
