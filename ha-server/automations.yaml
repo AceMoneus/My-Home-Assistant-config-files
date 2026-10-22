@@ -2094,33 +2094,61 @@
             entity_id: switch.mqtt_home_outside_lighting
           continue_on_error: true
   mode: single
-- id: "1792500000001"
-  alias: "Bettan motorvärmare"
-  description: "Testar mt31 kl 21:00 i 20 sekunder. Meddelar om effekten är under 100 W. Hoppar över om bilvärmen redan är på."
+- id: '1792500000001'
+  alias: Bettan motorvärmare
+  description: Testar mt31 kl 21:00 i 20 sekunder. Meddelar om effekten är under 100
+    W. Hoppar över om bilvärmen redan är på eller om temp kl 07:00 imorgon inte är
+    under 0°C. Skickar alltid meddelande till local. Skickar till both (utan telegram)
+    bara när villkoren är uppfyllda.
   triggers:
-    - trigger: time
-      at: "21:00:00"
+  - trigger: time
+    at: '21:00:00'
   conditions:
-    - condition: template
-      value_template: "{{ not is_state('switch.mqtt_home_bettan_carheat', 'on') }}"
+  - condition: template
+    value_template: '{{ not is_state(''switch.mqtt_home_bettan_carheat'', ''on'')
+      }}'
   actions:
+  - action: weather.get_forecasts
+    target:
+      entity_id: weather.smhi_home
+    data:
+      type: hourly
+    response_variable: forecast
+  - variables:
+      temp_0700: '{% set target = (today_at(''07:00'') + timedelta(days=1)).astimezone(utcnow().tzinfo).isoformat()
+        %} {% set fc = forecast[''weather.smhi_home''].forecast %} {% set match =
+        fc | selectattr(''datetime'', ''eq'', target) | list %} {{ (match[0].temperature
+        if match else 100) | float }}
+
+        '
+  - action: script.send_user_message
+    data:
+      target: local
+      telegram: true
+      message: 'Bettan motorvärmare Prognos 07:00 imorgon: {{ temp_0700 }} °C {% if
+        temp_0700 < 0 %} Temperatur under 0°C – testar motorvärmare. {% else %} Temperatur
+        över 0°C – hoppar över test. {% endif %}'
+  - if:
+    - condition: template
+      value_template: '{{ temp_0700 < 0 }}'
+    then:
     - action: switch.turn_on
       target:
         entity_id: switch.mt31
     - delay:
         seconds: 20
     - variables:
-        effekt: "{{ states('sensor.mt31_effekt') | float(0) }}"
+        effekt: '{{ states(''sensor.mt31_effekt'') | float(0) }}'
     - action: switch.turn_off
       target:
         entity_id: switch.mt31
     - if:
-        - condition: template
-          value_template: "{{ effekt < 100 }}"
+      - condition: template
+        value_template: '{{ effekt < 100 }}'
       then:
-        - action: script.send_user_message
-          data:
-            target: both
-            telegram: true
-            message: "Bettan motorvärmare"
+      - action: script.send_user_message
+        data:
+          target: both
+          telegram: false
+          message: 'Bettan motorvärmare Prognos 07:00 imorgon: {{ temp_0700 }} °C'
   mode: single
