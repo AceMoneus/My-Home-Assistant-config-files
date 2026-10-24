@@ -1,0 +1,103 @@
+# HA Server
+- name: "MQTT HA Server CPU"
+  unique_id: mqtt_ha_server_cpu
+  state_topic: metrics/ha-server
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.cpu | default(0) }}"
+
+- name: "MQTT HA Server Memory"
+  unique_id: mqtt_ha_server_memory
+  state_topic: metrics/ha-server
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.memory | default(0) }}"
+
+- name: "MQTT HA Server Disk"
+  unique_id: mqtt_ha_server_disk
+  state_topic: metrics/ha-server
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.disk | default(0) }}"
+
+# HA Front
+- name: "MQTT HA Front CPU"
+  unique_id: mqtt_ha_front_cpu
+  state_topic: metrics/ha-front
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.cpu | default(0) }}"
+
+- name: "MQTT HA Front Memory"
+  unique_id: mqtt_ha_front_memory
+  state_topic: metrics/ha-front
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.memory | default(0) }}"
+
+- name: "MQTT HA Front Disk"
+  unique_id: mqtt_ha_front_disk
+  state_topic: metrics/ha-front
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.disk | default(0) }}"
+
+- name: "MQTT HA Front CPU Temp"
+  unique_id: mqtt_ha_front_cpu_temp
+  state_topic: metrics/ha-front
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value_json.cpu_temp | default(0) }}"
+
+# HA Core
+- name: "MQTT HA Core CPU"
+  unique_id: mqtt_ha_core_cpu
+  state_topic: metrics/ha-core
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.cpu | default(0) }}"
+
+- name: "MQTT HA Core Memory"
+  unique_id: mqtt_ha_core_memory
+  state_topic: metrics/ha-core
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.memory | default(0) }}"
+
+- name: "MQTT HA Core Disk"
+  unique_id: mqtt_ha_core_disk
+  state_topic: metrics/ha-core
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.disk | default(0) }}"
+
+- name: "MQTT HA Core CPU Temp"
+  unique_id: mqtt_ha_core_cpu_temp
+  state_topic: metrics/ha-core
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  value_template: "{{ value_json.cpu_temp | default(0) }}"
+
+# HA Kottbo
+- name: "MQTT HA Kottbo CPU"
+  unique_id: mqtt_ha_kottbo_cpu
+  state_topic: metrics/ha-kottbo
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.cpu | default(0) }}"
+
+- name: "MQTT HA Kottbo Memory"
+  unique_id: mqtt_ha_kottbo_memory
+  state_topic: metrics/ha-kottbo
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.memory | default(0) }}"
+
+- name: "MQTT HA Kottbo Disk"
+  unique_id: mqtt_ha_kottbo_disk
+  state_topic: metrics/ha-kottbo
+  unit_of_measurement: "%"
+  state_class: measurement
+  value_template: "{{ value_json.disk | default(0) }}"
