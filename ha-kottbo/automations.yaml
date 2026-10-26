@@ -1372,3 +1372,324 @@
     ts: '{{ as_timestamp(now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=1))
       | int }}'
   mode: single
+- id: '1791201888062'
+  alias: mqtt_kottbo_shower_fan state publish
+  description: Speglar switch.plug_shower_fan_brytare till switch.mqtt_kottbo_shower_fan
+    när de skiljer sig, så lokal ändring syns på ha-front. Hoppar över om MQTT-switchen
+    redan har samma läge.
+  triggers:
+  - trigger: state
+    entity_id: switch.plug_shower_fan_brytare
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_shower_fan_brytare
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_shower_fan
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_shower_fan
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_shower_fan_brytare
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_shower_fan
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_shower_fan
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201987070'
+  alias: mqtt_kottbo_element_kok state publish
+  description: Speglar switch.silver_element_switch till switch.mqtt_kottbo_element_kok
+    när de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.silver_element_switch
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.silver_element_switch
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_kok
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_element_kok
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.silver_element_switch
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_kok
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_element_kok
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201989581'
+  alias: mqtt_kottbo_element_sovrum state publish
+  description: Speglar switch.ikea_of_sweden_tradfri_control_outlet_switch_3 till
+    switch.mqtt_kottbo_element_sovrum när de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_sovrum
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_element_sovrum
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.ikea_of_sweden_tradfri_control_outlet_switch_3
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_sovrum
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_element_sovrum
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201991919'
+  alias: mqtt_kottbo_element_vardagsrum state publish
+  description: Speglar switch.plug_04_switch till switch.mqtt_kottbo_element_vardagsrum
+    när de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.plug_04_switch
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_04_switch
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_vardagsrum
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_element_vardagsrum
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_04_switch
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_element_vardagsrum
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_element_vardagsrum
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201994413'
+  alias: mqtt_kottbo_bathroom_heater state publish
+  description: Speglar switch.plug_bathroom_heat till switch.mqtt_kottbo_bathroom_heater
+    när de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.plug_bathroom_heat
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_bathroom_heat
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_bathroom_heater
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_bathroom_heater
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_bathroom_heat
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_bathroom_heater
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_bathroom_heater
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201996976'
+  alias: mqtt_kottbo_ozone state publish
+  description: Speglar switch.plug_ozone_brytare till switch.mqtt_kottbo_ozone när
+    de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.plug_ozone_brytare
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_ozone_brytare
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_ozone
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_ozone
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_ozone_brytare
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_ozone
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_ozone
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791201999374'
+  alias: mqtt_kottbo_outside_1 state publish
+  description: Speglar switch.plug_outside_1_switch till switch.mqtt_kottbo_outside_1
+    när de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.plug_outside_1_switch
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_outside_1_switch
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_outside_1
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_outside_1
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.plug_outside_1_switch
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_outside_1
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_outside_1
+        continue_on_error: true
+  mode: queued
+  max: 5
+- id: '1791202001879'
+  alias: mqtt_kottbo_hall state publish
+  description: Speglar switch.silver_1_hall_switch till switch.mqtt_kottbo_hall när
+    de skiljer sig.
+  triggers:
+  - trigger: state
+    entity_id: switch.silver_1_hall_switch
+    to:
+    - 'on'
+    - 'off'
+  - trigger: homeassistant
+    event: start
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.silver_1_hall_switch
+        state: 'on'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_hall
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_hall
+        continue_on_error: true
+    - conditions:
+      - condition: state
+        entity_id: switch.silver_1_hall_switch
+        state: 'off'
+      - condition: state
+        entity_id: switch.mqtt_kottbo_hall
+        state: 'on'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_hall
+        continue_on_error: true
+  mode: queued
+  max: 5
