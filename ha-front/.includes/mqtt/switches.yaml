@@ -179,11 +179,11 @@
   optimistic: false
   qos: 2
   retain: true
-- name: "LED-slinga ute"
-  unique_id: kottbo_mqtt_outside_1
-  default_entity_id: switch.mqtt_kottbo_outside_1
-  command_topic: "kottbo/switch/outside_1"
-  state_topic: "kottbo/switch/outside_1"
+- name: "Ute-pluggar"
+  unique_id: kottbo_mqtt_outside
+  default_entity_id: switch.mqtt_kottbo_outside
+  command_topic: "kottbo/switch/outside"
+  state_topic: "kottbo/switch/outside"
   payload_on: "ON"
   payload_off: "OFF"
   optimistic: false
