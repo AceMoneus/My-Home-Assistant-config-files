@@ -164,6 +164,7 @@
       device_id:
       - 581f1029f083c2080c0473d9474f765c
       - 3c603425ec80b6c20b9305731f00c441
+      - 3ebf6cf1b50b834e73d662f4a64aa06d
       - 5b19d1ce1b19a015b80485d12cb2f3b7
       entity_id: switch.plug13
     action: homeassistant.turn_on
@@ -197,7 +198,8 @@
   - data: {}
     target:
       entity_id:
-      - switch.plug_outside_1_switch
+      - switch.kottzig_z1_switch
+      - switch.kottzig_z2
       - switch.silver_1_hall_switch
       - switch.plug13
       device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
@@ -808,70 +810,6 @@
             message: 'Varning! {{ repeat.item.name }} senaste heartbeat: {{ states(repeat.item.entity)
               }}'
   mode: single
-- id: '1787910064116'
-  alias: MQTT - Kottbo home_away publish
-  description: Publicerar kottbo/state/home_away (home|away, retain, qos 2) baserat
-    på zone.home (personer i Kottbo). Bootstrap vid start och var 5:e minut. Styr
-    larm endast vid närvarobyte.
-  triggers:
-  - trigger: state
-    id: presence
-    entity_id:
-    - zone.home
-  - trigger: homeassistant
-    id: bootstrap
-    event: start
-  - trigger: time_pattern
-    id: bootstrap
-    minutes: /5
-  actions:
-  - choose:
-    - conditions:
-      - condition: numeric_state
-        entity_id: zone.home
-        above: 0
-      sequence:
-      - action: mqtt.publish
-        data:
-          topic: kottbo/state/home_away
-          payload: home
-          retain: true
-          qos: 2
-        continue_on_error: true
-      - if:
-        - condition: trigger
-          id: presence
-        then:
-        - action: switch.turn_off
-          target:
-            entity_id: switch.mqtt_kottbo_alarm_state
-          continue_on_error: true
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: zone.home
-          state: '0'
-        - condition: numeric_state
-          entity_id: zone.home
-          below: 1
-      sequence:
-      - action: mqtt.publish
-        data:
-          topic: kottbo/state/home_away
-          payload: away
-          retain: true
-          qos: 2
-        continue_on_error: true
-      - if:
-        - condition: trigger
-          id: presence
-        then:
-        - action: switch.turn_on
-          target:
-            entity_id: switch.mqtt_kottbo_alarm_state
-          continue_on_error: true
-  mode: restart
 - id: '1787914288504'
   alias: mqtt_kottbo_element_kok
   description: MQTT switch.mqtt_kottbo_element_kok → switch.silver_element_switch
@@ -1082,29 +1020,33 @@
   mode: restart
 - id: '1787915000005'
   alias: mqtt_kottbo_outside_1
-  description: MQTT switch.mqtt_kottbo_outside_1 → switch.plug_outside_1_switch
+  description: MQTT switch.mqtt_kottbo_outside styr z1 och z2 tillsammans.
   triggers:
   - trigger: state
-    entity_id: switch.mqtt_kottbo_outside_1
+    entity_id: switch.mqtt_kottbo_outside
   actions:
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.mqtt_kottbo_outside_1
-        state: 'on'
+        entity_id: switch.mqtt_kottbo_outside
+        state: "on"
       sequence:
       - action: switch.turn_on
         target:
-          entity_id: switch.plug_outside_1_switch
+          entity_id:
+          - switch.kottzig_z1_switch
+          - switch.kottzig_z2
         continue_on_error: true
     - conditions:
       - condition: state
-        entity_id: switch.mqtt_kottbo_outside_1
-        state: 'off'
+        entity_id: switch.mqtt_kottbo_outside
+        state: "off"
       sequence:
       - action: switch.turn_off
         target:
-          entity_id: switch.plug_outside_1_switch
+          entity_id:
+          - switch.kottzig_z1_switch
+          - switch.kottzig_z2
         continue_on_error: true
   mode: restart
 - id: '1787915000006'
@@ -1615,41 +1557,86 @@
   max: 5
 - id: '1791201999374'
   alias: mqtt_kottbo_outside_1 state publish
-  description: Speglar switch.plug_outside_1_switch till switch.mqtt_kottbo_outside_1
-    när de skiljer sig.
+  description: Låser z1 och z2 via switch.mqtt_kottbo_outside. En på tänder båda.
+    En av släcker båda.
   triggers:
   - trigger: state
-    entity_id: switch.plug_outside_1_switch
+    id: plug
+    entity_id:
+    - switch.kottzig_z1_switch
+    - switch.kottzig_z2
     to:
-    - 'on'
-    - 'off'
+    - "on"
+    - "off"
   - trigger: homeassistant
+    id: start
     event: start
   actions:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: switch.plug_outside_1_switch
-        state: 'on'
-      - condition: state
-        entity_id: switch.mqtt_kottbo_outside_1
-        state: 'off'
+      - condition: trigger
+        id: start
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: switch.kottzig_z1_switch
+          state: "on"
+        - condition: state
+          entity_id: switch.kottzig_z2
+          state: "on"
       sequence:
       - action: switch.turn_on
         target:
-          entity_id: switch.mqtt_kottbo_outside_1
+          entity_id:
+          - switch.kottzig_z1_switch
+          - switch.kottzig_z2
+        continue_on_error: true
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_outside
         continue_on_error: true
     - conditions:
+      - condition: trigger
+        id: start
       - condition: state
-        entity_id: switch.plug_outside_1_switch
-        state: 'off'
+        entity_id: switch.kottzig_z1_switch
+        state: "off"
       - condition: state
-        entity_id: switch.mqtt_kottbo_outside_1
-        state: 'on'
+        entity_id: switch.kottzig_z2
+        state: "off"
+      - condition: state
+        entity_id: switch.mqtt_kottbo_outside
+        state: "on"
       sequence:
       - action: switch.turn_off
         target:
-          entity_id: switch.mqtt_kottbo_outside_1
+          entity_id: switch.mqtt_kottbo_outside
+        continue_on_error: true
+    - conditions:
+      - condition: trigger
+        id: plug
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'on' }}"
+      - condition: state
+        entity_id: switch.mqtt_kottbo_outside
+        state: "off"
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.mqtt_kottbo_outside
+        continue_on_error: true
+    - conditions:
+      - condition: trigger
+        id: plug
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'off' }}"
+      - condition: state
+        entity_id: switch.mqtt_kottbo_outside
+        state: "on"
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.mqtt_kottbo_outside
         continue_on_error: true
   mode: queued
   max: 5
@@ -1693,3 +1680,17 @@
         continue_on_error: true
   mode: queued
   max: 5
+- id: '1793004767360'
+  alias: Publish Metrics
+  triggers:
+  - minutes: /5
+    trigger: time_pattern
+  actions:
+  - data:
+      topic: metrics/ha-kottbo
+      payload: "{{\n  {\n    \"cpu\": states('sensor.system_monitor_processoranvandning')
+        | float(0),\n    \"memory\": states('sensor.system_monitor_minnesanvandning')
+        | float(0),\n    \"disk\": states('sensor.system_monitor_diskanvandning')
+        | float(0)\n  } | tojson\n}}\n"
+    action: mqtt.publish
+  mode: single

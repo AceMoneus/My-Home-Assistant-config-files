@@ -13,7 +13,6 @@ homeassistant: !include .includes/homeassistant.yaml
 mqtt:
   switch: !include .includes/mqtt/switches.yaml
   sensor: !include .includes/mqtt/sensors.yaml
-  binary_sensor: !include .includes/mqtt/binary_sensors.yaml
 script: !include .includes/scripts.yaml
 shell_command: !include .includes/shell_command.yaml
 template: !include_dir_merge_list .includes/templates/
