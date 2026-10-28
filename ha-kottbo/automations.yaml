@@ -288,15 +288,15 @@
     data: {}
   mode: single
 - id: '1711699263720'
-  alias: Fläkt badrum 60%
+  alias: Fläkt badrum 55%
   description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id:
+  triggers:
+  - entity_id:
     - sensor.temp_bathroom_luftfuktighet
-    above: 60
-  condition: []
-  action:
+    above: 55
+    trigger: numeric_state
+  conditions: []
+  actions:
   - type: turn_on
     device_id: fb56394856ae26ac1579b07640e92d16
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
@@ -310,7 +310,7 @@
     device_id: fb56394856ae26ac1579b07640e92d16
     entity_id: b3ed81cbd678b0cbb5c55715b63f5539
     domain: switch
-  mode: single
+  mode: restart
 - id: '1727098712935'
   alias: Button - Bathroom Heat ON
   description: ''
@@ -1019,7 +1019,7 @@
         continue_on_error: true
   mode: restart
 - id: '1787915000005'
-  alias: mqtt_kottbo_outside_1
+  alias: mqtt__z1_z2_outside
   description: MQTT switch.mqtt_kottbo_outside styr z1 och z2 tillsammans.
   triggers:
   - trigger: state
@@ -1029,7 +1029,7 @@
     - conditions:
       - condition: state
         entity_id: switch.mqtt_kottbo_outside
-        state: "on"
+        state: 'on'
       sequence:
       - action: switch.turn_on
         target:
@@ -1040,7 +1040,7 @@
     - conditions:
       - condition: state
         entity_id: switch.mqtt_kottbo_outside
-        state: "off"
+        state: 'off'
       sequence:
       - action: switch.turn_off
         target:
@@ -1556,7 +1556,7 @@
   mode: queued
   max: 5
 - id: '1791201999374'
-  alias: mqtt_kottbo_outside_1 state publish
+  alias: z1 och z2 state publish
   description: Låser z1 och z2 via switch.mqtt_kottbo_outside. En på tänder båda.
     En av släcker båda.
   triggers:
@@ -1566,8 +1566,8 @@
     - switch.kottzig_z1_switch
     - switch.kottzig_z2
     to:
-    - "on"
-    - "off"
+    - 'on'
+    - 'off'
   - trigger: homeassistant
     id: start
     event: start
@@ -1580,10 +1580,10 @@
         conditions:
         - condition: state
           entity_id: switch.kottzig_z1_switch
-          state: "on"
+          state: 'on'
         - condition: state
           entity_id: switch.kottzig_z2
-          state: "on"
+          state: 'on'
       sequence:
       - action: switch.turn_on
         target:
@@ -1600,13 +1600,13 @@
         id: start
       - condition: state
         entity_id: switch.kottzig_z1_switch
-        state: "off"
+        state: 'off'
       - condition: state
         entity_id: switch.kottzig_z2
-        state: "off"
+        state: 'off'
       - condition: state
         entity_id: switch.mqtt_kottbo_outside
-        state: "on"
+        state: 'on'
       sequence:
       - action: switch.turn_off
         target:
@@ -1616,10 +1616,10 @@
       - condition: trigger
         id: plug
       - condition: template
-        value_template: "{{ trigger.to_state.state == 'on' }}"
+        value_template: '{{ trigger.to_state.state == ''on'' }}'
       - condition: state
         entity_id: switch.mqtt_kottbo_outside
-        state: "off"
+        state: 'off'
       sequence:
       - action: switch.turn_on
         target:
@@ -1629,10 +1629,10 @@
       - condition: trigger
         id: plug
       - condition: template
-        value_template: "{{ trigger.to_state.state == 'off' }}"
+        value_template: '{{ trigger.to_state.state == ''off'' }}'
       - condition: state
         entity_id: switch.mqtt_kottbo_outside
-        state: "on"
+        state: 'on'
       sequence:
       - action: switch.turn_off
         target:
