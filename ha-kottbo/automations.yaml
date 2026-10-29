@@ -166,7 +166,9 @@
       - 3c603425ec80b6c20b9305731f00c441
       - 3ebf6cf1b50b834e73d662f4a64aa06d
       - 5b19d1ce1b19a015b80485d12cb2f3b7
-      entity_id: switch.plug13
+      entity_id:
+      - switch.z13
+      - switch.kottzig_z3
     action: homeassistant.turn_on
   mode: single
 - id: '1697571878770'
@@ -182,7 +184,9 @@
       device_id:
       - 581f1029f083c2080c0473d9474f765c
       - 5b19d1ce1b19a015b80485d12cb2f3b7
-      entity_id: switch.plug13
+      entity_id:
+      - switch.z13
+      - switch.kottzig_z3
     action: homeassistant.turn_off
   mode: single
 - id: '1698688508680'
@@ -201,7 +205,8 @@
       - switch.kottzig_z1_switch
       - switch.kottzig_z2
       - switch.silver_1_hall_switch
-      - switch.plug13
+      - switch.z13
+      - switch.kottzig_z3
       device_id: 5b19d1ce1b19a015b80485d12cb2f3b7
     action: homeassistant.turn_off
   mode: single
@@ -1188,10 +1193,10 @@
           - sensor.temp_basement_luftfuktighet
           - sensor.temp_bedroom_temperatur
           - sensor.temp_bedroom_luftfuktighet
-          - sensor.ground_dry_side_temperature
-          - sensor.ground_dry_side_humidity
-          - sensor.ground_wet_side_temperature
-          - sensor.ground_wet_side_humidity
+          - sensor.kottzig_z6_temperature
+          - sensor.kottzig_z6_humidity
+          - sensor.kottzig_z7_temperature
+          - sensor.kottzig_z7_humidity
           - sensor.frient_energy_effekt_fas_a
           - sensor.frient_energy_effekt_fas_b
           - sensor.frient_energy_effekt_fas_c
@@ -1241,13 +1246,13 @@
         \"device_class\": \"temperature\"},\n  {\"metric\": \"bedroom_humidity\",
         \"source\": \"sensor.temp_bedroom_luftfuktighet\", \"digits\": 0, \"unit\":
         \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_dry_side_temperature\",
-        \"source\": \"sensor.ground_dry_side_temperature\", \"digits\": 1, \"unit\":
+        \"source\": \"sensor.kottzig_z6_temperature\", \"digits\": 1, \"unit\":
         \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_dry_side_humidity\",
-        \"source\": \"sensor.ground_dry_side_humidity\", \"digits\": 0, \"unit\":
+        \"source\": \"sensor.kottzig_z6_humidity\", \"digits\": 0, \"unit\":
         \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_wet_side_temperature\",
-        \"source\": \"sensor.ground_wet_side_temperature\", \"digits\": 1, \"unit\":
+        \"source\": \"sensor.kottzig_z7_temperature\", \"digits\": 1, \"unit\":
         \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_wet_side_humidity\",
-        \"source\": \"sensor.ground_wet_side_humidity\", \"digits\": 0, \"unit\":
+        \"source\": \"sensor.kottzig_z7_humidity\", \"digits\": 0, \"unit\":
         \"%\", \"device_class\": \"humidity\"}\n] %}\n\n{% for spec in climate %}\n
         \ {% if spec.source in stats %}\n    {% set found = namespace(row=none) %}\n
         \   {% for row in stats[spec.source] %}\n      {% if (as_timestamp(row.start)
