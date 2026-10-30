@@ -871,34 +871,6 @@
           entity_id: switch.ikea_of_sweden_tradfri_control_outlet_switch_3
         continue_on_error: true
   mode: restart
-- id: '1787914294618'
-  alias: mqtt_kottbo_element_vardagsrum
-  description: MQTT switch.mqtt_kottbo_element_vardagsrum → switch.plug_04_switch
-  triggers:
-  - trigger: state
-    entity_id:
-    - switch.mqtt_kottbo_element_vardagsrum
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.mqtt_kottbo_element_vardagsrum
-        state: 'on'
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id: switch.plug_04_switch
-        continue_on_error: true
-    - conditions:
-      - condition: state
-        entity_id: switch.mqtt_kottbo_element_vardagsrum
-        state: 'off'
-      sequence:
-      - action: switch.turn_off
-        target:
-          entity_id: switch.plug_04_switch
-        continue_on_error: true
-  mode: restart
 - id: '1787915000001'
   alias: MQTT - Kottbo climate publish
   description: Publicerar kottbo-temperaturer till MQTT (retain, qos 2). State-change,
@@ -1193,10 +1165,8 @@
           - sensor.temp_basement_luftfuktighet
           - sensor.temp_bedroom_temperatur
           - sensor.temp_bedroom_luftfuktighet
-          - sensor.kottzig_z6_temperature
-          - sensor.kottzig_z6_humidity
-          - sensor.kottzig_z7_temperature
-          - sensor.kottzig_z7_humidity
+          - sensor.kottzig_z8_temperatur
+          - sensor.kottzig_z8_luftfuktighet
           - sensor.frient_energy_effekt_fas_a
           - sensor.frient_energy_effekt_fas_b
           - sensor.frient_energy_effekt_fas_c
@@ -1245,14 +1215,10 @@
         \"source\": \"sensor.temp_bedroom_temperatur\", \"digits\": 1, \"unit\": \"°C\",
         \"device_class\": \"temperature\"},\n  {\"metric\": \"bedroom_humidity\",
         \"source\": \"sensor.temp_bedroom_luftfuktighet\", \"digits\": 0, \"unit\":
-        \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_dry_side_temperature\",
-        \"source\": \"sensor.kottzig_z6_temperature\", \"digits\": 1, \"unit\":
-        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_dry_side_humidity\",
-        \"source\": \"sensor.kottzig_z6_humidity\", \"digits\": 0, \"unit\":
         \"%\", \"device_class\": \"humidity\"},\n  {\"metric\": \"ground_wet_side_temperature\",
-        \"source\": \"sensor.kottzig_z7_temperature\", \"digits\": 1, \"unit\":
-        \"°C\", \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_wet_side_humidity\",
-        \"source\": \"sensor.kottzig_z7_humidity\", \"digits\": 0, \"unit\":
+        \"source\": \"sensor.kottzig_z8_temperatur\", \"digits\": 1, \"unit\": \"°C\",
+        \"device_class\": \"temperature\"},\n  {\"metric\": \"ground_wet_side_humidity\",
+        \"source\": \"sensor.kottzig_z8_luftfuktighet\", \"digits\": 0, \"unit\":
         \"%\", \"device_class\": \"humidity\"}\n] %}\n\n{% for spec in climate %}\n
         \ {% if spec.source in stats %}\n    {% set found = namespace(row=none) %}\n
         \   {% for row in stats[spec.source] %}\n      {% if (as_timestamp(row.start)
@@ -1437,46 +1403,6 @@
       - action: switch.turn_off
         target:
           entity_id: switch.mqtt_kottbo_element_sovrum
-        continue_on_error: true
-  mode: queued
-  max: 5
-- id: '1791201991919'
-  alias: mqtt_kottbo_element_vardagsrum state publish
-  description: Speglar switch.plug_04_switch till switch.mqtt_kottbo_element_vardagsrum
-    när de skiljer sig.
-  triggers:
-  - trigger: state
-    entity_id: switch.plug_04_switch
-    to:
-    - 'on'
-    - 'off'
-  - trigger: homeassistant
-    event: start
-  actions:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.plug_04_switch
-        state: 'on'
-      - condition: state
-        entity_id: switch.mqtt_kottbo_element_vardagsrum
-        state: 'off'
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id: switch.mqtt_kottbo_element_vardagsrum
-        continue_on_error: true
-    - conditions:
-      - condition: state
-        entity_id: switch.plug_04_switch
-        state: 'off'
-      - condition: state
-        entity_id: switch.mqtt_kottbo_element_vardagsrum
-        state: 'on'
-      sequence:
-      - action: switch.turn_off
-        target:
-          entity_id: switch.mqtt_kottbo_element_vardagsrum
         continue_on_error: true
   mode: queued
   max: 5
