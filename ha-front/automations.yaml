@@ -209,18 +209,3 @@
         target:
           entity_id: automation.handle_incoming_user_message
   mode: single
-- id: '1792756896581'
-  alias: Publish Metrics
-  triggers:
-  - minutes: /5
-    trigger: time_pattern
-  actions:
-  - data:
-      topic: metrics/ha-front
-      payload: "{{\n  {\n    \"cpu\": states('sensor.system_monitor_processoranvandning')
-        | float(0),\n    \"memory\": states('sensor.system_monitor_minnesanvandning')
-        | float(0),\n    \"disk\": states('sensor.system_monitor_diskanvandning')
-        | float(0),\n    \"cpu_temp\": states('sensor.system_monitor_processortemperatur')
-        | float(0)\n  } | tojson\n}}\n"
-    action: mqtt.publish
-  mode: single
