@@ -1611,17 +1611,3 @@
         continue_on_error: true
   mode: queued
   max: 5
-- id: '1793004767360'
-  alias: Publish Metrics
-  triggers:
-  - minutes: /5
-    trigger: time_pattern
-  actions:
-  - data:
-      topic: metrics/ha-kottbo
-      payload: "{{\n  {\n    \"cpu\": states('sensor.system_monitor_processoranvandning')
-        | float(0),\n    \"memory\": states('sensor.system_monitor_minnesanvandning')
-        | float(0),\n    \"disk\": states('sensor.system_monitor_diskanvandning')
-        | float(0)\n  } | tojson\n}}\n"
-    action: mqtt.publish
-  mode: single
