@@ -5,6 +5,9 @@ substitutions:
 packages:
   common: !include common/common.yaml
 
+logger:
+  baud_rate: 0
+
 external_components:
   - source:
       type: git
