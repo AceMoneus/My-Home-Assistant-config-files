@@ -1,0 +1,324 @@
+mt1_last_seen:
+  name: MT1 Last Seen
+  has_date: true
+  has_time: true
+
+mt2_last_seen:
+  name: MT2 Last Seen
+  has_date: true
+  has_time: true
+
+mt3_last_seen:
+  name: MT3 Last Seen
+  has_date: true
+  has_time: true
+
+mt4_last_seen:
+  name: MT4 Last Seen
+  has_date: true
+  has_time: true
+
+mt5_last_seen:
+  name: MT5 Last Seen
+  has_date: true
+  has_time: true
+
+mt6_last_seen:
+  name: MT6 Last Seen
+  has_date: true
+  has_time: true
+
+mt7_last_seen:
+  name: MT7 Last Seen
+  has_date: true
+  has_time: true
+
+mt8_last_seen:
+  name: MT8 Last Seen
+  has_date: true
+  has_time: true
+
+mt9_last_seen:
+  name: MT9 Last Seen
+  has_date: true
+  has_time: true
+
+mt10_last_seen:
+  name: MT10 Last Seen
+  has_date: true
+  has_time: true
+
+mt11_last_seen:
+  name: MT11 Last Seen
+  has_date: true
+  has_time: true
+
+mt12_last_seen:
+  name: MT12 Last Seen
+  has_date: true
+  has_time: true
+
+mt13_last_seen:
+  name: MT13 Last Seen
+  has_date: true
+  has_time: true
+
+mt14_last_seen:
+  name: MT14 Last Seen
+  has_date: true
+  has_time: true
+
+mt15_last_seen:
+  name: MT15 Last Seen
+  has_date: true
+  has_time: true
+
+mt16_last_seen:
+  name: MT16 Last Seen
+  has_date: true
+  has_time: true
+
+mt17_last_seen:
+  name: MT17 Last Seen
+  has_date: true
+  has_time: true
+
+mt18_last_seen:
+  name: MT18 Last Seen
+  has_date: true
+  has_time: true
+
+mt19_last_seen:
+  name: MT19 Last Seen
+  has_date: true
+  has_time: true
+
+mt20_last_seen:
+  name: MT20 Last Seen
+  has_date: true
+  has_time: true
+
+mt21_last_seen:
+  name: MT21 Last Seen
+  has_date: true
+  has_time: true
+
+mt22_last_seen:
+  name: MT22 Last Seen
+  has_date: true
+  has_time: true
+
+mt23_last_seen:
+  name: MT23 Last Seen
+  has_date: true
+  has_time: true
+
+mt24_last_seen:
+  name: MT24 Last Seen
+  has_date: true
+  has_time: true
+
+mt26_last_seen:
+  name: MT26 Last Seen
+  has_date: true
+  has_time: true
+
+mt27_last_seen:
+  name: MT27 Last Seen
+  has_date: true
+  has_time: true
+
+mt28_last_seen:
+  name: MT28 Last Seen
+  has_date: true
+  has_time: true
+
+mt29_last_seen:
+  name: MT29 Last Seen
+  has_date: true
+  has_time: true
+
+mt30_last_seen:
+  name: MT30 Last Seen
+  has_date: true
+  has_time: true
+
+mt31_last_seen:
+  name: MT31 Last Seen
+  has_date: true
+  has_time: true
+
+mt32_last_seen:
+  name: MT32 Last Seen
+  has_date: true
+  has_time: true
+
+mt33_last_seen:
+  name: MT33 Last Seen
+  has_date: true
+  has_time: true
+
+mt34_last_seen:
+  name: MT34 Last Seen
+  has_date: true
+  has_time: true
+
+mt35_last_seen:
+  name: MT35 Last Seen
+  has_date: true
+  has_time: true
+
+mt39_last_seen:
+  name: MT39 Last Seen
+  has_date: true
+  has_time: true
+
+mt40_last_seen:
+  name: MT40 Last Seen
+  has_date: true
+  has_time: true
+
+mt45_last_seen:
+  name: MT45 Last Seen
+  has_date: true
+  has_time: true
+
+mt46_last_seen:
+  name: MT46 Last Seen
+  has_date: true
+  has_time: true
+
+mt48_last_seen:
+  name: MT48 Last Seen
+  has_date: true
+  has_time: true
+
+mt49_last_seen:
+  name: MT49 Last Seen
+  has_date: true
+  has_time: true
+
+mt50_last_seen:
+  name: MT50 Last Seen
+  has_date: true
+  has_time: true
+
+mt51_last_seen:
+  name: MT51 Last Seen
+  has_date: true
+  has_time: true
+
+mt52_last_seen:
+  name: MT52 Last Seen
+  has_date: true
+  has_time: true
+
+mt53_last_seen:
+  name: MT53 Last Seen
+  has_date: true
+  has_time: true
+
+mt54_last_seen:
+  name: MT54 Last Seen
+  has_date: true
+  has_time: true
+
+mt55_last_seen:
+  name: MT55 Last Seen
+  has_date: true
+  has_time: true
+
+mt56_last_seen:
+  name: MT56 Last Seen
+  has_date: true
+  has_time: true
+
+mt57_last_seen:
+  name: MT57 Last Seen
+  has_date: true
+  has_time: true
+
+mt67_last_seen:
+  name: MT67 Last Seen
+  has_date: true
+  has_time: true
+
+mt68_last_seen:
+  name: MT68 Last Seen
+  has_date: true
+  has_time: true
+
+mt69_last_seen:
+  name: MT69 Last Seen
+  has_date: true
+  has_time: true
+
+mt70_last_seen:
+  name: MT70 Last Seen
+  has_date: true
+  has_time: true
+
+mt71_last_seen:
+  name: MT71 Last Seen
+  has_date: true
+  has_time: true
+
+mt72_last_seen:
+  name: MT72 Last Seen
+  has_date: true
+  has_time: true
+
+mt73_last_seen:
+  name: MT73 Last Seen
+  has_date: true
+  has_time: true
+
+mt74_last_seen:
+  name: MT74 Last Seen
+  has_date: true
+  has_time: true
+
+mt75_last_seen:
+  name: MT75 Last Seen
+  has_date: true
+  has_time: true
+
+mt76_last_seen:
+  name: MT76 Last Seen
+  has_date: true
+  has_time: true
+
+mt77_last_seen:
+  name: MT77 Last Seen
+  has_date: true
+  has_time: true
+
+mt78_last_seen:
+  name: MT78 Last Seen
+  has_date: true
+  has_time: true
+
+mt79_last_seen:
+  name: MT79 Last Seen
+  has_date: true
+  has_time: true
+
+mt80_last_seen:
+  name: MT80 Last Seen
+  has_date: true
+  has_time: true
+
+mt81_last_seen:
+  name: MT81 Last Seen
+  has_date: true
+  has_time: true
+
+mt82_last_seen:
+  name: MT82 Last Seen
+  has_date: true
+  has_time: true
+
+mt83_last_seen:
+  name: MT83 Last Seen
+  has_date: true
+  has_time: true
