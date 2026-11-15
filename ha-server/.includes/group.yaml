@@ -16,6 +16,9 @@ evening_lights:
     - switch.mt10 #Vardagsrum gård
     - switch.mt17 #Pysselrum
     - switch.mt16 #Gästrum
+    - switch.mt79 #Vardagsrum fönster
+    - switch.mt80 #Vardagsrum fönster
+    - switch.mt82 #Vardagsrum fönster
 
 outdoor_mood_lights:
   name: "Group UteMyslampor"

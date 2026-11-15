@@ -2151,3 +2151,33 @@
           telegram: false
           message: 'Bettan motorvärmare Prognos 07:00 imorgon: {{ temp_0700 }} °C'
   mode: single
+- id: '1794572743769'
+  alias: Matter Last Seen
+  description: Uppdaterar input_datetime när en Matter-enhet rapporterar något
+  triggers:
+  - trigger: event
+    event_type: state_changed
+  conditions:
+  - condition: template
+    value_template: "{{ mt != '' and entity_id.split('.')[0] in\n   ['switch', 'light',
+      'binary_sensor', 'event', 'climate'] }}\n"
+  - condition: template
+    value_template: "{{ old_state is not none\n   and new_state is not none\n   and
+      old_state.state not in ['unavailable', 'unknown']\n   and new_state.state not
+      in ['unavailable', 'unknown'] }}\n"
+  actions:
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.{{ mt }}_last_seen
+    data:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
+  mode: queued
+  max: 50
+  variables:
+    entity_id: '{{ trigger.event.data.entity_id | default('''') }}'
+    old_state: '{{ trigger.event.data.old_state }}'
+    new_state: '{{ trigger.event.data.new_state }}'
+    mt: '{% set m = entity_id | regex_findall(''^[a-z_]+\.(mt\d+)'') %} {{ m[0] if
+      m else '''' }}
+
+      '
