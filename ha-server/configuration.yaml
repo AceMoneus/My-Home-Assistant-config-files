@@ -1,8 +1,11 @@
 ######################################################
-# Loads default set of integrations.
+# Core integrations
 default_config:
+
 logger:
   default: info
+
+recorder: !include .includes/recorder.yaml
 
 ######################################################
 # Load frontend themes from the themes folder

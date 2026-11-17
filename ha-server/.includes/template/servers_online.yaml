@@ -1,0 +1,97 @@
+- binary_sensor:
+
+    - name: PMX-11 Online
+      unique_id: pmx11_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.pmx_11_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: PMX-12 Online
+      unique_id: pmx12_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.pmx_12_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: PMX-21 Online
+      unique_id: pmx21_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.pmx_21_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: HA Core Online
+      unique_id: ha_core_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.ha_core_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: HA Front Online
+      unique_id: ha_front_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.ha_front_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: HA Server Online
+      unique_id: ha_server_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.ha_server_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: HA Kottbo Online
+      unique_id: ha_kottbo_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.ha_kottbo_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: Checkmk Online
+      unique_id: checkmk_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.checkmk_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: OpenObserve Online
+      unique_id: openobserve_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.openobserve_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: PostgreSQL Online
+      unique_id: postgresql_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.postgresql_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: Remote Online
+      unique_id: remote_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.remote_last_seen')))
+          < timedelta(minutes=5)
+        }}
+
+    - name: Vector Online
+      unique_id: vector_online
+      state: >
+        {{
+          (now() - as_datetime(states('sensor.vector_last_seen')))
+          < timedelta(minutes=5)
+        }}

@@ -1,0 +1,14 @@
+# .includes/recorder.yaml
+
+purge_keep_days: 1
+
+include:
+  entity_globs:
+    - sensor.*_cpu
+    - sensor.*_memory
+    - sensor.*_disk
+    - sensor.*_cpu_temp
+
+exclude:
+  entity_globs:
+    - sensor.*_last_seen
