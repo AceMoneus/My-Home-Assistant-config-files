@@ -1,0 +1,47 @@
+- name: PMX-11 Last Seen
+  unique_id: pmx11_last_seen
+  state_topic: "metrics/pmx-11/timestamp"
+
+- name: PMX-12 Last Seen
+  unique_id: pmx12_last_seen
+  state_topic: "metrics/pmx-12/timestamp"
+
+- name: PMX-21 Last Seen
+  unique_id: pmx21_last_seen
+  state_topic: "metrics/pmx-21/timestamp"
+
+- name: HA Core Last Seen
+  unique_id: ha_core_last_seen
+  state_topic: "metrics/ha-core/timestamp"
+
+- name: HA Front Last Seen
+  unique_id: ha_front_last_seen
+  state_topic: "metrics/ha-front/timestamp"
+
+- name: HA Server Last Seen
+  unique_id: ha_server_last_seen
+  state_topic: "metrics/ha-server/timestamp"
+
+- name: HA Kottbo Last Seen
+  unique_id: ha_kottbo_last_seen
+  state_topic: "metrics/ha-kottbo/timestamp"
+
+- name: Checkmk Last Seen
+  unique_id: checkmk_last_seen
+  state_topic: "metrics/checkmk/timestamp"
+
+- name: OpenObserve Last Seen
+  unique_id: openobserve_last_seen
+  state_topic: "metrics/openobserve/timestamp"
+
+- name: PostgreSQL Last Seen
+  unique_id: postgresql_last_seen
+  state_topic: "metrics/postgresql/timestamp"
+
+- name: Remote Last Seen
+  unique_id: remote_last_seen
+  state_topic: "metrics/remote/timestamp"
+
+- name: Vector Last Seen
+  unique_id: vector_last_seen
+  state_topic: "metrics/vector/timestamp"
