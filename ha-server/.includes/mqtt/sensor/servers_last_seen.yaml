@@ -26,10 +26,6 @@
   unique_id: ha_kottbo_last_seen
   state_topic: "metrics/ha-kottbo/timestamp"
 
-- name: Checkmk Last Seen
-  unique_id: checkmk_last_seen
-  state_topic: "metrics/checkmk/timestamp"
-
 - name: OpenObserve Last Seen
   unique_id: openobserve_last_seen
   state_topic: "metrics/openobserve/timestamp"

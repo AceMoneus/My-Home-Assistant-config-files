@@ -160,22 +160,6 @@
   state_topic: "metrics/ha-kottbo/disk_percent"
   unit_of_measurement: "%"
 
-# Checkmk
-- name: Checkmk CPU
-  unique_id: checkmk_cpu
-  state_topic: "metrics/checkmk/cpu_percent"
-  unit_of_measurement: "%"
-
-- name: Checkmk Memory
-  unique_id: checkmk_memory
-  state_topic: "metrics/checkmk/memory_percent"
-  unit_of_measurement: "%"
-
-- name: Checkmk Disk
-  unique_id: checkmk_disk
-  state_topic: "metrics/checkmk/disk_percent"
-  unit_of_measurement: "%"
-
 # OpenObserve
 - name: OpenObserve CPU
   unique_id: openobserve_cpu
