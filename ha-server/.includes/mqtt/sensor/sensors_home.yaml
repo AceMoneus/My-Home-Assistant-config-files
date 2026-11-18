@@ -105,37 +105,3 @@
   device_class: temperature
   state_class: measurement
   value_template: "{{ value }}"
-- name: "Timestamp kottbo"
-  state_topic: "timestamp/ha-kottbo"
-  device_class: "timestamp"
-  value_template: "{{ as_datetime(value) }}"
-  unique_id: "mqtt_timestamp_ha_kottbo"
-  default_entity_id: sensor.mqtt_kottbo_timestamp
-  qos: 2
-
-# front
-- name: "Timestamp front"
-  state_topic: "timestamp/ha-front"
-  device_class: "timestamp"
-  value_template: "{{ as_datetime(value) }}"
-  unique_id: "mqtt_timestamp_ha_front"
-  default_entity_id: sensor.mqtt_front_timestamp
-  qos: 2
-
-# core
-- name: "Timestamp core"
-  state_topic: "timestamp/ha-core"
-  device_class: "timestamp"
-  value_template: "{{ as_datetime(value) }}"
-  unique_id: "mqtt_timestamp_ha_core"
-  default_entity_id: sensor.mqtt_core_timestamp
-  qos: 2
-
-# server
-- name: "Timestamp server"
-  state_topic: "timestamp/ha-server"
-  device_class: "timestamp"
-  value_template: "{{ as_datetime(value) }}"
-  unique_id: "mqtt_timestamp_ha_server"
-  default_entity_id: sensor.mqtt_server_timestamp
-  qos: 2

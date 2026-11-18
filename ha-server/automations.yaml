@@ -2128,3 +2128,41 @@
       m else '''' }}
 
       '
+- id: '1795011137563'
+  alias: Infrastructure Health Check
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.servers_healthy
+    to: 'off'
+    for:
+      minutes: 5
+    id: unhealthy
+  - trigger: state
+    entity_id: binary_sensor.servers_healthy
+    to: 'on'
+    id: healthy
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: unhealthy
+      sequence:
+      - action: script.send_user_message
+        data:
+          target: local
+          telegram: true
+          message: 'Infrastrukturvarning. En eller flera servrar är inte healthy.
+
+            '
+    - conditions:
+      - condition: trigger
+        id: healthy
+      sequence:
+      - action: script.send_user_message
+        data:
+          target: local
+          telegram: true
+          message: 'Infrastruktur återställd. Alla servrar är healthy igen.
+
+            '
+  mode: single
