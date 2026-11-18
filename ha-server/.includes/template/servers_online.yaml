@@ -1,3 +1,38 @@
+- sensor:
+    - name: Servers Online
+      unique_id: servers_online
+      state: >
+        {{ [
+          states('binary_sensor.pmx_11_online'),
+          states('binary_sensor.pmx_12_online'),
+          states('binary_sensor.pmx_21_online'),
+          states('binary_sensor.ha_core_online'),
+          states('binary_sensor.ha_front_online'),
+          states('binary_sensor.ha_server_online'),
+          states('binary_sensor.ha_kottbo_online'),
+          states('binary_sensor.openobserve_online'),
+          states('binary_sensor.postgresql_online'),
+          states('binary_sensor.remote_online'),
+          states('binary_sensor.vector_online')
+        ] | select('eq', 'on') | list | count }}
+
+    - name: Servers Offline
+      unique_id: servers_offline
+      state: >
+        {{ [
+          states('binary_sensor.pmx_11_online'),
+          states('binary_sensor.pmx_12_online'),
+          states('binary_sensor.pmx_21_online'),
+          states('binary_sensor.ha_core_online'),
+          states('binary_sensor.ha_front_online'),
+          states('binary_sensor.ha_server_online'),
+          states('binary_sensor.ha_kottbo_online'),
+          states('binary_sensor.openobserve_online'),
+          states('binary_sensor.postgresql_online'),
+          states('binary_sensor.remote_online'),
+          states('binary_sensor.vector_online')
+        ] | select('eq', 'off') | list | count }}
+
 - binary_sensor:
 
     - name: PMX-11 Online
@@ -53,14 +88,6 @@
       state: >
         {{
           (now() - as_datetime(states('sensor.ha_kottbo_last_seen')))
-          < timedelta(minutes=5)
-        }}
-
-    - name: Checkmk Online
-      unique_id: checkmk_online
-      state: >
-        {{
-          (now() - as_datetime(states('sensor.checkmk_last_seen')))
           < timedelta(minutes=5)
         }}
 
