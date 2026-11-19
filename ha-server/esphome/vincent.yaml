@@ -1,0 +1,207 @@
+#######################################################
+substitutions:
+  device_name: pannrum-controller
+  friendly_name: "Pannrum Controller"
+
+esphome:
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: !secret fallback_ssid
+    password: !secret fallback_password
+
+captive_portal:
+
+logger:
+
+api:
+  encryption:
+    key: !secret encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+safe_mode:
+
+#######################################################
+# 1-WIRE
+one_wire:
+  - platform: gpio
+    pin: GPIO16
+
+#######################################################
+# JUSTERBAR KURVA
+number:
+  - platform: template
+    name: "Kurva förskjutning"
+    id: curve_offset
+    optimistic: true
+    min_value: -10
+    max_value: 10
+    step: 0.5
+    initial_value: 0
+    restore_value: true
+    unit_of_measurement: "°C"
+    icon: mdi:arrow-up-down
+    mode: slider
+
+  - platform: template
+    name: "Kurva lutning"
+    id: curve_slope
+    optimistic: true
+    min_value: 0.3
+    max_value: 1.2
+    step: 0.05
+    initial_value: 0.625
+    restore_value: true
+    icon: mdi:slope-uphill
+    mode: slider
+
+#######################################################
+# TEMPERATURSENSORER
+sensor:
+  - platform: dallas_temp
+    address: 0xc10b25771ba67a28
+    name: "Temp framledning"
+    id: supply_temp
+    update_interval: 30s
+    accuracy_decimals: 1
+
+  - platform: dallas_temp
+    address: 0xae0b2576e72c9128
+    name: "Temp ute"
+    id: outdoor_temp
+    update_interval: 60s
+    accuracy_decimals: 1
+
+  # Beräknat börvärde
+  - platform: template
+    name: "Framledning börvärde"
+    id: supply_setpoint
+    unit_of_measurement: "°C"
+    accuracy_decimals: 1
+    update_interval: 30s
+    lambda: |-
+      if (isnan(id(outdoor_temp).state)) return NAN;
+      float outdoor = id(outdoor_temp).state;
+      float slope = id(curve_slope).state;
+      float offset = id(curve_offset).state;
+
+      // Grundkurva: 15°C ute → 25°C + offset
+      float target = 25.0 + offset + (15.0 - outdoor) * slope;
+
+      // Eldstads-sänkning
+      if (id(fireplace_setback).state) {
+        target -= 4.0;
+      }
+
+      // Begränsa
+      if (target < 20.0) target = 20.0;
+      if (target > 55.0) target = 55.0;
+      return target;
+
+#######################################################
+# SSR-RELÄER
+switch:
+  - platform: gpio
+    pin: GPIO21
+    id: shunt_close          # ner
+    name: "SSR 1 - ner"
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+  - platform: gpio
+    pin: GPIO22
+    id: shunt_open           # upp
+    name: "SSR 2 - upp"
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+  # Eldstads-sänkning (−4 °C i max 4 timmar)
+  - platform: template
+    name: "Eldstads-sänkning"
+    id: fireplace_setback
+    optimistic: true
+    icon: mdi:fireplace
+    restore_mode: RESTORE_DEFAULT_OFF
+    turn_on_action:
+      - script.execute: setback_timer
+    turn_off_action:
+      - script.stop: setback_timer
+
+#######################################################
+# MANUELLA KNAPPAR
+button:
+  - platform: template
+    name: "Shunt öppna (manuell)"
+    icon: mdi:arrow-up-bold
+    on_press:
+      - script.execute: pulse_open
+
+  - platform: template
+    name: "Shunt stäng (manuell)"
+    icon: mdi:arrow-down-bold
+    on_press:
+      - script.execute: pulse_close
+
+#######################################################
+# SKRIPT
+script:
+  - id: pulse_open
+    mode: single
+    then:
+      - switch.turn_off: shunt_close
+      - switch.turn_on: shunt_open
+      - delay: 2s
+      - switch.turn_off: shunt_open
+
+  - id: pulse_close
+    mode: single
+    then:
+      - switch.turn_off: shunt_open
+      - switch.turn_on: shunt_close
+      - delay: 2s
+      - switch.turn_off: shunt_close
+
+  - id: setback_timer
+    mode: restart
+    then:
+      - delay: 4h
+      - switch.turn_off: fireplace_setback
+      - logger.log: "Eldstads-sänkning avslutad automatiskt efter 4 timmar"
+
+#######################################################
+# AUTOMATISK REGLERING
+interval:
+  - interval: 2min
+    startup_delay: 30s
+    then:
+      - lambda: |-
+          if (isnan(id(outdoor_temp).state) || isnan(id(supply_temp).state) || isnan(id(supply_setpoint).state)) {
+            ESP_LOGW("shunt", "Sensorer inte redo");
+            return;
+          }
+          float supply = id(supply_temp).state;
+          float target = id(supply_setpoint).state;
+          const float hyst = 1.5;
+
+          if (supply < (target - hyst)) {
+            ESP_LOGI("shunt", "Öppnar shunt (%.1f < %.1f)", supply, target);
+            id(pulse_open).execute();
+          } else if (supply > (target + hyst)) {
+            ESP_LOGI("shunt", "Stänger shunt (%.1f > %.1f)", supply, target);
+            id(pulse_close).execute();
+          } else {
+            ESP_LOGD("shunt", "Inom hysteres (%.1f ≈ %.1f)", supply, target);
+          }
