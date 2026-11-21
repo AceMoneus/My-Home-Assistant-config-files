@@ -383,7 +383,7 @@
     data: {}
   mode: single
 - id: '1759218371444'
-  alias: Send Persistent Notice to Telegram
+  alias: Send Persistent Notice
   triggers:
   - event_type: call_service
     trigger: event

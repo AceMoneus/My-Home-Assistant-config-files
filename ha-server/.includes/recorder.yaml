@@ -1,5 +1,3 @@
-# .includes/recorder.yaml
-
 purge_keep_days: 10
 
 exclude:
@@ -14,4 +12,31 @@ exclude:
     - sensor.*_rssi
     - sensor.*_linkquality
     - sensor.*_battery_low
-    - scene.*
+    # Servermetrics via MQTT
+    - sensor.*_cpu
+    - sensor.*_cpu_temp
+    - sensor.*_memory
+    - sensor.*_disk
+    - binary_sensor.*_healthy
+    - input_datetime.*_last_seen
+    # UniFi systemstatistik
+    - sensor.*_cpu_anvandning*
+    - sensor.*_cpu_utilization*
+    - sensor.*_memory_utilization*
+    - sensor.*_diskens_skrivhastighet*
+    - sensor.*_disk_write_rate*
+    - sensor.system_monitor_*
+    # UniFi Network / Protect
+    - sensor.*_minnesanvandning*
+    - sensor.*_upptid
+    - sensor.*_drifttid
+    - sensor.*_anvant_lagringsutrymme*
+    - sensor.*_storage_used
+    - sensor.*_klienter*
+    - sensor.server_hemma_*
+    - sensor.ups_tower_output_*
+    - sensor.ups_tower_bypass_voltage
+    - camera.*
+  entities:
+    - automation.mqtt_klimat_publish
+    - automation.matter_last_seen_test
