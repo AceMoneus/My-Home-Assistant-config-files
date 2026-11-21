@@ -10,6 +10,17 @@
       state: "{{ state_attr('sun.sun', 'elevation') | round(1) }}"
       attributes:
         azimuth: "{{ state_attr('sun.sun', 'azimuth') | round(1) }}"
+      unit_of_measurement: "°"
+
+    - name: "kottbo_temp_inside_templated"
+      unique_id: kottbo_temp_inside_templated
+      state: >
+        {{
+          states('sensor.mqtt_kottbo_temp_kitchen') | float(0)
+          + states('input_number.kottbo_temp_override') | float(0)
+        }}
+      icon: mdi:home-thermometer
+      unit_of_measurement: "°C"
 
 - binary_sensor:
     - name: "Larm home"

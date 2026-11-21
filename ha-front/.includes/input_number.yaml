@@ -1,0 +1,7 @@
+#/homeassistant/.includes/input_number.yaml
+  kottbo_temp_override:
+    name: Kottbo Temp Override
+    min: 0
+    max: 4
+    step: 1
+    mode: slider

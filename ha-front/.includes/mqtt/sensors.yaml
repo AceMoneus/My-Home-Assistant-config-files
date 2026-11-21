@@ -74,14 +74,6 @@
   state_class: measurement
   value_template: "{{ value }}"
   icon: mdi:home-thermometer
-- name: "Temp inne (sovrum)"
-  unique_id: kottbo_mqtt_temp_bedroom
-  default_entity_id: sensor.mqtt_kottbo_temp_bedroom
-  state_topic: "kottbo/temp/bedroom"
-  unit_of_measurement: "°C"
-  device_class: temperature
-  state_class: measurement
-  value_template: "{{ value }}"
 - name: "Temp ute"
   unique_id: kottbo_mqtt_temp_outside
   default_entity_id: sensor.mqtt_kottbo_temp_outside

@@ -1,3 +1,4 @@
+#/homeassistant/configuration.yaml
 ####################################################
 # Common misc
 default_config:
@@ -10,6 +11,7 @@ logger:
 automation: !include automations.yaml
 group: !include .includes/group.yaml
 input_boolean: !include .includes/input_boolean.yaml
+input_number: !include .includes/input_number.yaml
 template: !include .includes/template.yaml
 mqtt:
   binary_sensor: !include .includes/mqtt/binary_sensors.yaml
