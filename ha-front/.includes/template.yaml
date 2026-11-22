@@ -22,6 +22,16 @@
       icon: mdi:home-thermometer
       unit_of_measurement: "°C"
 
+    - name: "kottbo_temp_bedroom_templated"
+      unique_id: kottbo_temp_bedroom_templated
+      state: >
+        {{
+          states('sensor.mqtt_kottbo_temp_bedroom') | float(0)
+          + states('input_number.kottbo_temp_override') | float(0)
+        }}
+      icon: mdi:home-thermometer
+      unit_of_measurement: "°C"
+
 - binary_sensor:
     - name: "Larm home"
       unique_id: mqtt_home_alarm_state
