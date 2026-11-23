@@ -163,3 +163,57 @@
           and is_state('binary_sensor.remote_healthy', 'on')
           and is_state('binary_sensor.vector_healthy', 'on')
         }}
+
+    - name: "Servers Alert"
+      unique_id: servers_alert
+      device_class: problem
+      delay_on:
+        minutes: 5
+      state: "{{ is_state('binary_sensor.servers_healthy', 'off') }}"
+
+- sensor:
+    - name: "Servers OK"
+      unique_id: servers_ok
+      state: >
+        {{
+          [
+            states('sensor.pmx_11_cpu') | float(0) < 80
+            and states('sensor.pmx_11_memory') | float(0) < 80
+            and states('sensor.pmx_11_disk') | float(0) < 80
+            and states('sensor.pmx_11_cpu_temp') | float(0) < 80,
+            states('sensor.pmx_12_cpu') | float(0) < 80
+            and states('sensor.pmx_12_memory') | float(0) < 80
+            and states('sensor.pmx_12_disk') | float(0) < 80
+            and states('sensor.pmx_12_cpu_temp') | float(0) < 80,
+            states('sensor.pmx_21_cpu') | float(0) < 80
+            and states('sensor.pmx_21_memory') | float(0) < 80
+            and states('sensor.pmx_21_disk') | float(0) < 80
+            and states('sensor.pmx_21_cpu_temp') | float(0) < 80,
+            states('sensor.ha_core_cpu') | float(0) < 80
+            and states('sensor.ha_core_memory') | float(0) < 80
+            and states('sensor.ha_core_disk') | float(0) < 80
+            and states('sensor.ha_core_cpu_temp') | float(0) < 80,
+            states('sensor.ha_front_cpu') | float(0) < 80
+            and states('sensor.ha_front_memory') | float(0) < 80
+            and states('sensor.ha_front_disk') | float(0) < 80
+            and states('sensor.ha_front_cpu_temp') | float(0) < 80,
+            states('sensor.ha_server_cpu') | float(0) < 80
+            and states('sensor.ha_server_memory') | float(0) < 80
+            and states('sensor.ha_server_disk') | float(0) < 80,
+            states('sensor.ha_kottbo_cpu') | float(0) < 80
+            and states('sensor.ha_kottbo_memory') | float(0) < 80
+            and states('sensor.ha_kottbo_disk') | float(0) < 80,
+            states('sensor.openobserve_cpu') | float(0) < 80
+            and states('sensor.openobserve_memory') | float(0) < 80
+            and states('sensor.openobserve_disk') | float(0) < 80,
+            states('sensor.postgresql_cpu') | float(0) < 80
+            and states('sensor.postgresql_memory') | float(0) < 80
+            and states('sensor.postgresql_disk') | float(0) < 80,
+            states('sensor.remote_cpu') | float(0) < 80
+            and states('sensor.remote_memory') | float(0) < 80
+            and states('sensor.remote_disk') | float(0) < 80,
+            states('sensor.vector_cpu') | float(0) < 80
+            and states('sensor.vector_memory') | float(0) < 80
+            and states('sensor.vector_disk') | float(0) < 80
+          ] | select('eq', true) | list | count
+        }}

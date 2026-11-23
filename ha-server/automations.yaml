@@ -2131,16 +2131,14 @@
 - id: '1795011137563'
   alias: Infrastructure Health Check
   triggers:
-  - trigger: state
-    entity_id: binary_sensor.servers_healthy
-    to: 'off'
-    for:
-      minutes: 5
+  - entity_id: binary_sensor.servers_alert
     id: unhealthy
-  - trigger: state
-    entity_id: binary_sensor.servers_healthy
     to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.servers_alert
     id: healthy
+    to: 'off'
+    trigger: state
   actions:
   - choose:
     - conditions:
@@ -2149,20 +2147,36 @@
       sequence:
       - action: script.send_user_message
         data:
+          message: "{% set hosts = [\n  ['PMX-11', 'pmx_11', true],\n  ['PMX-12',
+            'pmx_12', true],\n  ['PMX-21', 'pmx_21', true],\n  ['HA Core', 'ha_core',
+            true],\n  ['HA Front', 'ha_front', true],\n  ['HA Server', 'ha_server',
+            false],\n  ['HA Kottbo', 'ha_kottbo', false],\n  ['OpenObserve', 'openobserve',
+            false],\n  ['PostgreSQL', 'postgresql', false],\n  ['Remote', 'remote',
+            false],\n  ['Vector', 'vector', false]\n] %} {% set ns = namespace(items=[])
+            %} {% for host in hosts %}\n  {% if not is_state('binary_sensor.' ~ host[1]
+            ~ '_healthy', 'on') %}\n    {% set ns.reason = 'okänd orsak' %}\n    {%
+            if not is_state('binary_sensor.' ~ host[1] ~ '_online', 'on') %}\n      {%
+            set ns.reason = 'offline' %}\n    {% elif states('sensor.' ~ host[1] ~
+            '_cpu') | float(0) >= 80 %}\n      {% set ns.reason = 'CPU ' ~ states('sensor.'
+            ~ host[1] ~ '_cpu') ~ '%' %}\n    {% elif states('sensor.' ~ host[1] ~
+            '_memory') | float(0) >= 80 %}\n      {% set ns.reason = 'minne ' ~ states('sensor.'
+            ~ host[1] ~ '_memory') ~ '%' %}\n    {% elif states('sensor.' ~ host[1]
+            ~ '_disk') | float(0) >= 80 %}\n      {% set ns.reason = 'disk ' ~ states('sensor.'
+            ~ host[1] ~ '_disk') ~ '%' %}\n    {% elif host[2] and states('sensor.'
+            ~ host[1] ~ '_cpu_temp') | float(0) >= 80 %}\n      {% set ns.reason =
+            'temp ' ~ states('sensor.' ~ host[1] ~ '_cpu_temp') ~ '°C' %}\n    {%
+            endif %}\n    {% set ns.items = ns.items + [host[0] ~ ' (' ~ ns.reason
+            ~ ')'] %}\n  {% endif %}\n{% endfor %} Infrastrukturvarning. Fel i 5 minuter:
+            {{ ns.items | join(', ') or 'okänd värd' }}."
           target: local
           telegram: true
-          message: 'Infrastrukturvarning. En eller flera servrar är inte healthy.
-
-            '
     - conditions:
       - condition: trigger
         id: healthy
       sequence:
       - action: script.send_user_message
         data:
+          message: Infrastruktur återställd. Alla servrar är healthy igen.
           target: local
           telegram: true
-          message: 'Infrastruktur återställd. Alla servrar är healthy igen.
-
-            '
   mode: single
