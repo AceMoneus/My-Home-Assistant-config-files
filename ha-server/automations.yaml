@@ -16,100 +16,6 @@
       telegram: false
       message: '{{ trigger.id }}'
   mode: single
-- id: '1738679737175'
-  alias: Alarm Home - Turn ON
-  description: Aktiverar larm endast vid off → on
-  triggers:
-  - trigger: state
-    entity_id: switch.mqtt_home_alarm_state
-    from: 'off'
-    to: 'on'
-  conditions: []
-  actions:
-  - action: script.send_user_message
-    data:
-      target: both
-      telegram: true
-      message: "{% if is_state('binary_sensor.mt30_dorr', 'on')\n    or is_state('binary_sensor.mt32_dorr',
-        'on')\n    or is_state('binary_sensor.mt68_dorr', 'on')\n    or is_state('binary_sensor.mt69_dorr',
-        'on') %}\n  Larm PÅ - Dörr/fönster öppet\n{% else %}\n  Larm PÅ\n{% endif
-        %}"
-  - action: switch.turn_on
-    continue_on_error: true
-    target:
-      entity_id:
-      - switch.mt4
-      - switch.mt8
-  - action: switch.turn_off
-    continue_on_error: true
-    target:
-      entity_id: switch.mt18
-  - action: switch.turn_off
-    metadata: {}
-    target:
-      entity_id: switch.fresh_ovre_badrum_constant_speed
-    data: {}
-  - delay:
-      minutes: 1
-  - action: switch.turn_on
-    continue_on_error: true
-    target:
-      entity_id:
-      - switch.security_hall_detektioner_person
-      - switch.g5_flex_detektioner_person_2
-      - switch.kok_detections_person
-      - switch.uppfart_detektioner_person
-      - switch.security_ytterdorr_detektioner_person
-      - switch.koksdorr_detektioner_person
-      - switch.g4_instant_detektioner_person
-  mode: restart
-- id: '1738679758106'
-  alias: Alarm Home - Turn OFF
-  description: Avaktiverar larm endast vid on → off
-  triggers:
-  - trigger: state
-    entity_id: switch.mqtt_home_alarm_state
-    from: 'on'
-    to: 'off'
-  conditions: []
-  actions:
-  - action: switch.turn_off
-    continue_on_error: true
-    target:
-      entity_id:
-      - switch.security_hall_detektioner_person
-      - switch.g5_flex_detektioner_person_2
-      - switch.kok_detections_person
-      - switch.uppfart_detektioner_person
-      - switch.security_ytterdorr_detektioner_person
-      - switch.koksdorr_detektioner_person
-      - switch.g4_instant_detektioner_person
-  - action: switch.turn_on
-    continue_on_error: true
-    target:
-      entity_id: switch.mt18
-  - action: script.send_user_message
-    data:
-      target: both
-      telegram: true
-      message: Larm AV
-  - if:
-    - condition: time
-      after: 06:00:00
-      before: '22:00:00'
-    then:
-    - action: switch.turn_on
-      target:
-        entity_id: switch.fresh_ovre_badrum_constant_speed
-  - delay:
-      seconds: 10
-  - action: switch.turn_off
-    continue_on_error: true
-    target:
-      entity_id:
-      - switch.mt4
-      - switch.mt8
-  mode: restart
 - id: '1741249838102'
   alias: MQTT - klimat publish
   description: Publicerar mt71–mt74 temp/fukt till MQTT (home/temp|humid/*).
@@ -907,64 +813,69 @@
         data: {}
 - id: '1781638175577'
   alias: Röklarm notifiering
-  description: HEIMAN-rökdetektorer + UniFi-kameror (INNE/UTE)
+  description: HEIMAN-rökdetektorer samt kamerornas rök och kolmonoxid.
   triggers:
-  - type: smoke
-    device_id: 7fe07ddc8393c1de1a097f765a6b5a25
+  - device_id: 7fe07ddc8393c1de1a097f765a6b5a25
+    domain: binary_sensor
     entity_id: f7c744934958df61bb43936fe669f49c
-    domain: binary_sensor
-    trigger: device
     id: smoke
-  - type: smoke
-    device_id: 152e232011bbe9be8597b785f31d6ea4
+    trigger: device
+    type: smoke
+  - device_id: 152e232011bbe9be8597b785f31d6ea4
+    domain: binary_sensor
     entity_id: 31f1c32e143657dc4b656e4b218feea4
-    domain: binary_sensor
-    trigger: device
     id: smoke
-  - type: smoke
-    device_id: 4405a823e4dbdfe433dafadcef20bb02
+    trigger: device
+    type: smoke
+  - device_id: 4405a823e4dbdfe433dafadcef20bb02
+    domain: binary_sensor
     entity_id: d68c43bae8381400aab5fee7c24a4fa0
-    domain: binary_sensor
-    trigger: device
     id: smoke
-  - type: smoke
-    device_id: 168b90f422d73f51b485c0f95b6b0420
+    trigger: device
+    type: smoke
+  - device_id: 168b90f422d73f51b485c0f95b6b0420
+    domain: binary_sensor
     entity_id: 9b69756594a9261b457d4ea345f33b91
-    domain: binary_sensor
-    trigger: device
     id: smoke
-  - type: smoke
-    device_id: 5d41e438a1dcd2d648e133fea1848af8
+    trigger: device
+    type: smoke
+  - device_id: 5d41e438a1dcd2d648e133fea1848af8
+    domain: binary_sensor
     entity_id: 0869495be16500b7bb992448c47ede4c
-    domain: binary_sensor
-    trigger: device
     id: smoke
-  - trigger: state
-    entity_id:
+    trigger: device
+    type: smoke
+  - entity_id:
     - binary_sensor.mt33_test_pagar
     - binary_sensor.mt34_test_pagar
     - binary_sensor.mt35_test_pagar
     - binary_sensor.mt39_test_pagar
     - binary_sensor.mt48_test_pagar
     from: 'off'
-    to: 'on'
     id: test
-  - trigger: state
-    entity_id:
+    to: 'on'
+    trigger: state
+  - entity_id:
     - binary_sensor.security_hall_roklarm_detekterat
     - binary_sensor.kok_smoke_alarm_detected
-    - binary_sensor.g4_instant_roklarm_detekterat
-    from: 'off'
-    to: 'on'
-    id: camera_inne
-  - trigger: state
-    entity_id:
+    - binary_sensor.uppfart_roklarm_detekterat
     - binary_sensor.security_ytterdorr_roklarm_detekterat
-    - binary_sensor.koksdorr_roklarm_detekterat
     - binary_sensor.g5_flex_roklarm_detekterat_2
+    - binary_sensor.koksdorr_roklarm_detekterat
+    - binary_sensor.g4_instant_roklarm_detekterat
+    - binary_sensor.oves_garage_roklarm_detekterat
+    - binary_sensor.security_hall_kolmonoxidlarm_detekterat
+    - binary_sensor.kok_co_alarm_detected
+    - binary_sensor.uppfart_kolmonoxidlarm_detekterat
+    - binary_sensor.security_ytterdorr_kolmonoxidlarm_detekterat
+    - binary_sensor.g5_flex_kolmonoxidlarm_detekterat_2
+    - binary_sensor.koksdorr_kolmonoxidlarm_detekterat
+    - binary_sensor.g4_instant_kolmonoxidlarm_detekterat
+    - binary_sensor.oves_garage_kolmonoxidlarm_detekterat
     from: 'off'
+    id: camera
     to: 'on'
-    id: camera_ute
+    trigger: state
   conditions: []
   actions:
   - variables:
@@ -976,25 +887,33 @@
         \ \"binary_sensor.mt34_test_pagar\": \"Serverskåp\",\n  \"binary_sensor.mt35_test_pagar\":
         \"Källartrappa\",\n  \"binary_sensor.mt39_test_pagar\": \"Garage\",\n  \"binary_sensor.mt48_test_pagar\":
         \"Övre hall\",\n  \"binary_sensor.security_hall_roklarm_detekterat\": \"Hall\",\n
-        \ \"binary_sensor.kok_smoke_alarm_detected\": \"Matplats\",\n  \"binary_sensor.g4_instant_roklarm_detekterat\":
-        \"Vind\",\n  \"binary_sensor.security_ytterdorr_roklarm_detekterat\": \"Ytterdörr\",\n
-        \ \"binary_sensor.koksdorr_roklarm_detekterat\": \"Köksdörr\",\n  \"binary_sensor.g5_flex_roklarm_detekterat_2\":
-        \"Altan\"\n} %} {{ by_entity.get(trigger.entity_id, by_device.get(trigger.device_id,
+        \ \"binary_sensor.security_hall_kolmonoxidlarm_detekterat\": \"Hall\",\n  \"binary_sensor.kok_smoke_alarm_detected\":
+        \"Matplats\",\n  \"binary_sensor.kok_co_alarm_detected\": \"Matplats\",\n
+        \ \"binary_sensor.uppfart_roklarm_detekterat\": \"Uppfart\",\n  \"binary_sensor.uppfart_kolmonoxidlarm_detekterat\":
+        \"Uppfart\",\n  \"binary_sensor.security_ytterdorr_roklarm_detekterat\": \"Ytterdörr\",\n
+        \ \"binary_sensor.security_ytterdorr_kolmonoxidlarm_detekterat\": \"Ytterdörr\",\n
+        \ \"binary_sensor.g5_flex_roklarm_detekterat_2\": \"Altan\",\n  \"binary_sensor.g5_flex_kolmonoxidlarm_detekterat_2\":
+        \"Altan\",\n  \"binary_sensor.koksdorr_roklarm_detekterat\": \"Köksdörr\",\n
+        \ \"binary_sensor.koksdorr_kolmonoxidlarm_detekterat\": \"Köksdörr\",\n  \"binary_sensor.g4_instant_roklarm_detekterat\":
+        \"Vind\",\n  \"binary_sensor.g4_instant_kolmonoxidlarm_detekterat\": \"Vind\",\n
+        \ \"binary_sensor.oves_garage_roklarm_detekterat\": \"Oves garage\",\n  \"binary_sensor.oves_garage_kolmonoxidlarm_detekterat\":
+        \"Oves garage\"\n} %} {{ by_entity.get(trigger.entity_id, by_device.get(trigger.device_id,
         \"Okänd rökdetektor\")) }}"
       message: "{% if trigger.id == \"test\" %}\n  RÖKLARM TEST – {{ detector_name
-        }}\n{% elif trigger.id == \"camera_inne\" %}\n  Röklarm via kamera INNE –
-        {{ detector_name }}\n{% elif trigger.id == \"camera_ute\" %}\n  Röklarm via
-        kamera UTE – {{ detector_name }}\n{% else %}\n  RÖKLARM – {{ detector_name
-        }}\n{% endif %}"
+        }}\n{% elif trigger.id == \"camera\" and ('kolmonoxid' in trigger.entity_id
+        or '_co_' in trigger.entity_id) %}\n  Kolmonoxidlarm via kamera – {{ detector_name
+        }}\n{% elif trigger.id == \"camera\" %}\n  Röklarm via kamera – {{ detector_name
+        }}\n{% else %}\n  RÖKLARM – {{ detector_name }}\n{% endif %}"
   - action: telegram_bot.send_message
     data:
       message: '{{ message }}'
   - action: script.send_user_message
     data:
-      target: both
       message: '{{ message }}'
+      target: both
       telegram: true
-  mode: single
+  max: 10
+  mode: queued
 - id: '1783352991565'
   alias: mqtt_top_bathroom_fan
   description: mqtt_kitchen_tv
@@ -1229,46 +1148,115 @@
   mode: single
 - id: '1757935900000'
   alias: Perimeter-protection
-  description: Notifierar person/dörr när perimeter protection är ON
+  description: När perimetern slås på spelas person in på Uppfart, Ytterdörr, Altan
+    och Köksdörr. När den slås av blir inspelning never. Notifierar bara när perimetern
+    är på. Alarm ONOFF stänger av denna automation medan hemlarmet är på.
   triggers:
-  - trigger: state
-    entity_id:
+  - entity_id: switch.mqtt_home_perimeter_protection
+    from: 'off'
+    id: perimeter_on
+    to: 'on'
+    trigger: state
+  - entity_id: switch.mqtt_home_perimeter_protection
+    from: 'on'
+    id: perimeter_off
+    to: 'off'
+    trigger: state
+  - entity_id:
     - binary_sensor.security_ytterdorr_person_detekterad
     - binary_sensor.koksdorr_person_detekterad
     - binary_sensor.g5_flex_person_detekterad_2
     - binary_sensor.uppfart_person_detekterad
     from: 'off'
-    to: 'on'
     id: person
-  - trigger: state
-    entity_id:
+    to: 'on'
+    trigger: state
+  - entity_id:
     - binary_sensor.mt32_dorr
     - binary_sensor.mt68_dorr
     - binary_sensor.mt69_dorr
-    to: 'on'
     id: door
-  conditions:
-  - condition: state
-    entity_id: switch.mqtt_home_perimeter_protection
-    state: 'on'
+    to: 'on'
+    trigger: state
+  conditions: []
   actions:
-  - variables:
-      source_name: "{% set names = {\n  \"binary_sensor.security_ytterdorr_person_detekterad\":
-        \"Ytterdörr\",\n  \"binary_sensor.koksdorr_person_detekterad\": \"Köksdörr\",\n
-        \ \"binary_sensor.g5_flex_person_detekterad_2\": \"Altan\",\n  \"binary_sensor.uppfart_person_detekterad\":
-        \"Uppfart\",\n  \"binary_sensor.mt32_dorr\": \"Ytterdörr\",\n  \"binary_sensor.mt68_dorr\":
-        \"Altandörr\",\n  \"binary_sensor.mt69_dorr\": \"Köksdörr\"\n} %} {{ names.get(trigger.entity_id,
-        \"Okänd\") }}"
-      message: "{% if trigger.id == \"door\" %}\n  Dörr öppnad: {{ source_name }}\n{%
-        else %}\n  Person: {{ source_name }}\n{% endif %}"
-  - action: telegram_bot.send_message
-    data:
-      message: '{{ message }}'
-  - action: script.send_user_message
-    data:
-      target: both
-      message: '{{ message }}'
-      telegram: true
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: perimeter_on
+      - condition: state
+        entity_id: switch.mqtt_home_alarm_state
+        state: 'off'
+      sequence:
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.uppfart_detektioner_person
+          - switch.security_ytterdorr_detektioner_person
+          - switch.g5_flex_detektioner_person_2
+          - switch.koksdorr_detektioner_person
+      - action: select.select_option
+        continue_on_error: true
+        data:
+          option: detections
+        target:
+          entity_id:
+          - select.uppfart_inspelningslage
+          - select.security_ytterdorr_inspelningslage
+          - select.g5_flex_inspelningslage
+          - select.koksdorr_inspelningslage
+    - conditions:
+      - condition: trigger
+        id: perimeter_off
+      - condition: state
+        entity_id: switch.mqtt_home_alarm_state
+        state: 'off'
+      sequence:
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.uppfart_detektioner_person
+          - switch.security_ytterdorr_detektioner_person
+          - switch.g5_flex_detektioner_person_2
+          - switch.koksdorr_detektioner_person
+      - action: select.select_option
+        continue_on_error: true
+        data:
+          option: never
+        target:
+          entity_id:
+          - select.uppfart_inspelningslage
+          - select.security_ytterdorr_inspelningslage
+          - select.g5_flex_inspelningslage
+          - select.koksdorr_inspelningslage
+    - conditions:
+      - condition: trigger
+        id:
+        - person
+        - door
+      - condition: state
+        entity_id: switch.mqtt_home_perimeter_protection
+        state: 'on'
+      sequence:
+      - variables:
+          message: "{% if trigger.id == \"door\" %}\n  Dörr öppnad: {{ source_name
+            }}\n{% else %}\n  Person: {{ source_name }}\n{% endif %}"
+          source_name: "{% set names = {\n  \"binary_sensor.security_ytterdorr_person_detekterad\":
+            \"Ytterdörr\",\n  \"binary_sensor.koksdorr_person_detekterad\": \"Köksdörr\",\n
+            \ \"binary_sensor.g5_flex_person_detekterad_2\": \"Altan\",\n  \"binary_sensor.uppfart_person_detekterad\":
+            \"Uppfart\",\n  \"binary_sensor.mt32_dorr\": \"Ytterdörr\",\n  \"binary_sensor.mt68_dorr\":
+            \"Altandörr\",\n  \"binary_sensor.mt69_dorr\": \"Köksdörr\"\n} %} {{ names.get(trigger.entity_id,
+            \"Okänd\") }}"
+      - action: telegram_bot.send_message
+        data:
+          message: '{{ message }}'
+      - action: script.send_user_message
+        data:
+          message: '{{ message }}'
+          target: both
+          telegram: true
   mode: queued
 - id: '1790302500001'
   alias: Matter-enhet borta
@@ -1580,19 +1568,20 @@
       device_class: power
       state_class: measurement
 - id: '1738679737178'
-  alias: Alarm Home
-  description: Hanterar aktivering och avaktivering av hemlarm
+  alias: Alarm ONOFF
+  description: Slår på och av hemlarmet, inklusive person- och bilddetektering samt
+    siren.
   triggers:
-  - trigger: state
-    entity_id: switch.mqtt_home_alarm_state
+  - entity_id: switch.mqtt_home_alarm_state
     from: 'off'
-    to: 'on'
     id: alarm_on
-  - trigger: state
-    entity_id: switch.mqtt_home_alarm_state
+    to: 'on'
+    trigger: state
+  - entity_id: switch.mqtt_home_alarm_state
     from: 'on'
-    to: 'off'
     id: alarm_off
+    to: 'off'
+    trigger: state
   conditions: []
   actions:
   - choose:
@@ -1600,14 +1589,19 @@
       - condition: trigger
         id: alarm_on
       sequence:
+      - action: automation.turn_off
+        continue_on_error: true
+        target:
+          entity_id: automation.perimeter_protection
       - action: script.send_user_message
+        continue_on_error: true
         data:
-          target: both
-          telegram: true
           message: "{% if is_state('binary_sensor.mt30_dorr', 'on')\n    or is_state('binary_sensor.mt32_dorr',
             'on')\n    or is_state('binary_sensor.mt68_dorr', 'on')\n    or is_state('binary_sensor.mt69_dorr',
             'on') %}\n  Larm PÅ - Dörr/fönster öppet\n{% else %}\n  Larm PÅ\n{% endif
             %}"
+          target: both
+          telegram: true
       - action: switch.turn_on
         continue_on_error: true
         target:
@@ -1619,21 +1613,60 @@
         target:
           entity_id: switch.mt18
       - action: switch.turn_off
+        continue_on_error: true
         target:
           entity_id: switch.fresh_ovre_badrum_constant_speed
       - delay:
-          minutes: 1
+          seconds: 90
       - action: switch.turn_on
         continue_on_error: true
         target:
           entity_id:
           - switch.security_hall_detektioner_person
-          - switch.g5_flex_detektioner_person_2
           - switch.kok_detections_person
           - switch.uppfart_detektioner_person
           - switch.security_ytterdorr_detektioner_person
+          - switch.g5_flex_detektioner_person_2
           - switch.koksdorr_detektioner_person
-          - switch.g4_instant_detektioner_person
+          - switch.security_hall_detektioner_djur
+          - switch.kok_detections_animal
+          - switch.uppfart_detektioner_djur
+          - switch.security_ytterdorr_detektioner_djur
+          - switch.g5_flex_detektioner_djur_2
+          - switch.koksdorr_detektioner_djur
+          - switch.oves_garage_detektioner_person
+          - switch.oves_garage_detektioner_djur
+          - switch.g4_instant_detektioner_djur
+          - switch.security_hall_detektioner_rok
+          - switch.kok_detections_smoke
+          - switch.uppfart_detektioner_rok
+          - switch.security_ytterdorr_detektioner_rok
+          - switch.g5_flex_detektioner_rok_2
+          - switch.koksdorr_detektioner_rok
+          - switch.g4_instant_detektioner_rok
+          - switch.oves_garage_detektioner_rok
+          - switch.security_hall_detektioner_kolmonoxidlarm
+          - switch.kok_detections_co
+          - switch.uppfart_detektioner_kolmonoxidlarm
+          - switch.security_ytterdorr_detektioner_kolmonoxidlarm
+          - switch.g5_flex_detektioner_kolmonoxidlarm_2
+          - switch.koksdorr_detektioner_kolmonoxidlarm
+          - switch.g4_instant_detektioner_kolmonoxidlarm
+          - switch.oves_garage_detektioner_kolmonoxidlarm
+      - action: select.select_option
+        continue_on_error: true
+        data:
+          option: detections
+        target:
+          entity_id:
+          - select.security_hall_inspelningslage
+          - select.g4_instant_inspelningslage_2
+          - select.g4_instant_inspelningslage
+          - select.kok_recording_mode
+          - select.uppfart_inspelningslage
+          - select.security_ytterdorr_inspelningslage
+          - select.g5_flex_inspelningslage
+          - select.koksdorr_inspelningslage
     - conditions:
       - condition: trigger
         id: alarm_off
@@ -1643,27 +1676,104 @@
         target:
           entity_id:
           - switch.security_hall_detektioner_person
-          - switch.g5_flex_detektioner_person_2
           - switch.kok_detections_person
           - switch.uppfart_detektioner_person
           - switch.security_ytterdorr_detektioner_person
+          - switch.g5_flex_detektioner_person_2
           - switch.koksdorr_detektioner_person
-          - switch.g4_instant_detektioner_person
+          - switch.security_hall_detektioner_djur
+          - switch.kok_detections_animal
+          - switch.uppfart_detektioner_djur
+          - switch.security_ytterdorr_detektioner_djur
+          - switch.g5_flex_detektioner_djur_2
+          - switch.koksdorr_detektioner_djur
+      - action: select.select_option
+        continue_on_error: true
+        data:
+          option: never
+        target:
+          entity_id:
+          - select.security_hall_inspelningslage
+          - select.kok_recording_mode
+          - select.uppfart_inspelningslage
+          - select.security_ytterdorr_inspelningslage
+          - select.g5_flex_inspelningslage
+          - select.koksdorr_inspelningslage
+      - action: select.select_option
+        continue_on_error: true
+        data:
+          option: detections
+        target:
+          entity_id:
+          - select.g4_instant_inspelningslage
+          - select.g4_instant_inspelningslage_2
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id:
+          - switch.security_hall_detektioner_rok
+          - switch.kok_detections_smoke
+          - switch.uppfart_detektioner_rok
+          - switch.security_ytterdorr_detektioner_rok
+          - switch.g5_flex_detektioner_rok_2
+          - switch.koksdorr_detektioner_rok
+          - switch.g4_instant_detektioner_rok
+          - switch.oves_garage_detektioner_rok
+          - switch.security_hall_detektioner_kolmonoxidlarm
+          - switch.kok_detections_co
+          - switch.uppfart_detektioner_kolmonoxidlarm
+          - switch.security_ytterdorr_detektioner_kolmonoxidlarm
+          - switch.g5_flex_detektioner_kolmonoxidlarm_2
+          - switch.koksdorr_detektioner_kolmonoxidlarm
+          - switch.g4_instant_detektioner_kolmonoxidlarm
+          - switch.oves_garage_detektioner_kolmonoxidlarm
+          - switch.oves_garage_detektioner_person
+          - switch.oves_garage_detektioner_djur
+          - switch.g4_instant_detektioner_djur
+      - action: automation.turn_on
+        continue_on_error: true
+        target:
+          entity_id: automation.perimeter_protection
+      - if:
+        - condition: state
+          entity_id: switch.mqtt_home_perimeter_protection
+          state: 'on'
+        then:
+        - action: switch.turn_on
+          continue_on_error: true
+          target:
+            entity_id:
+            - switch.uppfart_detektioner_person
+            - switch.security_ytterdorr_detektioner_person
+            - switch.g5_flex_detektioner_person_2
+            - switch.koksdorr_detektioner_person
+        - action: select.select_option
+          continue_on_error: true
+          data:
+            option: detections
+          target:
+            entity_id:
+            - select.uppfart_inspelningslage
+            - select.security_ytterdorr_inspelningslage
+            - select.g5_flex_inspelningslage
+            - select.koksdorr_inspelningslage
       - action: switch.turn_on
         continue_on_error: true
         target:
           entity_id: switch.mt18
       - action: script.send_user_message
+        continue_on_error: true
         data:
+          message: Larm AV
           target: both
           telegram: true
-          message: Larm AV
       - if:
-        - condition: time
-          after: 06:00:00
+        - after: 06:00:00
           before: '22:00:00'
+          condition: time
         then:
         - action: switch.turn_on
+          continue_on_error: true
           target:
             entity_id: switch.fresh_ovre_badrum_constant_speed
       - delay:
@@ -2179,4 +2289,36 @@
           message: Infrastruktur återställd. Alla servrar är healthy igen.
           target: local
           telegram: true
+  mode: single
+- id: '1795432343683'
+  alias: Camera Detections Always Enabled
+  description: Slår på rök- och kolmonoxiddetektering en gång i timmen och vid start.
+    Larmar inte.
+  triggers:
+  - event: start
+    trigger: homeassistant
+  - hours: /1
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    continue_on_error: true
+    target:
+      entity_id:
+      - switch.security_hall_detektioner_rok
+      - switch.kok_detections_smoke
+      - switch.uppfart_detektioner_rok
+      - switch.security_ytterdorr_detektioner_rok
+      - switch.g5_flex_detektioner_rok_2
+      - switch.koksdorr_detektioner_rok
+      - switch.g4_instant_detektioner_rok
+      - switch.oves_garage_detektioner_rok
+      - switch.security_hall_detektioner_kolmonoxidlarm
+      - switch.kok_detections_co
+      - switch.uppfart_detektioner_kolmonoxidlarm
+      - switch.security_ytterdorr_detektioner_kolmonoxidlarm
+      - switch.g5_flex_detektioner_kolmonoxidlarm_2
+      - switch.koksdorr_detektioner_kolmonoxidlarm
+      - switch.g4_instant_detektioner_kolmonoxidlarm
+      - switch.oves_garage_detektioner_kolmonoxidlarm
   mode: single
