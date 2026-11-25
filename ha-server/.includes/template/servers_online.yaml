@@ -37,88 +37,110 @@
 
     - name: PMX-11 Online
       unique_id: pmx11_online
+
+      availability: >
+        {{ has_value('sensor.pmx_11_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.pmx_11_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.pmx_11_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: PMX-12 Online
       unique_id: pmx12_online
+
+      availability: >
+        {{ has_value('sensor.pmx_12_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.pmx_12_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.pmx_12_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: PMX-21 Online
       unique_id: pmx21_online
+
+      availability: >
+        {{ has_value('sensor.pmx_21_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.pmx_21_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.pmx_21_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: HA Core Online
       unique_id: ha_core_online
+
+      availability: >
+        {{ has_value('sensor.ha_core_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.ha_core_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.ha_core_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: HA Front Online
       unique_id: ha_front_online
+
+      availability: >
+        {{ has_value('sensor.ha_front_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.ha_front_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.ha_front_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: HA Server Online
       unique_id: ha_server_online
+
+      availability: >
+        {{ has_value('sensor.ha_server_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.ha_server_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.ha_server_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: HA Kottbo Online
       unique_id: ha_kottbo_online
+
+      availability: >
+        {{ has_value('sensor.ha_kottbo_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.ha_kottbo_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.ha_kottbo_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: OpenObserve Online
       unique_id: openobserve_online
+
+      availability: >
+        {{ has_value('sensor.openobserve_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.openobserve_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.openobserve_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: PostgreSQL Online
       unique_id: postgresql_online
+
+      availability: >
+        {{ has_value('sensor.postgresql_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.postgresql_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.postgresql_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: Remote Online
       unique_id: remote_online
+
+      availability: >
+        {{ has_value('sensor.remote_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.remote_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.remote_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
 
     - name: Vector Online
       unique_id: vector_online
+
+      availability: >
+        {{ has_value('sensor.vector_last_seen') }}
+
       state: >
-        {{
-          (now() - as_datetime(states('sensor.vector_last_seen')))
-          < timedelta(minutes=5)
-        }}
+        {% set seen = as_datetime(states('sensor.vector_last_seen')) %}
+        {{ seen is not none and (now() - seen) < timedelta(minutes=5) }}
