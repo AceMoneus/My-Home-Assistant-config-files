@@ -12,11 +12,8 @@ exclude:
     - sensor.*_rssi
     - sensor.*_linkquality
     - sensor.*_battery_low
-    # Servermetrics via MQTT
-    - sensor.*_cpu
-    - sensor.*_cpu_temp
-    - sensor.*_memory
-    - sensor.*_disk
+    # Servermetrics via MQTT are recorded so dashboard graphs match the cards.
+    # Healthy flags stay excluded; they are derived from the metrics.
     - binary_sensor.*_healthy
     - input_datetime.*_last_seen
     # UniFi systemstatistik

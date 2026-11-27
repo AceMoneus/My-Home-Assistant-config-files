@@ -2152,10 +2152,8 @@
   mode: single
 - id: '1792500000001'
   alias: Bettan motorvärmare
-  description: Testar mt31 kl 21:00 i 20 sekunder. Meddelar om effekten är under 100
-    W. Hoppar över om bilvärmen redan är på eller om temp kl 07:00 imorgon inte är
-    under 0°C. Skickar alltid meddelande till local. Skickar till both (utan telegram)
-    bara när villkoren är uppfyllda.
+  description: Testar mt31 kl 21:00 i 20 sekunder om prognosen för 06:00 imorgon är
+    under 0°C. Skickar endast meddelande om motorvärmaren inte verkar vara inkopplad.
   triggers:
   - trigger: time
     at: '21:00:00'
@@ -2171,22 +2169,15 @@
       type: hourly
     response_variable: forecast
   - variables:
-      temp_0700: '{% set target = (today_at(''07:00'') + timedelta(days=1)).astimezone(utcnow().tzinfo).isoformat()
+      temp_0600: '{% set target = (today_at(''06:00'') + timedelta(days=1)).astimezone(utcnow().tzinfo).isoformat()
         %} {% set fc = forecast[''weather.smhi_home''].forecast %} {% set match =
         fc | selectattr(''datetime'', ''eq'', target) | list %} {{ (match[0].temperature
         if match else 100) | float }}
 
         '
-  - action: script.send_user_message
-    data:
-      target: local
-      telegram: true
-      message: 'Bettan motorvärmare Prognos 07:00 imorgon: {{ temp_0700 }} °C {% if
-        temp_0700 < 0 %} Temperatur under 0°C – testar motorvärmare. {% else %} Temperatur
-        över 0°C – hoppar över test. {% endif %}'
   - if:
     - condition: template
-      value_template: '{{ temp_0700 < 0 }}'
+      value_template: '{{ temp_0600 < 0 }}'
     then:
     - action: switch.turn_on
       target:
@@ -2206,7 +2197,8 @@
         data:
           target: both
           telegram: false
-          message: 'Bettan motorvärmare Prognos 07:00 imorgon: {{ temp_0700 }} °C'
+          message: 'Bettan motorvärmare verkar inte vara inkopplad. Prognos 06:00
+            imorgon: {{ temp_0600 }} °C. Uppmätt effekt: {{ effekt | round(0) }} W.'
   mode: single
 - id: '1794572743769'
   alias: Matter Last Seen
