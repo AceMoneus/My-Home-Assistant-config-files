@@ -270,6 +270,9 @@
           - light.mt56
   - delay:
       minutes: 2
+  - condition: state
+    entity_id: switch.mqtt_home_outside_lighting
+    state: 'off'
   - action: light.turn_off
     target:
       entity_id:
@@ -2100,56 +2103,6 @@
           - switch.mqtt_home_bedroom_light
         continue_on_error: true
   mode: single
-- id: outdoor_lighting_sun
-  alias: Utomhusbelysning - solstyrning
-  description: Tänds vid solnedgång, släcks vid soluppgång. Oberoende av lighting_period.
-  triggers:
-  - trigger: sun
-    event: sunset
-    id: sunset
-  - trigger: sun
-    event: sunrise
-    id: sunrise
-  - trigger: homeassistant
-    event: start
-    id: bootstrap
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: trigger
-        id: sunset
-      sequence:
-      - action: switch.turn_on
-        target:
-          entity_id: switch.mqtt_home_outside_lighting
-        continue_on_error: true
-    - conditions:
-      - condition: trigger
-        id: sunrise
-      sequence:
-      - action: switch.turn_off
-        target:
-          entity_id: switch.mqtt_home_outside_lighting
-        continue_on_error: true
-    - conditions:
-      - condition: trigger
-        id: bootstrap
-      sequence:
-      - if:
-        - condition: sun
-          after: sunset
-        then:
-        - action: switch.turn_on
-          target:
-            entity_id: switch.mqtt_home_outside_lighting
-          continue_on_error: true
-        else:
-        - action: switch.turn_off
-          target:
-            entity_id: switch.mqtt_home_outside_lighting
-          continue_on_error: true
-  mode: single
 - id: '1792500000001'
   alias: Bettan motorvärmare
   description: Testar mt31 kl 21:00 i 20 sekunder om prognosen för 06:00 imorgon är
@@ -2259,17 +2212,17 @@
             ~ '_healthy', 'on') %}\n    {% set ns.reason = 'okänd orsak' %}\n    {%
             if not is_state('binary_sensor.' ~ host[1] ~ '_online', 'on') %}\n      {%
             set ns.reason = 'offline' %}\n    {% elif states('sensor.' ~ host[1] ~
-            '_cpu') | float(0) >= 80 %}\n      {% set ns.reason = 'CPU ' ~ states('sensor.'
-            ~ host[1] ~ '_cpu') ~ '%' %}\n    {% elif states('sensor.' ~ host[1] ~
-            '_memory') | float(0) >= 80 %}\n      {% set ns.reason = 'minne ' ~ states('sensor.'
-            ~ host[1] ~ '_memory') ~ '%' %}\n    {% elif states('sensor.' ~ host[1]
-            ~ '_disk') | float(0) >= 80 %}\n      {% set ns.reason = 'disk ' ~ states('sensor.'
-            ~ host[1] ~ '_disk') ~ '%' %}\n    {% elif host[2] and states('sensor.'
-            ~ host[1] ~ '_cpu_temp') | float(0) >= 80 %}\n      {% set ns.reason =
-            'temp ' ~ states('sensor.' ~ host[1] ~ '_cpu_temp') ~ '°C' %}\n    {%
-            endif %}\n    {% set ns.items = ns.items + [host[0] ~ ' (' ~ ns.reason
-            ~ ')'] %}\n  {% endif %}\n{% endfor %} Infrastrukturvarning. Fel i 5 minuter:
-            {{ ns.items | join(', ') or 'okänd värd' }}."
+            '_system_load') | float(0) >= 80 %}\n      {% set ns.reason = 'Load '
+            ~ states('sensor.' ~ host[1] ~ '_system_load') ~ '%' %}\n    {% elif states('sensor.'
+            ~ host[1] ~ '_memory') | float(0) >= 80 %}\n      {% set ns.reason = 'minne
+            ' ~ states('sensor.' ~ host[1] ~ '_memory') ~ '%' %}\n    {% elif states('sensor.'
+            ~ host[1] ~ '_disk') | float(0) >= 80 %}\n      {% set ns.reason = 'disk
+            ' ~ states('sensor.' ~ host[1] ~ '_disk') ~ '%' %}\n    {% elif host[2]
+            and states('sensor.' ~ host[1] ~ '_cpu_temp') | float(0) >= 80 %}\n      {%
+            set ns.reason = 'temp ' ~ states('sensor.' ~ host[1] ~ '_cpu_temp') ~
+            '°C' %}\n    {% endif %}\n    {% set ns.items = ns.items + [host[0] ~
+            ' (' ~ ns.reason ~ ')'] %}\n  {% endif %}\n{% endfor %} Infrastrukturvarning.
+            Fel i 5 minuter: {{ ns.items | join(', ') or 'okänd värd' }}."
           target: local
           telegram: true
     - conditions:

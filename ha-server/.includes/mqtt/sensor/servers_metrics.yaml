@@ -1,7 +1,7 @@
 # PMX-11
-- name: PMX-11 CPU
-  unique_id: pmx11_cpu
-  state_topic: "metrics/pmx-11/cpu_percent"
+- name: PMX-11 System Load
+  unique_id: pmx11_system_load
+  state_topic: "metrics/pmx-11/system_load"
   unit_of_measurement: "%"
   state_class: measurement
 
@@ -25,9 +25,9 @@
   state_class: measurement
 
 # PMX-12
-- name: PMX-12 CPU
-  unique_id: pmx12_cpu
-  state_topic: "metrics/pmx-12/cpu_percent"
+- name: PMX-12 System Load
+  unique_id: pmx12_system_load
+  state_topic: "metrics/pmx-12/system_load"
   unit_of_measurement: "%"
   state_class: measurement
 
@@ -51,9 +51,9 @@
   state_class: measurement
 
 # PMX-21
-- name: PMX-21 CPU
-  unique_id: pmx21_cpu
-  state_topic: "metrics/pmx-21/cpu_percent"
+- name: PMX-21 System Load
+  unique_id: pmx21_system_load
+  state_topic: "metrics/pmx-21/system_load"
   unit_of_measurement: "%"
   state_class: measurement
 
@@ -77,9 +77,9 @@
   state_class: measurement
 
 # HA Core
-- name: HA Core CPU
-  unique_id: ha_core_cpu
-  state_topic: "metrics/ha-core/cpu_percent"
+- name: HA Core System Load
+  unique_id: ha_core_system_load
+  state_topic: "metrics/ha-core/system_load"
   unit_of_measurement: "%"
   state_class: measurement
 
@@ -103,9 +103,9 @@
   state_class: measurement
 
 # HA Front
-- name: HA Front CPU
-  unique_id: ha_front_cpu
-  state_topic: "metrics/ha-front/cpu_percent"
+- name: HA Front System Load
+  unique_id: ha_front_system_load
+  state_topic: "metrics/ha-front/system_load"
   unit_of_measurement: "%"
   state_class: measurement
 
@@ -129,9 +129,9 @@
   state_class: measurement
 
 # HA Server
-- name: HA Server CPU
-  unique_id: ha_server_cpu
-  state_topic: "metrics/ha-server/cpu_percent"
+- name: HA Server System Load
+  unique_id: ha_server_system_load
+  state_topic: "metrics/ha-server/system_load"
   unit_of_measurement: "%"
 
 - name: HA Server Memory
@@ -145,9 +145,9 @@
   unit_of_measurement: "%"
 
 # HA Kottbo
-- name: HA Kottbo CPU
-  unique_id: ha_kottbo_cpu
-  state_topic: "metrics/ha-kottbo/cpu_percent"
+- name: HA Kottbo System Load
+  unique_id: ha_kottbo_system_load
+  state_topic: "metrics/ha-kottbo/system_load"
   unit_of_measurement: "%"
 
 - name: HA Kottbo Memory
@@ -161,9 +161,9 @@
   unit_of_measurement: "%"
 
 # OpenObserve
-- name: OpenObserve CPU
-  unique_id: openobserve_cpu
-  state_topic: "metrics/openobserve/cpu_percent"
+- name: OpenObserve System Load
+  unique_id: openobserve_system_load
+  state_topic: "metrics/openobserve/system_load"
   unit_of_measurement: "%"
 
 - name: OpenObserve Memory
@@ -177,9 +177,9 @@
   unit_of_measurement: "%"
 
 # PostgreSQL
-- name: PostgreSQL CPU
-  unique_id: postgresql_cpu
-  state_topic: "metrics/postgresql/cpu_percent"
+- name: PostgreSQL System Load
+  unique_id: postgresql_system_load
+  state_topic: "metrics/postgresql/system_load"
   unit_of_measurement: "%"
 
 - name: PostgreSQL Memory
@@ -193,9 +193,9 @@
   unit_of_measurement: "%"
 
 # Remote
-- name: Remote CPU
-  unique_id: remote_cpu
-  state_topic: "metrics/remote/cpu_percent"
+- name: Remote System Load
+  unique_id: remote_system_load
+  state_topic: "metrics/remote/system_load"
   unit_of_measurement: "%"
 
 - name: Remote Memory
@@ -209,9 +209,9 @@
   unit_of_measurement: "%"
 
 # Vector
-- name: Vector CPU
-  unique_id: vector_cpu
-  state_topic: "metrics/vector/cpu_percent"
+- name: Vector System Load
+  unique_id: vector_system_load
+  state_topic: "metrics/vector/system_load"
   unit_of_measurement: "%"
 
 - name: Vector Memory
